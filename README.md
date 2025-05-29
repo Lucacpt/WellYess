@@ -7,7 +7,7 @@ The app focuses on providing a simple and accessible user experience to help man
 - **Health parameters monitoring**, including blood pressure, blood sugar, and body temperature
 - **Dietary advice** tailored for older adults
 - **Daily physical activity suggestions** adapted to individual mobility levels
-- **Emergency SOS feature* to alert caregivers
+- **Emergency SOS feature** to alert caregivers
 - **Caregiver interface** to monitor and assist remotely
 
 This project was developed as part of the Interazione Uomo-Macchina course at the University of Salerno.
