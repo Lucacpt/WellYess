@@ -1,17 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:path_provider/path_provider.dart';
+import 'homepage.dart'; // Assicurati che questo file esista nella cartella lib/
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // Inizializza Hive
-  final appDocumentDir = await getApplicationDocumentsDirectory();
-  await Hive.initFlutter(appDocumentDir.path);
-
-  // Apri una box chiamata 'counterBox'
-  await Hive.openBox('counterBox');
-
+void main() {
   runApp(const MyApp());
 }
 
@@ -21,66 +11,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Progetto IUM',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        useMaterial3: true, // Opzionale, per lo stile Material 3
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  late Box box;
-
-  @override
-  void initState() {
-    super.initState();
-    box = Hive.box('counterBox');
-    _counter = box.get('counter', defaultValue: 0);
-  }
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-      box.put('counter', _counter); // Salva su Hive
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+      home: MyHomeApp(), // HomePage deve essere definita in homepage.dart
     );
   }
 }
