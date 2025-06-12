@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart'; 
 
 void main() {
   runApp(MyHomeApp());
@@ -88,9 +89,8 @@ class HomeScreen extends StatelessWidget {
                           spacing: 24,
                           runSpacing: 24,
                           children: [
-                            _appIcon(Icons.play_arrow, "Play Store"),
+                            _appSvgIcon('assets/Sofa.svg', "Sofa"),   //Icona di prova in svg
                             _appIcon(Icons.photo, "Galleria"),
-                            //_appIcon(Icons.whatsapp, "WhatsApp"),
                             _appIcon(Icons.favorite, "Salute"),
                             _appIcon(Icons.call, "Telefono"),
                             _appIcon(Icons.message, "Messaggi"),
@@ -155,3 +155,26 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
+
+Widget _appSvgIcon(String assetPath, String label) {
+  return Column(
+    children: [
+      CircleAvatar(
+        radius: 32,
+        backgroundColor: Colors.white,
+        child: SvgPicture.asset(
+          assetPath,
+          width: 32,
+          height: 32,
+          colorFilter: ColorFilter.mode(Colors.green, BlendMode.srcIn),
+        ),
+      ),
+      SizedBox(height: 6),
+      Text(
+        label,
+        style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+      ),
+    ],
+  );
+}
+
