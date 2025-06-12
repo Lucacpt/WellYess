@@ -6,6 +6,8 @@ void main() {
 }
 
 class MyHomeApp extends StatelessWidget {
+  const MyHomeApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -16,6 +18,8 @@ class MyHomeApp extends StatelessWidget {
 }
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +43,7 @@ class HomeScreen extends StatelessWidget {
           SafeArea(
             child: Center( // Centro per limitare larghezza
               child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: 420), // Limita larghezza a 420 px (tipica smartphone)
+                constraints: BoxConstraints(maxWidth: 420), // Limita larghezza a 420 px tipica smartphone
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
