@@ -8,6 +8,7 @@ build/
 .packages
 .dart_tool/
 pubspec.lock
+.flutter-plugins-dependencies
 
 # File di cache
 *.log
