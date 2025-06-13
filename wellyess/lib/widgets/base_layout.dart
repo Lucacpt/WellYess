@@ -17,42 +17,69 @@ class BaseLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FF),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: currentIndex,
-        onTap: (index) {
-          // Puoi gestire navigazione qui o passare callback
-        },
-      ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              // Riga superiore: logo e foto profilo
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  // qui puoi aggiungere anche il logo se vuoi
-                  CircleAvatar(
-                    radius: 22,
-                    backgroundImage: AssetImage('assets/images/elder_profile_pic.png'),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 90), // margine inferiore per navbar
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // RIGA SUPERIORE con back e avatar (più in alto)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (onBackPressed != null)
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back),
+                          onPressed: onBackPressed,
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                      const Spacer(),
+                      const CircleAvatar(
+                        radius: 22,
+                        backgroundImage: AssetImage('assets/images/elder_profile_pic.png'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10), // spazio verticale più piccolo
+
+                  // Container principale con contenuto variabile
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(40),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10)
+                          )
+                        ]
+                      ),
+                      child: child,
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
-              // Container principale con contenuto variabile
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(40),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: child,
-                ),
+            ),
+
+            // Navbar in fondo
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 5,
+              child: CustomBottomNavBar(
+                currentIndex: currentIndex,
+                onTap: (index) {
+                  // gestisci navigazione
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
