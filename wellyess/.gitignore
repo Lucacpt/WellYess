@@ -1,5 +1,25 @@
+# Flutter files da ignorare
+
+# Cartella di build
 build/
-.dart_tool/
-.flutter-plugins
+
+# File generati dal tool Flutter
+.flutter/
 .packages
+.dart_tool/
+pubspec.lock
+
+# File di cache
+*.log
+
+# File degli IDE (es. IntelliJ, Visual Studio Code)
 .idea/
+.vscode/
+*.iml
+
+# File generati dal plugin Flutter
+*.apk
+*.ipa
+
+# Outros files da Flutter
+generated/
