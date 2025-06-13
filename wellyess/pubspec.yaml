@@ -29,5 +29,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-  - assets/Sofa.svg
-  
+  - assets/icons/calendar.svg
+  - assets/icons/heartbeat.svg
+  - assets/icons/pills.svg
+  - assets/icons/sport_food.svg
+  - assets/images/elder_profile_pic.png

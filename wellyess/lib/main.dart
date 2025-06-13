@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true, // Opzionale, per lo stile Material 3
       ),
-      home: MyHomeApp(), // HomePage deve essere definita in homepage.dart
+      home: HomePage(), // HomePage deve essere definita in homepage.dart
     );
   }
 }
