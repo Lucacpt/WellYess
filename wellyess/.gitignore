@@ -1,5 +1,39 @@
-build/
-.dart_tool/
-.flutter-plugins
-.packages
-.idea/
+# Flutter/Dart
+.dart_tool/          # Cartella generata da Flutter/Dart per file temporanei e di configurazione del progetto
+.packages           # File generato che mappa i pacchetti Dart usati nel progetto
+.flutter-plugins     # File generato che tiene traccia dei plugin Flutter usati
+pubspec.lock        # Lockfile delle dipendenze, da includere o ignorare a seconda del workflow (di solito si ignora)
+
+build/              # Cartella con i file di build generati (APK, IPA, ecc.)
+.generated/         # Cartelle o file generati automaticamente dal tooling
+
+# IDE (configurazioni locali)
+.idea/              # Cartella di configurazione JetBrains (Android Studio, IntelliJ)
+.vscode/             # Cartella di configurazione Visual Studio Code
+*.iml               # File di progetto IntelliJ IDEA
+
+# macOS specifici
+.DS_Store           # File nascosto creato da macOS per le proprietà delle cartelle
+
+# Android specifici
+android/.gradle/    # Cartella cache di Gradle
+android/app/build/  # Cartella build di Android
+local.properties    # File locale con path SDK e configurazioni specifiche della macchina, NON condividere
+
+# iOS specifici
+ios/Pods/           # Cartella delle dipendenze gestite da CocoaPods (ricostruibile)
+ios/.generated/     # File generati automaticamente da Flutter/iOS
+DerivedData/        # Cartella di build di Xcode (non va nel repo)
+*.xccovreport       # File di report di copertura codice generati da Xcode
+
+# macOS specifici (per app desktop)
+macos/Pods/         # Dipendenze CocoaPods per macOS
+macos/.generated/   # File generati per macOS
+
+# Windows specifici
+windows/runner/Release/  # Cartelle build Windows in release
+windows/runner/Debug/    # Cartelle build Windows in debug
+
+# Linux specifici
+linux/runner/Release/    # Cartelle build Linux in release
+linux/runner/Debug/      # Cartelle build Linux in debug
