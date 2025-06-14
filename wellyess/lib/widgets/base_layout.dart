@@ -31,11 +31,16 @@ class BaseLayout extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Semantics(
-                        label: 'Logo Wellyess',
-                        child: Image.asset(
-                          'assets/logo/wellyess.png',
-                          height: 55,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.popUntil(context, (route) => route.isFirst);
+                        },
+                        child: Semantics(
+                          label: 'Logo Wellyess',
+                          child: Image.asset(
+                            'assets/logo/wellyess.png',
+                            height: 55,
+                          ),
                         ),
                       ),
                       Semantics(
