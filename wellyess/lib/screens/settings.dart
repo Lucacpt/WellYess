@@ -139,7 +139,6 @@ class _SettingsRow extends StatelessWidget {
     this.iconWidget,
     required this.label,
     required this.onTap,
-    super.key,
   }) : assert(iconData != null || iconWidget != null, 'È necessario fornire iconData o iconWidget');
 
   @override
