@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'bottom_navbar.dart';
-import 'go_back_button.dart'; 
+import 'go_back_button.dart';
+import 'package:wellyess/screens/profilo_anziano.dart'; 
 
 class BaseLayout extends StatelessWidget {
   final Widget child;
@@ -30,13 +31,30 @@ class BaseLayout extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Image.asset(
-                        'assets/logo/wellyess.png',
-                        height: 55,
+                      Semantics(
+                        label: 'Logo Wellyess',
+                        child: Image.asset(
+                          'assets/logo/wellyess.png',
+                          height: 55,
+                        ),
                       ),
-                      const CircleAvatar(
-                        radius: 30,
-                        backgroundImage: AssetImage('assets/images/elder_profile_pic.png'),
+                      Semantics(
+                        label: 'Foto profilo utente',
+                        button: true,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ProfiloAnziano(),
+                              ),
+                            );
+                          },
+                          child: const CircleAvatar(
+                            radius: 30,
+                            backgroundImage: AssetImage('assets/images/elder_profile_pic.png'),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -63,7 +81,10 @@ class BaseLayout extends StatelessWidget {
                         children: [
                           // Freccia indietro
                           if (onBackPressed != null) ...[
-                            BackCircleButton(onPressed: onBackPressed),
+                            Semantics(
+                              button: true,
+                              child: BackCircleButton(onPressed: onBackPressed),
+                            ),
                             const SizedBox(height: 20),
                           ],
 
@@ -82,11 +103,14 @@ class BaseLayout extends StatelessWidget {
               left: 0,
               right: 0,
               bottom: 5,
-              child: CustomBottomNavBar(
-                currentIndex: currentIndex,
-                onTap: (index) {
-                  // gestisci navigazione
-                },
+              child: Semantics(
+                container: true,
+                label: 'Barra di navigazione principale',
+                child: CustomBottomNavBar(
+                  onTap: (index) {
+                    // gestisci navigazione
+                  },
+                ),
               ),
             ),
           ],

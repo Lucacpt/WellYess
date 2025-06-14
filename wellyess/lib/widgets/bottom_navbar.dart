@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
-  final int currentIndex;
   final ValueChanged<int>? onTap;
 
   const CustomBottomNavBar({
     super.key,
-    this.currentIndex = 1,
     this.onTap,
   });
 
@@ -36,7 +34,7 @@ class CustomBottomNavBar extends StatelessWidget {
                     iconSize: 30,
                     icon: Icon(
                       Icons.menu,
-                      color: currentIndex == 0 ? Colors.white : Colors.white70,
+                      color:Colors.white,
                     ),
                     onPressed: () => onTap?.call(0),
                   ),
@@ -44,7 +42,7 @@ class CustomBottomNavBar extends StatelessWidget {
                     iconSize: 30,
                     icon: Icon(
                       Icons.settings,
-                      color: currentIndex == 2 ? Colors.white : Colors.white70,
+                      color:Colors.white,
                     ),
                     onPressed: () => onTap?.call(2),
                   ),
