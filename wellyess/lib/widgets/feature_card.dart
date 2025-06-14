@@ -28,8 +28,9 @@ class FeatureCard extends StatelessWidget {
   Widget build(BuildContext context) {
     // Restituisce un widget Card con ombra e bordi arrotondati
     return Card(
+      color: Colors.white,  // Colore di sfondo della card
       elevation: 5, // Altezza dell'ombra della card
-      shadowColor: Colors.grey.shade300,  // Colore dell'ombra della card
+      shadowColor: Colors.grey.shade500,  // Colore dell'ombra della card
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),   // Bordo arrotondato della card
       // Il widget InkWell permette di rilevare i tocchi e applicare un effetto visivo
       child: InkWell(
@@ -51,7 +52,7 @@ class FeatureCard extends StatelessWidget {
                 textAlign: TextAlign.center,  // Allinea il testo al centro
                 // Stile del testo
                 style: const TextStyle( 
-                  fontSize: 17,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,  // Peso del font
                 ),
               ),

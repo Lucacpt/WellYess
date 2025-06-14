@@ -31,7 +31,6 @@ class HomePage extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 20),
           const Text(
             "Bentornato,\nMichele!",
             textAlign: TextAlign.center,
@@ -75,8 +74,8 @@ class HomePage extends StatelessWidget {
                 FeatureCard(
                   icon: SvgPicture.asset(
                     'assets/icons/calendar.svg',
-                    height: 45,
-                    width: 45,
+                    height: 50,
+                    width: 50,
                     color: const Color(0xFF5DB47F),
                   ),
                   label: "Agenda Medica",
@@ -85,8 +84,8 @@ class HomePage extends StatelessWidget {
                 FeatureCard(
                   icon: SvgPicture.asset(
                     'assets/icons/sport_food.svg',
-                    height: 45,
-                    width: 45,
+                    height: 50,
+                    width: 50,
                     color: const Color(0xFF5DB47F),
                   ),
                   label: "Consigli Di\nSalute",

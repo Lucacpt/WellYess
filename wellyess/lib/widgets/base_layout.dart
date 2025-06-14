@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'bottom_navbar.dart';
+import 'go_back_button.dart'; 
 
 class BaseLayout extends StatelessWidget {
   final Widget child;
@@ -21,34 +22,31 @@ class BaseLayout extends StatelessWidget {
         child: Stack(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 90), // margine inferiore per navbar
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 90), // margine inferiore per la navbar
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // RIGA SUPERIORE con back e avatar (più in alto)
+                  // RIGA SUPERIORE con logo e avatar
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      if (onBackPressed != null)
-                        IconButton(
-                          icon: const Icon(Icons.arrow_back),
-                          onPressed: onBackPressed,
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                        ),
-                      const Spacer(),
+                      Image.asset(
+                        'assets/logo/wellyess.png',
+                        height: 55,
+                      ),
                       const CircleAvatar(
-                        radius: 22,
+                        radius: 30,
                         backgroundImage: AssetImage('assets/images/elder_profile_pic.png'),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10), // spazio verticale più piccolo
 
-                  // Container principale con contenuto variabile
+                  const SizedBox(height: 15), // spazio extra tra logo/avatar e contenuto
+
+                  // CONTAINER PRINCIPALE
                   Expanded(
                     child: Container(
-                      padding: const EdgeInsets.all(40),
+                      padding: const EdgeInsets.all(30),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(30),
@@ -56,18 +54,30 @@ class BaseLayout extends StatelessWidget {
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
                             blurRadius: 20,
-                            offset: const Offset(0, 10)
-                          )
-                        ]
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
                       ),
-                      child: child,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Freccia indietro
+                          if (onBackPressed != null) ...[
+                            BackCircleButton(onPressed: onBackPressed),
+                            const SizedBox(height: 20),
+                          ],
+
+                          // Contenuto della pagina
+                          Expanded(child: child),
+                        ],
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
 
-            // Navbar in fondo
+            // NAVBAR IN FONDO
             Positioned(
               left: 0,
               right: 0,
