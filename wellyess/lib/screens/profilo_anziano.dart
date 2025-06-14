@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:wellyess/widgets/base_layout.dart';  // importa il layout base
-import 'package:wellyess/widgets/go_back_button.dart'; // importa il pulsante indietro
 
 class ProfiloAnziano extends StatelessWidget {
   const ProfiloAnziano({super.key});
