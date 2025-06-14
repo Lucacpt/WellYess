@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wellyess/screens/settings.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final ValueChanged<int>? onTap;
@@ -44,7 +45,14 @@ class CustomBottomNavBar extends StatelessWidget {
                       Icons.settings,
                       color:Colors.white,
                     ),
-                    onPressed: () => onTap?.call(2),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SettingsPage(),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

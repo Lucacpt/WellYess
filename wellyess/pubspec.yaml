@@ -29,9 +29,11 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+  - assets/icons/
   - assets/icons/calendar.svg
   - assets/icons/heartbeat.svg
   - assets/icons/pills.svg
   - assets/icons/sport_food.svg
+  - assets/icons/Account_Icon.svg
   - assets/images/elder_profile_pic.png
   - assets/logo/wellyess.png
