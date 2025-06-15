@@ -3,6 +3,7 @@ import '../widgets/base_layout.dart';
 import '../widgets/feature_card.dart';
 import '../widgets/sos_button.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'med_section.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -59,7 +60,14 @@ class HomePage extends StatelessWidget {
                     color: const Color(0xFF5DB47F),
                   ),
                   label: "Farmaci",
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const FarmaciPage(), // Assicurati che FarmaciPage sia una classe esistente
+                      ),
+                    );
+                  },
                 ),
                 FeatureCard(
                   icon: SvgPicture.asset(

@@ -42,7 +42,7 @@ class ProfiloAnziano extends StatelessWidget {
                 const SizedBox(height: 10),
                 const Text(
                   'Michele Verdi',
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
