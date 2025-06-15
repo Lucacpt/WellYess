@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../widgets/base_layout.dart';
 import 'package:wellyess/screens/elder_profile.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // Importa flutter_svg
+import 'package:wellyess/screens/profilo_caregiver.dart'; // Importa CaregiverProfilePage
+import 'package:flutter_svg/flutter_svg.dart'; 
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -34,12 +36,9 @@ class SettingsPage extends StatelessWidget {
 
                 _SettingsRow(
                   iconWidget: SvgPicture.asset( 
-                    'assets/icons/Account_Icon.svg', 
+                    'assets/icons/Account_Icon.svg', // Assicurati che questo file esista
                     width: 32,
                     height: 32,
-                    // colorFilter: ColorFilter.mode(
-                    //     Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black87,
-                    //     BlendMode.srcIn),
                   ),
                   label: 'Account',
                   onTap: () {
@@ -54,16 +53,12 @@ class SettingsPage extends StatelessWidget {
 
                 _SettingsRow(
                   iconWidget: SvgPicture.asset( 
-                    'assets/icons/Alert Icon.svg', // Sostituito con SVG
+                    'assets/icons/Alert Icon.svg', // Assicurati che questo file esista
                     width: 32,
                     height: 32,
-                    // colorFilter: ColorFilter.mode(
-                    //     Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black87,
-                    //     BlendMode.srcIn),
                   ),
                   label: 'Notifiche',
                   onTap: () {
-                    // TODO: navigazione alla pagina Notifiche
                   },
                 ),
                 const Divider(),
@@ -71,16 +66,12 @@ class SettingsPage extends StatelessWidget {
 
                 _SettingsRow(
                   iconWidget: SvgPicture.asset( 
-                    'assets/icons/Accessibiliy Icon.svg', // Sostituito con SVG
+                    'assets/icons/Accessibiliy Icon.svg', // Assicurati che questo file esista
                     width: 32,
                     height: 32,
-                    // colorFilter: ColorFilter.mode(
-                    //     Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black87,
-                    //     BlendMode.srcIn),
                   ),
                   label: 'Accessibilità',
                   onTap: () {
-                    // TODO: navigazione alla pagina Accessibilità
                   },
                 ),
                 const Divider(),
@@ -88,16 +79,16 @@ class SettingsPage extends StatelessWidget {
 
                 _SettingsRow(
                   iconWidget: SvgPicture.asset( 
-                    'assets/icons/Caregiver Icon.svg', // Sostituito con SVG
+                    'assets/icons/Caregiver Icon.svg', // Assicurati che questo file esista
                     width: 32,
                     height: 32,
-                    // colorFilter: ColorFilter.mode(
-                    //     Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black87,
-                    //     BlendMode.srcIn),
                   ),
                   label: 'Caregiver',
-                  onTap: () {
-                    // TODO: navigazione alla pagina Caregiver
+                  onTap: () { // Azione di navigazione per Caregiver
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const CaregiverProfilePage()), 
+                    );
                   },
                 ),
                 const Divider(),
@@ -105,16 +96,12 @@ class SettingsPage extends StatelessWidget {
 
                 _SettingsRow(
                   iconWidget: SvgPicture.asset( 
-                    'assets/icons/Help me Icon.svg', // Sostituito con SVG
+                    'assets/icons/Help Me Icon.svg', // Assicurati che questo file esista
                     width: 32,
                     height: 32,
-                    // colorFilter: ColorFilter.mode(
-                    //     Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black87,
-                    //     BlendMode.srcIn),
                   ),
                   label: 'Help Me',
                   onTap: () {
-                    // TODO: navigazione alla pagina Help Me
                   },
                 ),
                 const Divider(),
@@ -147,7 +134,6 @@ class _SettingsRow extends StatelessWidget {
     if (iconWidget != null) {
       currentIcon = iconWidget!;
     } else {
-      // Questo blocco else ora non dovrebbe essere raggiunto se tutte le icone sono SVG
       currentIcon = Icon( 
         iconData!,
         size: 32,
