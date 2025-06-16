@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wellyess/widgets/base_layout.dart';
-import 'package:wellyess/screens/med_section.dart';          // FarmaciPage
-import 'package:wellyess/screens/consigli_salute.dart';     // ConsigliSalutePage
-import 'placeholderpage.dart';                             // PlaceholderPage
+import 'package:wellyess/screens/med_section.dart';      // FarmaciPage
+import 'package:wellyess/screens/consigli_salute.dart'; // ConsigliSalutePage
 
 class MenuPage extends StatelessWidget {
   const MenuPage({Key? key}) : super(key: key);
@@ -18,8 +17,7 @@ class MenuPage extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Menu",
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+              const Text("Menu", style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
               IconButton(
                 icon: const Icon(Icons.close, size: 30),
                 onPressed: () => Navigator.of(context).pop(),
@@ -37,26 +35,7 @@ class MenuPage extends StatelessWidget {
           _buildMenuButton(context, "Help Me"),
 
           const SizedBox(height: 24),
-          Center(
-            child: ElevatedButton(
-              onPressed: () => _navigateWithFade(
-                  context, const PlaceholderPage(title: "SOS")),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 60, vertical: 20),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
-                elevation: 6,
-              ),
-              child: const Text("SOS",
-                  style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black)),
-            ),
-          ),
-          const SizedBox(height: 16),
+          // SOS rimane invariato oppure punta a una pagina reale
         ],
       ),
     );
@@ -78,7 +57,7 @@ class MenuPage extends StatelessWidget {
               MaterialPageRoute(builder: (_) => const ConsigliSalutePage()),
             );
           } else {
-            _navigateWithFade(context, PlaceholderPage(title: label));
+            // TODO: sostituire con navigazione reale o disabilitare
           }
         },
         child: Container(
@@ -87,27 +66,14 @@ class MenuPage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: ShapeDecoration(
             color: const Color(0xFF5DB47F),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             shadows: const [
-              BoxShadow(
-                  color: Color(0x3F000000),
-                  blurRadius: 4,
-                  offset: Offset(0, 4)),
+              BoxShadow(color: Color(0x3F000000), blurRadius: 4, offset: Offset(0, 4)),
             ],
           ),
-          child: Text(label,
-              style: const TextStyle(fontSize: 20, color: Colors.white)),
+          child: Text(label, style: const TextStyle(fontSize: 20, color: Colors.white)),
         ),
       ),
     );
-  }
-
-  void _navigateWithFade(BuildContext context, Widget page) {
-    Navigator.of(context).push(PageRouteBuilder(
-      pageBuilder: (_, __, ___) => page,
-      transitionsBuilder: (_, anim, __, child) =>
-          FadeTransition(opacity: anim, child: child),
-    ));
   }
 }
