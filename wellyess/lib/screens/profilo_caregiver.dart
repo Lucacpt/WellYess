@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../widgets/base_layout.dart';
 import 'aggiungi_caregiver.dart';
+import '../widgets/confirm_popup.dart';
+import '../widgets/custom_main_button.dart';  // importa il CustomMainButton
 
 class CaregiverProfilePage extends StatelessWidget {
   const CaregiverProfilePage({super.key});
@@ -15,7 +17,6 @@ class CaregiverProfilePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Titolo in alto
             const Align(
               alignment: Alignment.topCenter,
               child: Text(
@@ -27,22 +28,15 @@ class CaregiverProfilePage extends StatelessWidget {
               ),
             ),
             const Divider(),
-
             const SizedBox(height: 30),
-
-            // Immagine profilo PNG
             Center(
               child: CircleAvatar(
                 radius: 70,
                 backgroundColor: Colors.grey.shade200,
-                backgroundImage: const AssetImage(
-                  'assets/images/caregiver.png',
-                ),
+                backgroundImage: const AssetImage('assets/images/caregiver.png'),
               ),
             ),
-
             const SizedBox(height: 20),
-
             const Center(
               child: Text(
                 'Svetlana Nowak',
@@ -52,9 +46,7 @@ class CaregiverProfilePage extends StatelessWidget {
                 ),
               ),
             ),
-
             const SizedBox(height: 60),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: const [
@@ -75,8 +67,7 @@ class CaregiverProfilePage extends StatelessWidget {
               ],
             ),
             const Divider(height: 1, thickness: 1),
-            const SizedBox(height: 45),
-
+            const SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: const [
@@ -97,89 +88,37 @@ class CaregiverProfilePage extends StatelessWidget {
               ],
             ),
             const Divider(height: 1, thickness: 1),
-            const SizedBox(height: 44),
-
+            const SizedBox(height: 35),
             const Spacer(),
-
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext ctx) {
-                      return AlertDialog(
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        title: const Text(
-                          'Vuoi davvero Eliminare?\nL’azione è irreversibile',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
+            
+            CustomMainButton(
+              text: 'Elimina',
+              color: Colors.red,
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext ctx) {
+                    return ConfirmDialog(
+                      titleText: 'Vuoi davvero Eliminare?\nL’azione è irreversibile',
+                      cancelButtonText: 'No, Esci',
+                      confirmButtonText: 'Sì, Elimina',
+                      onCancel: () {
+                        Navigator.of(ctx).pop();
+                      },
+                      onConfirm: () {
+                        Navigator.of(ctx).pop();
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) => const AggiungiCaregiverPage(),
                           ),
-                        ),
-                        actionsAlignment: MainAxisAlignment.center,
-                        actions: <Widget>[
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(ctx).pop();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 30, vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(30)),
-                              ),
-                              foregroundColor: Colors.white,
-                            ),
-                            child: const Text('No, Esci'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(ctx).pop();
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                  builder: (context) => const AggiungiCaregiverPage(),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 30, vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(30)),
-                              ),
-                              foregroundColor: Colors.white,
-                            ),
-                            child: const Text('Sì, Elimina'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  padding: const EdgeInsets.symmetric(vertical: 18),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  foregroundColor: Colors.white,
-                ),
-                child: const Text(
-                  'Elimina',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
             ),
+
             const SizedBox(height: 10),
           ],
         ),

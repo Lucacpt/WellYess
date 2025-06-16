@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wellyess/widgets/base_layout.dart';
-import 'package:wellyess/widgets/custom_button.dart';
+import 'package:wellyess/widgets/custom_main_button.dart';  // importa il CustomMainButton
+import 'package:wellyess/widgets/confirm_popup.dart';       // importa il ConfirmDialog
 import 'package:wellyess/widgets/med_legenda.dart';
 import 'package:wellyess/widgets/med_state.dart';
 
@@ -81,33 +82,33 @@ class ModificaStatoFarmaciPage extends StatelessWidget {
           statoColore: statoColore,
         ),
         const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: CustomButton(
-                text: 'Assunto',
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Farmaco "$nome" segnato come assunto')),
-                  );
-                },
-                fontSize: 18,                
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: CustomButton(
-                text: 'Non preso',
-                color: const Color(0xFFED0606),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Farmaco "$nome" segnato come non preso')),
-                  );
-                },
-                fontSize: 18,
-              ),
-            ),
-          ],
+        CustomMainButton(
+          text: 'Modifica Stato Farmaco',
+          color: Color(0xFF5DB47F),  // puoi cambiare il colore come preferisci
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (ctx) {
+                return ConfirmDialog(
+                  titleText: 'Hai assunto il farmaco $nome?',
+                  cancelButtonText: 'No',
+                  confirmButtonText: 'Sì',
+                  onCancel: () {
+                    Navigator.of(ctx).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Farmaco "$nome" segnato come NON assunto')),
+                    );
+                  },
+                  onConfirm: () {
+                    Navigator.of(ctx).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Farmaco "$nome" segnato come assunto')),
+                    );
+                  },
+                );
+              },
+            );
+          },
         ),
       ],
     );
