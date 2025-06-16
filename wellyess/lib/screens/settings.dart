@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import '../widgets/base_layout.dart';
 import 'package:wellyess/screens/elder_profile.dart';
-import 'package:flutter_svg/flutter_svg.dart'; // Importa flutter_svg
-import 'package:wellyess/screens/profilo_caregiver.dart'; // Importa CaregiverProfilePage
 import 'package:flutter_svg/flutter_svg.dart'; 
+import 'package:wellyess/screens/profilo_caregiver.dart'; 
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});

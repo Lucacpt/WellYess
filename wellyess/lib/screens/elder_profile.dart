@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wellyess/widgets/base_layout.dart';  // importa il layout base
+import 'package:wellyess/widgets/base_layout.dart';
+import 'package:wellyess/widgets/info_row.dart';
 
 class ProfiloAnziano extends StatelessWidget {
   const ProfiloAnziano({super.key});
@@ -19,91 +20,58 @@ class ProfiloAnziano extends StatelessWidget {
       onBackPressed: () {
         Navigator.pop(context);
       },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Text(
-              'Profilo',
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Text(
+                'Profilo',
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              ),
             ),
-          ),
 
-          _divider(),
-          const SizedBox(height: 20),
+            _divider(),
+            const SizedBox(height: 20),
 
-          Center(
-            child: Column(
-              children: [
-                const CircleAvatar(
-                  radius: 50,
-                  backgroundImage: AssetImage('assets/images/elder_profile_pic.png'),
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  'Michele Verdi',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                ),
-              ],
+            Center(
+              child: Column(
+                children: const [
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundImage: AssetImage('assets/images/elder_profile_pic.png'),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'Michele Verdi',
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
             ),
-          ),
 
-          const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text('Data nascita', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              Text('15 Mag 1948', style: TextStyle(fontSize: 18)),
-            ],
-          ),
+            const InfoRow(label: 'Data nascita', value: '15 Mag 1948'),
+            _divider(),
+            _spacer(),
 
-          _divider(),
-          _spacer(),
+            const InfoRow(label: 'Sesso', value: 'Maschile'),
+            _divider(),
+            _spacer(),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text('Sesso', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              Text('Maschile', style: TextStyle(fontSize: 18)),
-            ],
-          ),
+            const InfoRow(label: 'Allergie', value: 'Polline'),
+            _divider(),
+            _spacer(),
 
-          _divider(),
-          _spacer(),
+            const InfoRow(label: 'Intolleranze', value: 'Lattosio'),
+            _divider(),
+            _spacer(),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text('Allergie', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              Text('Polline', style: TextStyle(fontSize: 18)),
-            ],
-          ),
-
-          _divider(),
-          _spacer(),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text('Intolleranze', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              Text('Lattosio', style: TextStyle(fontSize: 18)),
-            ],
-          ),
-
-          _divider(),
-          _spacer(),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text('Gruppo sanguigno', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              Text('A', style: TextStyle(fontSize: 18)),
-            ],
-          ),
-
-          _divider(),
-        ],
+            const InfoRow(label: 'Gruppo sanguigno', value: 'A'),
+            _divider(),
+          ],
+        ),
       ),
     );
   }

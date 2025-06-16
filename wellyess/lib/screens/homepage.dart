@@ -64,7 +64,7 @@ class HomePage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const FarmaciPage(), // Assicurati che FarmaciPage sia una classe esistente
+                        builder: (context) => const FarmaciPage(), 
                       ),
                     );
                   },

@@ -5,6 +5,7 @@ import 'package:wellyess/widgets/med_details.dart';
 import 'package:wellyess/widgets/med_state.dart';
 import 'package:wellyess/widgets/med_legenda.dart';
 import 'package:wellyess/widgets/custom_main_button.dart';
+import 'med_details.dart';
 
 class FarmaciPage extends StatelessWidget {
   const FarmaciPage({super.key});
@@ -49,9 +50,20 @@ class FarmaciPage extends StatelessWidget {
             const Text('Tutti i farmaci', style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold)),
             const SizedBox(height: 5),
 
-            FarmacoDettagliCard(nome: 'Aspirina', dose: '100mg', onPressed: () {}),
-            FarmacoDettagliCard(nome: 'Simvastatina', dose: '20mg', onPressed: () {}),
-            FarmacoDettagliCard(nome: 'Atorvastatina', dose: '20mg', onPressed: () {}),
+            FarmacoDettagliCard(
+              nome: 'Aspirina',
+              dose: '100mg',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const DettagliFarmacoPage(),
+                  ),
+                );
+              },
+            ),
+            FarmacoDettagliCard(nome: 'Lisinopril', dose: '10mg', onPressed: () {}),
+            FarmacoDettagliCard(nome: 'Coleros', dose: '20mg', onPressed: () {}),
 
             const SizedBox(height: 20),
             CustomMainButton(
