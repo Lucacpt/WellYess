@@ -7,6 +7,7 @@ import 'package:wellyess/widgets/med_legenda.dart';
 import 'package:wellyess/widgets/custom_main_button.dart';
 import 'med_details.dart';
 import 'change_med_state.dart';
+import 'add_new_med.dart';
 
 class FarmaciPage extends StatelessWidget {
   const FarmaciPage({super.key});
@@ -80,10 +81,14 @@ class FarmaciPage extends StatelessWidget {
               text: '+ Aggiungi Farmaco',
               color: const Color(0xFF5DB47F),
               onTap: () {
-                // Logica per aggiungere farmaco
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AggiungiFarmacoPage()),
+                );
               },
             ),
-          ],
+
+                      ],
         ),
       ),
     );
