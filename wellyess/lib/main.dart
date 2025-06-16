@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'screens/homepage.dart'; // Assicurati che questo file esista nella cartella lib/
+import 'package:wellyess/services/auth_service.dart';
+import 'package:wellyess/screens/homepage.dart';
+import 'package:wellyess/screens/login_page.dart';
+import 'package:wellyess/screens/profilo_caregiver.dart';
 
 void main() {
   runApp(const MyApp());
@@ -7,17 +10,19 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
+    final startPage = AuthService.isLoggedIn
+        ? (AuthService.currentUser == UserType.elder
+            ? const HomePage()
+            : const CaregiverProfilePage())
+        : const LoginPage();
+
     return MaterialApp(
-      title: 'Progetto IUM',
+      title: 'WellYess',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true, // Opzionale, per lo stile Material 3
-      ),
-      home: HomePage(), // HomePage deve essere definita in homepage.dart
+      theme: ThemeData(useMaterial3: true),
+      home: startPage,
     );
   }
 }
