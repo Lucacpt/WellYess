@@ -6,6 +6,7 @@ import 'package:wellyess/widgets/med_state.dart';
 import 'package:wellyess/widgets/med_legenda.dart';
 import 'package:wellyess/widgets/custom_main_button.dart';
 import 'med_details.dart';
+import 'change_med_state.dart';
 
 class FarmaciPage extends StatelessWidget {
   const FarmaciPage({super.key});
@@ -27,7 +28,16 @@ class FarmaciPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('Farmaci di oggi', style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold)),
-                CustomButton(text: 'Modifica', onPressed: () {})
+                CustomButton(
+                  text: 'Modifica',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ModificaStatoFarmaciPage()),
+                    );
+                  },
+                ),
+
               ],
             ),
             const SizedBox(height: 10),
