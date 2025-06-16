@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wellyess/screens/menu_page.dart';
 import 'package:wellyess/screens/settings.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
@@ -31,19 +32,29 @@ class CustomBottomNavBar extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  // BOTTONE MENU
                   IconButton(
                     iconSize: 30,
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.menu,
-                      color:Colors.white,
+                      color: Colors.white,
                     ),
-                    onPressed: () => onTap?.call(0),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MenuPage(),
+                        ),
+                      );
+                    },
                   ),
+
+                  // BOTTONE IMPOSTAZIONI
                   IconButton(
                     iconSize: 30,
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.settings,
-                      color:Colors.white,
+                      color: Colors.white,
                     ),
                     onPressed: () {
                       Navigator.push(
