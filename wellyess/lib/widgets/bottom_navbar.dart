@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:wellyess/screens/menu_page.dart';
 import 'package:wellyess/screens/settings.dart';
+import 'package:wellyess/screens/homepage.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
+  /// Chiamato con 0=Menu, 1=Home, 2=Settings
   final ValueChanged<int>? onTap;
+  /// Indice selezionato (per evidenziare l’icona)
+  final int currentIndex;
 
   const CustomBottomNavBar({
-    super.key,
+    Key? key,
     this.onTap,
-  });
+    this.currentIndex = 1,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 90, // spazio totale occupato dalla navbar
+      height: 90,
       child: Stack(
         alignment: Alignment.topCenter,
         children: [
-          // Background della navbar
+          // Sfondo navbar
           Positioned(
             bottom: 0,
             left: 20,
@@ -31,35 +37,30 @@ class CustomBottomNavBar extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  // Menu
                   IconButton(
                     iconSize: 30,
                     icon: Icon(
                       Icons.menu,
-                      color:Colors.white,
+                      color: currentIndex == 0 ? Colors.white : Colors.white70,
                     ),
                     onPressed: () => onTap?.call(0),
                   ),
+                  // Impostazioni
                   IconButton(
                     iconSize: 30,
                     icon: Icon(
                       Icons.settings,
-                      color:Colors.white,
+                      color: currentIndex == 2 ? Colors.white : Colors.white70,
                     ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SettingsPage(),
-                        ),
-                      );
-                    },
+                    onPressed: () => onTap?.call(2),
                   ),
                 ],
               ),
             ),
           ),
 
-          // Icona Home centrale sporgente
+          // Home centrale
           Positioned(
             bottom: 5,
             child: GestureDetector(
@@ -68,9 +69,11 @@ class CustomBottomNavBar extends StatelessWidget {
                 width: 70,
                 height: 70,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF375647),
+                  color: currentIndex == 1
+                      ? const Color(0xFF375647)
+                      : Colors.grey.shade600,
                   shape: BoxShape.circle,
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       color: Colors.black26,
                       blurRadius: 8,
@@ -78,11 +81,7 @@ class CustomBottomNavBar extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.home,
-                  size: 36,
-                  color: Colors.white,
-                ),
+                child: const Icon(Icons.home, size: 36, color: Colors.white),
               ),
             ),
           ),
