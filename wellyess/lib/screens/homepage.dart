@@ -5,7 +5,8 @@ import '../widgets/sos_button.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'med_section.dart';
 import 'consigli_salute.dart';
-import 'sos.dart'; // <-- IMPORTA LA SCHERMATA DI EMERGENZA
+import 'sos.dart';
+import 'monitoring_section.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -83,7 +84,12 @@ class HomePage extends StatelessWidget {
                       colorFilter: ColorFilter.mode(const Color(0xFF5DB47F), BlendMode.srcIn),
                     ),
                     label: "Parametri",
-                    onTap: () {},
+                    onTap: () {
+                       Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const MonitoraggioParametriPage()),
+                      );
+                    },
                   ),
                   FeatureCard(
                     icon: SvgPicture.asset(

@@ -20,6 +20,8 @@ dependencies:
   # Svg support dependencies
   flutter_svg: ^2.1.0  # Aggiunto per supportare SVG
 
+  # Line Chart dependencies
+  fl_chart: ^0.66.0  # o la versione più recente disponibile
 
 dev_dependencies:
   flutter_test:
