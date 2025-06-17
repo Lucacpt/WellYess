@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:wellyess/screens/detailed_parameters_chart.dart'; // importa la schermata estesa
 
 class OxygenChart extends StatelessWidget {
   final List<FlSpot> spo2Data;
@@ -9,19 +10,21 @@ class OxygenChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _buildCard(
+      context: context,
       title: 'Saturazione',
       iconPath: 'assets/images/saturation.png',
       line: LineChartBarData(
         spots: spo2Data,
         isCurved: true,
         barWidth: 2,
-        color: Colors.blue.shade800, // blu reale
+        color: Colors.blue.shade800,
         dotData: FlDotData(show: false),
       ),
     );
   }
 
   Widget _buildCard({
+    required BuildContext context,
     required String title,
     required String iconPath,
     required LineChartBarData line,
@@ -46,6 +49,27 @@ class OxygenChart extends StatelessWidget {
                 Text(
                   title,
                   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => DetailedChartScreen(
+                          title: 'Saturazione',
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50, // cerchietto blu chiaro
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.arrow_forward, size: 16),
+                  ),
                 ),
               ],
             ),

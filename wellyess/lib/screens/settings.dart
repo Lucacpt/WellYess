@@ -99,7 +99,7 @@ class SettingsPage extends StatelessWidget {
                     width: 32,
                     height: 32,
                   ),
-                  label: 'Help Me',
+                  label: 'Logout',
                   onTap: () {
                   },
                 ),

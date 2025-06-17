@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:wellyess/screens/detailed_parameters_chart.dart'; // importa la schermata estesa
 
 class GlucoseChart extends StatelessWidget {
   final List<FlSpot> hgtData;
@@ -9,6 +10,7 @@ class GlucoseChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _buildCard(
+      context: context,
       title: 'Glicemia',
       iconPath: 'assets/images/glycemia.png',
       line: LineChartBarData(
@@ -22,6 +24,7 @@ class GlucoseChart extends StatelessWidget {
   }
 
   Widget _buildCard({
+    required BuildContext context,
     required String title,
     required String iconPath,
     required LineChartBarData line,
@@ -46,6 +49,27 @@ class GlucoseChart extends StatelessWidget {
                 Text(
                   title,
                   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => DetailedChartScreen(
+                          title: 'Glicemia',
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFFFF3E0), // cerchietto ocra chiaro
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.arrow_forward, size: 16),
+                  ),
                 ),
               ],
             ),

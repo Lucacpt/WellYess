@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:wellyess/screens/detailed_parameters_chart.dart'; // importa la nuova schermata
 
 class PressureChart extends StatelessWidget {
   final List<FlSpot> diaData;
@@ -16,6 +17,7 @@ class PressureChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _buildCard(
+      context: context,
       title: 'Pressione',
       iconPath: 'assets/images/pression.png',
       lines: [
@@ -37,6 +39,7 @@ class PressureChart extends StatelessWidget {
   }
 
   Widget _buildCard({
+    required BuildContext context,
     required String title,
     required String iconPath,
     required List<LineChartBarData> lines,
@@ -61,6 +64,27 @@ class PressureChart extends StatelessWidget {
                 Text(
                   title,
                   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => DetailedChartScreen(
+                          title: 'Pressione',
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFE0F7FA), // cerchietto azzurrino
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.arrow_forward, size: 16),
+                  ),
                 ),
               ],
             ),
