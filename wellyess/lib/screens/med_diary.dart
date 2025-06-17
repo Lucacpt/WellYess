@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../widgets/base_layout.dart';
 import '../widgets/custom_button.dart';
 import 'dettagli_visita.dart';
+import '../widgets/custom_main_button.dart';
 
 class MedDiaryPage extends StatefulWidget {
   const MedDiaryPage({super.key});
@@ -62,13 +62,13 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
             children: [
               const Text(
                 '7 - 13 Maggio 2025',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
               ),
               SizedBox(
                 height: 32,
                 child: CustomButton(
                   text: '14 - 20 Maggio →',
-                  color: _primaryColor,
+                  color: Color(0xFF5DB47F),  // puoi cambiare il colore come preferisci
                   fontSize: 15,
                   onPressed: () {},
                 ),
@@ -105,45 +105,15 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
 
           const Divider(),
 
-          const SizedBox(height: 30),
+          const SizedBox(height: 15),
 
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _primaryColor,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-              ),
-              onPressed: () {},
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: SizedBox(
-                      height: 22,
-                      width: 22,
-                      child: SvgPicture.asset(
-                        'assets/icons/add_icon.svg',
-                        colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                      ),
-                    ),
-                  ),
-                  const Text(
-                    'Aggiungi appuntamento',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
+          CustomMainButton(
+              text: '+ Aggiungi appuntamento',
+              color: const Color(0xFF5DB47F),
+              onTap: () {
+                // TODO: implementa la funzione
+              },
             ),
-          ),
         ],
       ),
     );
@@ -278,6 +248,8 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
                   width: 95,
                   child: CustomButton(
                     text: 'Dettagli',
+                    color: Color(0xFF5DB47F),  // puoi cambiare il colore come preferisci
+
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -288,7 +260,6 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
                         ),
                       );
                     },
-                    color: _primaryColor,
                     fontSize: 13,
                   ),
                 ),
