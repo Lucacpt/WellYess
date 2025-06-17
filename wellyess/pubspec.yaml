@@ -30,4 +30,5 @@ flutter:
   uses-material-design: true
   assets:
   - assets/icons/ # permette di usare tutte le icone SVG
-  - assets/images/ # permette di usare tutte le immagini
+  - assets/images/ # permette di usare tutte le immaginiù
+  - assets/logo/
