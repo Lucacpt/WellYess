@@ -5,7 +5,8 @@ import '../widgets/sos_button.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'med_section.dart';
 import 'consigli_salute.dart';
-import 'sos.dart'; // <-- IMPORTA LA SCHERMATA DI EMERGENZA
+import 'sos.dart';
+import 'med_diary.dart'; // <-- IMPORTA MedDiaryPage
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -93,7 +94,14 @@ class HomePage extends StatelessWidget {
                       colorFilter: ColorFilter.mode(const Color(0xFF5DB47F), BlendMode.srcIn),
                     ),
                     label: "Agenda Medica",
-                    onTap: () {},
+                    onTap: () { // <-- MODIFICA QUI
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MedDiaryPage(), // Naviga a MedDiaryPage
+                        ),
+                      );
+                    },
                   ),
                   FeatureCard(
                     icon: SvgPicture.asset(
@@ -120,7 +128,7 @@ class HomePage extends StatelessWidget {
               width: double.infinity,
               height: 90,
               child: SosButton(
-                onPressed: () { // <-- MODIFICA QUI
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const EmergenzaScreen()),

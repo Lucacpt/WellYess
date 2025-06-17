@@ -207,7 +207,6 @@ class _HealthTipCard extends StatelessWidget {
   final String subtitle;
 
   const _HealthTipCard({
-    super.key, // Aggiunto super.key
     required this.svgAssetPath,
     required this.title,
     required this.subtitle,
