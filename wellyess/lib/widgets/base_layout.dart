@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:wellyess/screens/menu_page.dart';
+import 'package:wellyess/screens/settings.dart';
 import 'bottom_navbar.dart';
 import 'go_back_button.dart';
 import 'package:wellyess/screens/elder_profile.dart'; 
@@ -112,8 +114,19 @@ class BaseLayout extends StatelessWidget {
                 container: true,
                 label: 'Barra di navigazione principale',
                 child: CustomBottomNavBar(
+                  currentIndex: currentIndex,
                   onTap: (index) {
-                    // gestisci navigazione
+                    switch (index) {
+                      case 0:
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const MenuPage()));
+                        break;
+                      case 1:
+                        Navigator.popUntil(context, (r) => r.isFirst);
+                        break;
+                      case 2:
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()));
+                        break;
+                    }
                   },
                 ),
               ),

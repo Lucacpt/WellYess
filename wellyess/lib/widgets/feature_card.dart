@@ -17,11 +17,11 @@ class FeatureCard extends StatelessWidget {
 
   // Costruttore della FeatureCard che richiede l'icona, l'etichetta e un callback opzionale
   const FeatureCard({
-    Key? key,     // Opzionale e può essere utilizzato per identificare univocamente il widget
+    super.key,     // Opzionale e può essere utilizzato per identificare univocamente il widget
     required this.icon,
     required this.label,
     this.onTap,
-  }) : super(key: key);
+  });
 
   // Il metodo build costruisce l'interfaccia utente del widget
   @override
