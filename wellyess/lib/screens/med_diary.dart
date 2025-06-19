@@ -3,6 +3,7 @@ import '../widgets/base_layout.dart';
 import '../widgets/custom_button.dart';
 import 'dettagli_visita.dart';
 import '../widgets/custom_main_button.dart';
+import 'new_visita.dart';
 
 class MedDiaryPage extends StatefulWidget {
   const MedDiaryPage({super.key});
@@ -108,12 +109,15 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
           const SizedBox(height: 15),
 
           CustomMainButton(
-              text: '+ Aggiungi appuntamento',
-              color: const Color(0xFF5DB47F),
-              onTap: () {
-                // TODO: implementa la funzione
-              },
-            ),
+            text: '+ Aggiungi appuntamento',
+            color: const Color(0xFF5DB47F),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const NewVisitaScreen()),
+              );
+            },
+          ),
         ],
       ),
     );

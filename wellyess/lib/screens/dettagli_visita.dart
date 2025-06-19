@@ -9,7 +9,7 @@ class DettagliVisitaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color _primaryColor = Colors.green.shade500;
+    final Color primaryColor = Colors.green.shade500;
     return BaseLayout(
       onBackPressed: () => Navigator.of(context).pop(),
       child: SingleChildScrollView(

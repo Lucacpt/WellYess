@@ -4,7 +4,7 @@ import 'package:wellyess/screens/med_section.dart';      // FarmaciPage
 import 'package:wellyess/screens/consigli_salute.dart'; // ConsigliSalutePage
 
 class MenuPage extends StatelessWidget {
-  const MenuPage({Key? key}) : super(key: key);
+  const MenuPage({super.key});
 
   @override
   Widget build(BuildContext context) {

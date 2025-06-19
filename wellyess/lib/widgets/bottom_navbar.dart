@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:wellyess/screens/menu_page.dart';
-import 'package:wellyess/screens/settings.dart';
-import 'package:wellyess/screens/homepage.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   /// Chiamato con 0=Menu, 1=Home, 2=Settings
@@ -10,10 +7,10 @@ class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
 
   const CustomBottomNavBar({
-    Key? key,
+    super.key,
     this.onTap,
     this.currentIndex = 1,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
