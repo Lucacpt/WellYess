@@ -68,14 +68,16 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
               SizedBox(
                 height: 32,
                 child: CustomButton(
-                  text: '14 - 20 Maggio →',
-                  color: Color(0xFF5DB47F),  // puoi cambiare il colore come preferisci
+                  text: '14 - 20 Maggio',
+                  icon: Icons.arrow_forward_ios, // ← icona di Flutter
+                  color: const Color(0xFF5DB47F),
                   fontSize: 15,
                   onPressed: () {},
                 ),
               ),
             ],
           ),
+
           const SizedBox(height: 20),
 
           // Selettore giorno
