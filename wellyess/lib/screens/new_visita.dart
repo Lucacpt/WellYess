@@ -64,7 +64,7 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
               const SizedBox(height: 6),
               InputField(
                 controller: TextEditingController(),
-                placeholder: '',
+                placeholder: 'Es. Controllo cardiologico',
               ),
               const SizedBox(height: 16),
 
@@ -78,7 +78,7 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
               const SizedBox(height: 6),
               InputField(
                 controller: _locationController,
-                placeholder: '',
+                placeholder: 'Es. Ospedale San Luca, Salerno',
               ),
               const SizedBox(height: 16),
 
@@ -93,7 +93,7 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
               DropdownField(
                 options: _dateOptions,
                 value: _selectedDate,
-                placeholder: '',
+                placeholder: 'Seleziona una data',
                 onChanged: (newValue) {
                   setState(() {
                     _selectedDate = newValue;
@@ -112,7 +112,7 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
               const SizedBox(height: 6),
               TimePickerField(
                 value: _selectedTime,
-                placeholder: '',
+                placeholder: 'Scegli un orario',
                 onChanged: (newTime) {
                   setState(() {
                     _selectedTime = newTime;
@@ -131,7 +131,7 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
               const SizedBox(height: 6),
               InputField(
                 controller: _notesController,
-                placeholder: '',
+                placeholder: 'Aggiungi note sulla visita',
               ),
               const SizedBox(height: 32),
 
