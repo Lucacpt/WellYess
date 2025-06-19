@@ -3,6 +3,7 @@ import '../widgets/base_layout.dart';
 import 'package:wellyess/screens/elder_profile.dart';
 import 'package:flutter_svg/flutter_svg.dart'; 
 import 'package:wellyess/screens/profilo_caregiver.dart'; 
+import 'login_page.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -39,7 +40,7 @@ class SettingsPage extends StatelessWidget {
                     width: 32,
                     height: 32,
                   ),
-                  label: 'Account',
+                  label: 'Profilo',
                   onTap: () {
                     Navigator.push(
                       context,
@@ -95,12 +96,16 @@ class SettingsPage extends StatelessWidget {
 
                 _SettingsRow(
                   iconWidget: SvgPicture.asset( 
-                    'assets/icons/Help Me Icon.svg', // Assicurati che questo file esista
+                    'assets/icons/Logout.svg', // Assicurati che questo file esista
                     width: 32,
                     height: 32,
                   ),
                   label: 'Logout',
                   onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LoginPage()), 
+                    );
                   },
                 ),
                 const Divider(),

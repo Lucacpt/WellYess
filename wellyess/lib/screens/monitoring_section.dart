@@ -6,6 +6,7 @@ import 'package:wellyess/widgets/parameters_card.dart';
 import 'package:wellyess/widgets/pressure_chart.dart';
 import 'package:wellyess/widgets/glucose_chart.dart';
 import 'package:wellyess/widgets/oxygen_chart.dart';
+import 'add_new_parameters.dart';
 
 class MonitoraggioParametriPage extends StatelessWidget {
   const MonitoraggioParametriPage({super.key});
@@ -85,7 +86,12 @@ class MonitoraggioParametriPage extends StatelessWidget {
               text: '+ Aggiungi Parametri',
               color: const Color(0xFF5DB47F),
               onTap: () {
-                // TODO: implementa la funzione
+                Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AggiungiMonitoraggioPage(),
+                        ),
+                      );
               },
             ),
 

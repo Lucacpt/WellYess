@@ -53,7 +53,7 @@ class HomePage extends StatelessWidget {
               color: Colors.grey,
               thickness: 1,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             Expanded(
               child: GridView.count(
                 crossAxisCount: 2,
@@ -133,7 +133,7 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
-              height: 90,
+              height: 80,
               child: SosButton(
                 onPressed: () {
                   Navigator.push(
