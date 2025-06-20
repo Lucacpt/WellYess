@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wellyess/services/auth_service.dart';
+import 'package:wellyess/models/user_model.dart';        // <-- importa UserType da qui
 import 'package:wellyess/screens/homepage.dart';
 import 'package:wellyess/screens/profilo_caregiver.dart';
 

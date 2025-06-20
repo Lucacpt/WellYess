@@ -1,18 +1,23 @@
-enum UserType { elder, caregiver }
+import 'package:hive/hive.dart';
+import '../models/user_model.dart';
 
 class AuthService {
-  static UserType? _currentUser;
-  static bool get isLoggedIn => _currentUser != null;
-  static UserType? get currentUser => _currentUser;
+  static late Box<UserModel> _userBox;
 
-  /// Simula login: in un’app reale qui fai la chiamata a backend/Firebase
+  static Future<void> init() async {
+    _userBox = await Hive.openBox<UserModel>('users');
+  }
+
   static Future<bool> login(String email, String password, UserType type) async {
-    await Future.delayed(const Duration(seconds: 1));
-    _currentUser = type;
+    final user = UserModel(email: email, type: type);
+    await _userBox.put('current', user);
     return true;
   }
 
-  static void logout() {
-    _currentUser = null;
+  static UserModel? get currentUser => _userBox.get('current');
+  static bool get isLoggedIn => currentUser != null;
+
+  static Future<void> logout() async {
+    await _userBox.clear();
   }
 }
