@@ -10,9 +10,9 @@ class LegendaPallino extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        CircleAvatar(radius: 6, backgroundColor: color),
+        CircleAvatar(radius: 10, backgroundColor: color),
         const SizedBox(width: 6),
-        Text(text),
+        Text(text, style: const TextStyle(fontSize: 15)),
       ],
     );
   }
