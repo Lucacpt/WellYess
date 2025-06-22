@@ -20,9 +20,9 @@ class CaregiverProfilePage extends StatelessWidget {
             const Align(
               alignment: Alignment.topCenter,
               child: Text(
-                'Caregiver',
+                'Assistente',
                 style: TextStyle(
-                  fontSize: 30,
+                  fontSize: 32,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -88,7 +88,7 @@ class CaregiverProfilePage extends StatelessWidget {
               ],
             ),
             const Divider(height: 1, thickness: 1),
-            const SizedBox(height: 35),
+            const SizedBox(height: 30),
             const Spacer(),
             
             CustomMainButton(

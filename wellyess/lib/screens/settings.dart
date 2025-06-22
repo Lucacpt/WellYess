@@ -24,7 +24,7 @@ class SettingsPage extends StatelessWidget {
                 const Text(
                   'Impostazioni',
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 32,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -83,7 +83,7 @@ class SettingsPage extends StatelessWidget {
                     width: 32,
                     height: 32,
                   ),
-                  label: 'Caregiver',
+                  label: 'Assistente',
                   onTap: () { // Azione di navigazione per Caregiver
                     Navigator.push(
                       context,
@@ -100,7 +100,7 @@ class SettingsPage extends StatelessWidget {
                     width: 32,
                     height: 32,
                   ),
-                  label: 'Logout',
+                  label: 'Esci dal profilo',
                   onTap: () {
                     Navigator.push(
                       context,
