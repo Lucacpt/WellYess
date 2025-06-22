@@ -58,7 +58,7 @@ class HomePage extends StatelessWidget {
                 color: Colors.grey,
                 thickness: 1,
               ),
-              SizedBox(height: screenHeight * 0.015),
+              SizedBox(height: screenHeight * 0.05),
 
               // NUOVA STRUTTURA ROBUSTA CON COLUMN E ROW
               Column(
@@ -159,7 +159,8 @@ class HomePage extends StatelessWidget {
                 ],
               ),
 
-              SizedBox(height: screenHeight * 0.02),
+              SizedBox(height: screenHeight * 0.05),
+
               SizedBox(
                 width: double.infinity,
                 height: screenHeight * 0.1,

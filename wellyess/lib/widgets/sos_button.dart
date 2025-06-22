@@ -10,37 +10,40 @@ class SosButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   // Costruttore del SosButton che richiede un callback onPressed
-  // Il parametro super.key è opzionale e può essere utilizzato per identificare univocamente il widget
   const SosButton({super.key, required this.onPressed});
 
-  // Il metodo build costruisce l'interfaccia utente del widget
   @override
   Widget build(BuildContext context) {
-    // Restituisce un ElevatedButton con uno stile personalizzato
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return ElevatedButton(
-      onPressed: onPressed, // Gestisce il tap sul pulsante
-      // Stile del pulsante
+      onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.red,
-        // Padding interno del pulsante
-        padding: const EdgeInsets.symmetric(
-          horizontal: 30,
-          vertical: 10,
+        backgroundColor: const Color(0xFFF44336), // Rosso standard di Material, fedele all'immagine
+        // MODIFICA CHIAVE: Rimosso il padding verticale.
+        // Questo permette al widget 'Center' di posizionare il testo
+        // perfettamente al centro dello spazio verticale disponibile.
+        padding: EdgeInsets.symmetric(
+          horizontal: screenWidth * 0.08,
         ),
-        // Forma del pulsante con bordi arrotondati
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(screenWidth * 0.04),
         ),
-        // Colore dell'ombra del pulsante
         elevation: 4,
+        // Aggiunto per rimuovere il padding minimo di default del pulsante,
+        // dando al Center il pieno controllo.
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
-      // Testo del pulsante
-      child: const Text(
-        "SOS",
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 50,
-          fontWeight: FontWeight.bold,
+      // Il widget Center ora centra il testo nello spazio totale del pulsante.
+      child: Center(
+        child: Text(
+          "SOS",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: screenWidth * 0.1, // Dimensione più bilanciata
+            fontWeight: FontWeight.bold,
+            letterSpacing: 2, // Aggiunge spazio tra le lettere per leggibilità
+          ),
         ),
       ),
     );
