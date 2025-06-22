@@ -6,6 +6,8 @@ import 'package:wellyess/services/auth_service.dart';
 import 'package:wellyess/screens/login_page.dart';
 import 'package:wellyess/screens/homepage.dart';
 import 'package:wellyess/screens/profilo_caregiver.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,9 +18,13 @@ Future<void> main() async {
   await Hive.openBox<UserModel>('users');
   await Hive.openBox<FarmacoModel>('farmaci');
   await AuthService.init();
+
+  // 2. Inizializza i dati per la lingua italiana prima di avviare l'app
+  await initializeDateFormatting('it_IT', null);
   debugPrint('ℹ️ isLoggedIn = ${AuthService.isLoggedIn}');  // <-- vedi in console
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
