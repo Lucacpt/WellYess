@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../widgets/base_layout.dart';
 import 'package:wellyess/screens/elder_profile.dart';
-import 'package:flutter_svg/flutter_svg.dart'; 
-import 'package:wellyess/screens/profilo_caregiver.dart'; 
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:wellyess/screens/profilo_caregiver.dart';
 import 'login_page.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -10,101 +10,105 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final double iconSize = screenWidth * 0.08; // Dimensione base per le icone
+
     return BaseLayout(
       currentIndex: 2, // Indice per la pagina delle impostazioni nella navbar
       onBackPressed: () => Navigator.of(context).pop(),
-      child: Align( 
-        alignment: Alignment.topCenter, 
+      child: Align(
+        alignment: Alignment.topCenter,
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.only(top: 0.0, left: 0.0, right: 16.0, bottom: 16.0), 
+            padding: EdgeInsets.symmetric(
+                horizontal: screenWidth * 0.04, vertical: screenHeight * 0.02),
             child: Column(
-              mainAxisSize: MainAxisSize.min, 
+              mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   'Impostazioni',
                   style: TextStyle(
-                    fontSize: 32,
+                    fontSize: screenWidth * 0.08, // Reso responsivo
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 15),
+                SizedBox(height: screenHeight * 0.02), // Reso responsivo
                 const Divider(),
-                const SizedBox(height: 10),
-
-                const SizedBox(height: 30),
+                SizedBox(height: screenHeight * 0.01), // Reso responsivo
+                SizedBox(height: screenHeight * 0.03), // Reso responsivo
 
                 _SettingsRow(
-                  iconWidget: SvgPicture.asset( 
-                    'assets/icons/Account_Icon.svg', // Assicurati che questo file esista
-                    width: 32,
-                    height: 32,
+                  iconWidget: SvgPicture.asset(
+                    'assets/icons/Account_Icon.svg',
+                    width: iconSize,
+                    height: iconSize,
                   ),
                   label: 'Profilo',
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const ProfiloAnziano()), 
+                      MaterialPageRoute(
+                          builder: (context) => const ProfiloAnziano()),
                     );
                   },
                 ),
                 const Divider(),
-                const SizedBox(height: 20),
+                SizedBox(height: screenHeight * 0.025), // Reso responsivo
 
                 _SettingsRow(
-                  iconWidget: SvgPicture.asset( 
-                    'assets/icons/Alert Icon.svg', // Assicurati che questo file esista
-                    width: 32,
-                    height: 32,
+                  iconWidget: SvgPicture.asset(
+                    'assets/icons/Alert Icon.svg',
+                    width: iconSize,
+                    height: iconSize,
                   ),
                   label: 'Notifiche',
-                  onTap: () {
-                  },
+                  onTap: () {},
                 ),
                 const Divider(),
-                const SizedBox(height: 20),
+                SizedBox(height: screenHeight * 0.025), // Reso responsivo
 
                 _SettingsRow(
-                  iconWidget: SvgPicture.asset( 
-                    'assets/icons/Accessibiliy Icon.svg', // Assicurati che questo file esista
-                    width: 32,
-                    height: 32,
+                  iconWidget: SvgPicture.asset(
+                    'assets/icons/Accessibiliy Icon.svg',
+                    width: iconSize,
+                    height: iconSize,
                   ),
                   label: 'Accessibilità',
-                  onTap: () {
-                  },
+                  onTap: () {},
                 ),
                 const Divider(),
-                const SizedBox(height: 20),
+                SizedBox(height: screenHeight * 0.025), // Reso responsivo
 
                 _SettingsRow(
-                  iconWidget: SvgPicture.asset( 
-                    'assets/icons/Caregiver Icon.svg', // Assicurati che questo file esista
-                    width: 32,
-                    height: 32,
+                  iconWidget: SvgPicture.asset(
+                    'assets/icons/Caregiver Icon.svg',
+                    width: iconSize,
+                    height: iconSize,
                   ),
                   label: 'Assistente',
-                  onTap: () { // Azione di navigazione per Caregiver
+                  onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const CaregiverProfilePage()), 
+                      MaterialPageRoute(
+                          builder: (context) => const CaregiverProfilePage()),
                     );
                   },
                 ),
                 const Divider(),
-                const SizedBox(height: 20),
+                SizedBox(height: screenHeight * 0.025), // Reso responsivo
 
                 _SettingsRow(
-                  iconWidget: SvgPicture.asset( 
-                    'assets/icons/Logout.svg', // Assicurati che questo file esista
-                    width: 32,
-                    height: 32,
+                  iconWidget: SvgPicture.asset(
+                    'assets/icons/Logout.svg',
+                    width: iconSize,
+                    height: iconSize,
                   ),
                   label: 'Esci dal profilo',
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const LoginPage()), 
+                      MaterialPageRoute(builder: (context) => const LoginPage()),
                     );
                   },
                 ),
@@ -120,8 +124,8 @@ class SettingsPage extends StatelessWidget {
 
 // Widget helper per una riga di impostazione
 class _SettingsRow extends StatelessWidget {
-  final IconData? iconData; 
-  final Widget? iconWidget; 
+  final IconData? iconData;
+  final Widget? iconWidget;
   final String label;
   final VoidCallback onTap;
 
@@ -130,18 +134,23 @@ class _SettingsRow extends StatelessWidget {
     this.iconWidget,
     required this.label,
     required this.onTap,
-  }) : assert(iconData != null || iconWidget != null, 'È necessario fornire iconData o iconWidget');
+  }) : assert(iconData != null || iconWidget != null,
+            'È necessario fornire iconData o iconWidget');
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     Widget currentIcon;
+
     if (iconWidget != null) {
       currentIcon = iconWidget!;
     } else {
-      currentIcon = Icon( 
+      currentIcon = Icon(
         iconData!,
-        size: 32,
-        color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black87,
+        size: screenWidth * 0.08, // Reso responsivo
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white70
+            : Colors.black87,
       );
     }
 
@@ -151,26 +160,28 @@ class _SettingsRow extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 0.0), 
+          padding: EdgeInsets.symmetric(
+              vertical: screenWidth * 0.025, horizontal: 0.0), // Reso responsivo
           child: Row(
             children: [
-              Padding( 
-                padding: const EdgeInsets.only(left: 16.0), 
-                child: currentIcon, 
+              Padding(
+                padding: EdgeInsets.only(left: screenWidth * 0.04), // Reso responsivo
+                child: currentIcon,
               ),
               Expanded(
                 child: Text(
                   label,
-                  textAlign: TextAlign.center, 
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold, 
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: screenWidth * 0.045, // Reso responsivo
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(right: 16.0),
-                child: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey.shade600),
+                padding: EdgeInsets.only(right: screenWidth * 0.04), // Reso responsivo
+                child: Icon(Icons.arrow_forward_ios,
+                    size: screenWidth * 0.04, color: Colors.grey.shade600), // Reso responsivo
               ),
             ],
           ),

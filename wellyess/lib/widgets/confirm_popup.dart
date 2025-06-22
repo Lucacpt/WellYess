@@ -18,17 +18,20 @@ class ConfirmDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return AlertDialog(
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(screenWidth * 0.05), // Reso responsivo
       ),
       title: Text(
         titleText,
         textAlign: TextAlign.center,
-        style: const TextStyle(
+        style: TextStyle(
           fontWeight: FontWeight.bold,
-          fontSize: 20,
+          fontSize: screenWidth * 0.05, // Reso responsivo
         ),
       ),
       actionsAlignment: MainAxisAlignment.center,
@@ -37,9 +40,10 @@ class ConfirmDialog extends StatelessWidget {
           onPressed: onCancel,
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.green,
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(30)),
+            padding: EdgeInsets.symmetric(
+                horizontal: screenWidth * 0.07, vertical: screenHeight * 0.015), // Reso responsivo
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(screenWidth * 0.08)), // Reso responsivo
             ),
             foregroundColor: Colors.white,
           ),
@@ -49,9 +53,10 @@ class ConfirmDialog extends StatelessWidget {
           onPressed: onConfirm,
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.red,
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(30)),
+            padding: EdgeInsets.symmetric(
+                horizontal: screenWidth * 0.07, vertical: screenHeight * 0.015), // Reso responsivo
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(screenWidth * 0.08)), // Reso responsivo
             ),
             foregroundColor: Colors.white,
           ),

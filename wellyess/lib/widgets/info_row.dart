@@ -12,20 +12,22 @@ class InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 18,
+            fontSize: screenWidth * 0.045, // Reso responsivo (era 18)
           ),
         ),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 18,
+          style: TextStyle(
+            fontSize: screenWidth * 0.045, // Reso responsivo (era 18)
           ),
         ),
       ],

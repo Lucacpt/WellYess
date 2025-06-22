@@ -3,7 +3,7 @@ import 'package:wellyess/screens/menu_page.dart';
 import 'package:wellyess/screens/settings.dart';
 import 'bottom_navbar.dart';
 import 'go_back_button.dart';
-import 'package:wellyess/screens/elder_profile.dart'; 
+import 'package:wellyess/screens/elder_profile.dart';
 
 class BaseLayout extends StatelessWidget {
   final Widget child;
@@ -19,13 +19,23 @@ class BaseLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Otteniamo le dimensioni dello schermo per i calcoli
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FF),
       body: SafeArea(
         child: Stack(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 90), // margine inferiore per la navbar
+              // Padding reso responsivo
+              padding: EdgeInsets.fromLTRB(
+                screenWidth * 0.05, // 20
+                screenHeight * 0.012, // 10
+                screenWidth * 0.05, // 20
+                screenHeight * 0.12, // 90, per la navbar
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -41,7 +51,8 @@ class BaseLayout extends StatelessWidget {
                           label: 'Logo Wellyess',
                           child: Image.asset(
                             'assets/logo/wellyess.png',
-                            height: 55,
+                            // Altezza del logo resa responsiva
+                            height: screenHeight * 0.06, // 55
                           ),
                         ),
                       ),
@@ -57,24 +68,30 @@ class BaseLayout extends StatelessWidget {
                               ),
                             );
                           },
-                          child: const CircleAvatar(
-                            radius: 30,
-                            backgroundImage: AssetImage('assets/images/elder_profile_pic.png'),
+                          child: CircleAvatar(
+                            // Raggio dell'avatar reso responsivo
+                            radius: screenWidth * 0.075, // 30
+                            backgroundImage: const AssetImage(
+                                'assets/images/elder_profile_pic.png'),
                           ),
                         ),
                       ),
                     ],
                   ),
 
-                  const SizedBox(height: 15), // spazio extra tra logo/avatar e contenuto
+                  // Spazio reso responsivo
+                  SizedBox(height: screenHeight * 0.018), // 15
 
                   // CONTAINER PRINCIPALE
                   Expanded(
                     child: Container(
-                      padding: const EdgeInsets.all(30),
+                      // Padding del container reso responsivo
+                      padding: EdgeInsets.all(screenWidth * 0.075), // 30
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(30),
+                        // Raggio del bordo reso responsivo
+                        borderRadius:
+                            BorderRadius.circular(screenWidth * 0.075), // 30
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
@@ -92,7 +109,8 @@ class BaseLayout extends StatelessWidget {
                               button: true,
                               child: BackCircleButton(onPressed: onBackPressed),
                             ),
-                            const SizedBox(height: 20),
+                            // Spazio reso responsivo
+                            SizedBox(height: screenHeight * 0.025), // 20
                           ],
 
                           // Contenuto della pagina
@@ -109,7 +127,8 @@ class BaseLayout extends StatelessWidget {
             Positioned(
               left: 0,
               right: 0,
-              bottom: 5,
+              // Posizione dal basso resa responsiva
+              bottom: screenHeight * 0.006, // 5
               child: Semantics(
                 container: true,
                 label: 'Barra di navigazione principale',
@@ -118,13 +137,19 @@ class BaseLayout extends StatelessWidget {
                   onTap: (index) {
                     switch (index) {
                       case 0:
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => const MenuPage()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const MenuPage()));
                         break;
                       case 1:
                         Navigator.popUntil(context, (r) => r.isFirst);
                         break;
                       case 2:
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const SettingsPage()));
                         break;
                     }
                   },

@@ -5,16 +5,11 @@ import 'package:wellyess/widgets/info_row.dart';
 class ProfiloAnziano extends StatelessWidget {
   const ProfiloAnziano({super.key});
 
-  Widget _divider() {
-    return const Divider(thickness: 1, color: Colors.grey);
-  }
-
-  Widget _spacer() {
-    return const SizedBox(height: 15);
-  }
-
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return BaseLayout(
       currentIndex: 2,
       onBackPressed: () {
@@ -27,49 +22,54 @@ class ProfiloAnziano extends StatelessWidget {
             Center(
               child: Text(
                 'Profilo',
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: screenWidth * 0.08, // Reso responsivo (era 32)
+                    fontWeight: FontWeight.bold),
               ),
             ),
-
-            _divider(),
-            const SizedBox(height: 20),
+            const Divider(thickness: 1, color: Colors.grey),
+            SizedBox(height: screenHeight * 0.025), // Reso responsivo (era 20)
 
             Center(
               child: Column(
-                children: const [
+                children: [
                   CircleAvatar(
-                    radius: 50,
-                    backgroundImage: AssetImage('assets/images/elder_profile_pic.png'),
+                    radius: screenWidth * 0.125, // Reso responsivo (era 50)
+                    backgroundImage:
+                        const AssetImage('assets/images/elder_profile_pic.png'),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(
+                      height: screenHeight * 0.012), // Reso responsivo (era 10)
                   Text(
                     'Michele Verdi',
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontSize: screenWidth * 0.07, // Reso responsivo (era 28)
+                        fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: screenHeight * 0.025), // Reso responsivo (era 20)
 
             const InfoRow(label: 'Data nascita', value: '15 Mag 1948'),
-            _divider(),
-            _spacer(),
+            const Divider(thickness: 1, color: Colors.grey),
+            SizedBox(height: screenHeight * 0.018), // Reso responsivo (era 15)
 
             const InfoRow(label: 'Sesso', value: 'Maschile'),
-            _divider(),
-            _spacer(),
+            const Divider(thickness: 1, color: Colors.grey),
+            SizedBox(height: screenHeight * 0.018), // Reso responsivo (era 15)
 
             const InfoRow(label: 'Allergie', value: 'Polline'),
-            _divider(),
-            _spacer(),
+            const Divider(thickness: 1, color: Colors.grey),
+            SizedBox(height: screenHeight * 0.018), // Reso responsivo (era 15)
 
             const InfoRow(label: 'Intolleranze', value: 'Lattosio'),
-            _divider(),
-            _spacer(),
+            const Divider(thickness: 1, color: Colors.grey),
+            SizedBox(height: screenHeight * 0.018), // Reso responsivo (era 15)
 
             const InfoRow(label: 'Gruppo sanguigno', value: 'A'),
-            _divider(),
+            const Divider(thickness: 1, color: Colors.grey),
           ],
         ),
       ),

@@ -14,12 +14,16 @@ class CustomMainButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return SizedBox(
       width: double.infinity, // prende tutta la larghezza disponibile
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
-          padding: const EdgeInsets.symmetric(vertical: 14),
+          // Padding verticale aumentato per un pulsante più alto
+          padding: EdgeInsets.symmetric(vertical: screenHeight * 0.022),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
           ),
@@ -28,9 +32,10 @@ class CustomMainButton extends StatelessWidget {
         onPressed: onTap,
         child: Text(
           text,
-          style: const TextStyle(
+          style: TextStyle(
             color: Colors.white,
-            fontSize: 16,
+            // Dimensione del font aumentata
+            fontSize: screenWidth * 0.045,
             fontWeight: FontWeight.w600,
           ),
         ),
