@@ -18,10 +18,14 @@ class DettagliFarmacoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return BaseLayout(
       onBackPressed: () => Navigator.pop(context),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
+            .copyWith(bottom: screenHeight * 0.01),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -31,14 +35,16 @@ class DettagliFarmacoPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Center(
+                    SizedBox(height: screenHeight * 0.02),
+                    Center(
                       child: Text(
                         'Dettagli farmaco',
                         style: TextStyle(
-                            fontSize: 32, fontWeight: FontWeight.bold),
+                            fontSize: screenWidth * 0.08,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
-                    const Divider(thickness: 1.2, height: 30),
+                    Divider(thickness: 1.2, height: screenHeight * 0.07),
                     InfoRow(label: 'Nome', value: farmaco.nome),
                     const Divider(),
                     InfoRow(label: 'Dose', value: farmaco.dose),
@@ -46,15 +52,13 @@ class DettagliFarmacoPage extends StatelessWidget {
                     InfoRow(label: 'Forma', value: farmaco.formaTerapeutica),
                     const Divider(),
                     InfoRow(label: 'Orario', value: farmaco.orario),
-                    const Divider(),
-                    InfoRow(label: 'Frequenza', value: farmaco.frequenza),
                   ],
                 ),
               ),
             ),
 
             // Pulsante fisso in basso
-            const SizedBox(height: 20),
+            SizedBox(height: screenHeight * 0.02),
             CustomMainButton(
               text: 'Elimina',
               color: Colors.red.shade700,

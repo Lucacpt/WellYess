@@ -24,6 +24,9 @@ dependencies:
   # Line Chart dependencies
   fl_chart: ^0.66.0  # o la versione più recente disponibile
 
+  # Date and Time dependencies
+  intl: ^0.18.1  # Per la formattazione delle date
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

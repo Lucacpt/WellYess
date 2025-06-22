@@ -19,19 +19,24 @@ class FarmacoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return GestureDetector(
       onTap: onTap,
       child: Card(
         color: Colors.white,
         elevation: 4,
-        margin: const EdgeInsets.symmetric(vertical: 6),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        margin: EdgeInsets.symmetric(
+            vertical: screenWidth * 0.015), // Reso responsivo (era 6)
+        shape: RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.circular(15)), // Il valore fisso qui è ok
         child: IntrinsicHeight(
           child: Row(
             children: [
               // Barra colorata
               Container(
-                width: 25,
+                width: screenWidth * 0.06, // Reso responsivo (era 25)
                 decoration: BoxDecoration(
                   color: statoColore,
                   borderRadius: const BorderRadius.only(
@@ -44,25 +49,32 @@ class FarmacoCard extends StatelessWidget {
               // Contenuto
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 12.0),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.04,
+                      vertical: screenWidth * 0.03), // Reso responsivo
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         orario,
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: screenWidth * 0.045, // Reso responsivo (era 18)
+                            fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(
+                          width: screenWidth * 0.03), // Reso responsivo (era 12)
                       Expanded(
                         child: Text(
                           '$nome $dose',
-                          style: const TextStyle(fontSize: 18),
+                          style: TextStyle(
+                              fontSize:
+                                  screenWidth * 0.045), // Reso responsivo (era 18)
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const Icon(Icons.chevron_right, color: Colors.grey),
+                      Icon(Icons.chevron_right,
+                          color: Colors.grey,
+                          size: screenWidth * 0.06), // Reso responsivo
                     ],
                   ),
                 ),

@@ -22,8 +22,7 @@ class CustomMainButton extends StatelessWidget {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
-          // Padding verticale aumentato per un pulsante più alto
-          padding: EdgeInsets.symmetric(vertical: screenHeight * 0.022),
+          padding: EdgeInsets.symmetric(vertical: screenHeight * 0.018),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
           ),
@@ -34,8 +33,8 @@ class CustomMainButton extends StatelessWidget {
           text,
           style: TextStyle(
             color: Colors.white,
-            // Dimensione del font aumentata
-            fontSize: screenWidth * 0.045,
+            // Dimensione del font leggermente ridotta
+            fontSize: screenWidth * 0.05,
             fontWeight: FontWeight.w600,
           ),
         ),

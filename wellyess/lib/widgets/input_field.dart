@@ -14,10 +14,12 @@ class InputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(screenWidth * 0.04), // Reso responsivo
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.3),
@@ -27,7 +29,7 @@ class InputField extends StatelessWidget {
           ),
         ],
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03), // Reso responsivo
       child: TextField(
         controller: controller,
         maxLines: maxLines,
@@ -35,7 +37,7 @@ class InputField extends StatelessWidget {
           hintText: placeholder,
           border: InputBorder.none,
         ),
-        style: const TextStyle(fontSize: 16),
+        style: TextStyle(fontSize: screenWidth * 0.04), // Reso responsivo
       ),
     );
   }

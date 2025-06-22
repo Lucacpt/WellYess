@@ -8,11 +8,17 @@ class LegendaPallino extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Row(
       children: [
-        CircleAvatar(radius: 10, backgroundColor: color),
-        const SizedBox(width: 6),
-        Text(text, style: const TextStyle(fontSize: 15)),
+        CircleAvatar(
+            radius: screenWidth * 0.02, // Reso responsivo (era 10)
+            backgroundColor: color),
+        SizedBox(width: screenWidth * 0.015), // Reso responsivo (era 6)
+        Text(text,
+            style: TextStyle(
+                fontSize: screenWidth * 0.038)), // Reso responsivo (era 15)
       ],
     );
   }

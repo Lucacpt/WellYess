@@ -16,6 +16,13 @@ class TimePickerField extends StatelessWidget {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: value ?? TimeOfDay.now(),
+      // Forza il selettore a usare il formato 24 ore
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        );
+      },
     );
     if (picked != null && picked != value) {
       onChanged(picked);
@@ -24,12 +31,25 @@ class TimePickerField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // Formattazione manuale per la visualizzazione nel campo
+    String displayText;
+    if (value != null) {
+      final hour = value!.hour.toString().padLeft(2, '0');
+      final minute = value!.minute.toString().padLeft(2, '0');
+      displayText = '$hour:$minute';
+    } else {
+      displayText = placeholder;
+    }
+
     return GestureDetector(
       onTap: () => _selectTime(context),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(screenWidth * 0.04),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.3),
@@ -39,19 +59,22 @@ class TimePickerField extends StatelessWidget {
             ),
           ],
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        padding: EdgeInsets.symmetric(
+            horizontal: screenWidth * 0.03,
+            vertical: screenHeight * 0.018),
         child: Row(
           children: [
             Expanded(
               child: Text(
-                value != null ? value!.format(context) : placeholder,
+                displayText, // Usa la stringa formattata manualmente
                 style: TextStyle(
-                  fontSize: 16,
-                  color: value != null ? Colors.black : Colors.grey,
+                  fontSize: screenWidth * 0.04,
+                  color: value != null ? Colors.black : Colors.grey.shade600,
                 ),
               ),
             ),
-            const Icon(Icons.access_time, color: Colors.grey),
+            Icon(Icons.access_time,
+                color: Colors.grey, size: screenWidth * 0.06),
           ],
         ),
       ),

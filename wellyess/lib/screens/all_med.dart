@@ -1,10 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/intl.dart'; // <-- Aggiunto questo import
 import 'package:wellyess/models/farmaco_model.dart';
 import 'package:wellyess/screens/add_new_med.dart';
 import 'package:wellyess/screens/med_details.dart';
 import 'package:wellyess/widgets/base_layout.dart';
 import 'package:wellyess/widgets/custom_main_button.dart';
+
+// NUOVO: Helper per interpretare qualsiasi stringa di orario
+DateTime? _parseTime(String timeString) {
+  try {
+    // Prova a interpretare il formato "h:mm a" (es. "8:00 PM")
+    return DateFormat("h:mm a").parse(timeString);
+  } catch (e) {
+    try {
+      // Se fallisce, prova a interpretare il formato "HH:mm" (es. "20:00")
+      return DateFormat("HH:mm").parse(timeString);
+    } catch (e) {
+      // Se entrambi falliscono, non è un formato valido
+      return null;
+    }
+  }
+}
 
 class AllMedsPage extends StatelessWidget {
   const AllMedsPage({Key? key}) : super(key: key);
@@ -12,79 +29,116 @@ class AllMedsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final box = Hive.box<FarmacoModel>('farmaci');
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return BaseLayout(
       currentIndex: 1,
       onBackPressed: () => Navigator.pop(context),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Sezione superiore che si espande e scorre
+            // --- INTESTAZIONE FISSA ---
+            Text(
+              'Tutta la Terapia',
+              style: TextStyle(
+                  fontSize: screenWidth * 0.08,
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            Divider(
+                thickness: 1.5,
+                height: screenHeight * 0.04),
+            
+            // --- CORPO DINAMICO (SCORREVOLE O VUOTO) ---
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Text(
-                      'Tutta la Terapia',
-                      style:
-                          TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                    const Divider(thickness: 1.5, height: 40),
-                    const SizedBox(height: 10),
-                    ValueListenableBuilder<Box<FarmacoModel>>(
-                      valueListenable: box.listenable(),
-                      builder: (context, box, _) {
-                        final farmaciEntries = box.toMap().entries.toList();
+              child: ValueListenableBuilder<Box<FarmacoModel>>(
+                valueListenable: box.listenable(),
+                builder: (context, box, _) {
+                  final farmaciEntries = box.toMap().entries.toList();
 
-                        if (farmaciEntries.isEmpty) {
-                          return const Center(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(vertical: 40.0),
-                              child: Text(
-                                'Nessun farmaco aggiunto.',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 20, color: Colors.grey),
+                  if (farmaciEntries.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'Nessun farmaco aggiunto.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: screenWidth * 0.045,
+                            color: Colors.grey),
+                      ),
+                    );
+                  }
+
+                  farmaciEntries.sort((a, b) => a.value.nome
+                      .toLowerCase()
+                      .compareTo(b.value.nome.toLowerCase()));
+
+                  // Se ci sono farmaci, mostra info + lista scorrevole
+                  return Column(
+                    children: [
+                      // Testo informativo (ora è fisso sopra la lista)
+                      Row(
+                        children: [
+                          Icon(Icons.info_outline,
+                              color: Colors.blue.shade700,
+                              size: screenWidth * 0.06),
+                          SizedBox(width: screenWidth * 0.02),
+                          Expanded(
+                            child: Text(
+                              "Tocca un farmaco per visualizzare i dettagli.",
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.038,
+                                fontStyle: FontStyle.italic,
+                                color: Colors.grey.shade700,
                               ),
                             ),
-                          );
-                        }
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: screenHeight * 0.02),
 
-                        farmaciEntries.sort((a, b) => a.value.nome
-                            .toLowerCase()
-                            .compareTo(b.value.nome.toLowerCase()));
-
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
+                      // Lista dei farmaci (unica parte scorrevole)
+                      Expanded(
+                        child: ListView.builder(
+                          // Padding aggiunto per distanziare le card dai bordi
+                          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
                           itemCount: farmaciEntries.length,
                           itemBuilder: (context, index) {
                             final entry = farmaciEntries[index];
                             final farmaco = entry.value;
                             final farmacoKey = entry.key;
 
+                            // MODIFICATO: Formatta sempre l'orario in 24 ore per la visualizzazione
+                            final orario24h = _parseTime(farmaco.orario);
+                            final orarioDaMostrare = orario24h != null
+                                ? DateFormat('HH:mm').format(orario24h)
+                                : farmaco.orario; // Fallback
+
                             return Card(
                               color: Colors.white,
                               elevation: 4,
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 0, vertical: 4.0),
+                              // Margine verticale aumentato per più spazio
+                              margin: EdgeInsets.symmetric(
+                                  vertical: screenHeight * 0.01),
                               child: ListTile(
-                                leading: const Icon(
+                                leading: Icon(
                                   Icons.medication_outlined,
-                                  color: Color(0xFF5DB47F),
-                                  size: 30,
+                                  color: const Color(0xFF5DB47F),
+                                  size: screenWidth * 0.08,
                                 ),
                                 title: Text(
                                   farmaco.nome,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: screenWidth * 0.05),
                                 ),
                                 subtitle: Text(
-                                    '${farmaco.dose} - ${farmaco.frequenza}'),
+                                  '${farmaco.dose} - $orarioDaMostrare', // Usa l'orario formattato
+                                  style: TextStyle(
+                                      fontSize: screenWidth * 0.045),
+                                ),
                                 trailing: const Icon(Icons.chevron_right),
                                 onTap: () {
                                   Navigator.push(
@@ -100,15 +154,16 @@ class AllMedsPage extends StatelessWidget {
                               ),
                             );
                           },
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
-            // Pulsante fisso in basso
-            const SizedBox(height: 20),
+            
+            // --- FOOTER FISSO ---
+            SizedBox(height: screenHeight * 0.02),
             CustomMainButton(
               text: '+ Aggiungi farmaco',
               color: const Color(0xFF5DB47F),
@@ -120,6 +175,7 @@ class AllMedsPage extends StatelessWidget {
                 );
               },
             ),
+            SizedBox(height: screenHeight * 0.01),
           ],
         ),
       ),

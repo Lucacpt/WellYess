@@ -9,98 +9,97 @@ class DettagliVisitaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color primaryColor = Colors.green.shade500;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return BaseLayout(
       onBackPressed: () => Navigator.of(context).pop(),
       child: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 2),
-            const Center(
+            SizedBox(height: screenHeight * 0.01),
+            Center(
               child: Text(
                 'Dettagli Visita',
                 style: TextStyle(
-                  fontSize: 26,
+                  fontSize: screenWidth * 0.07,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
                 ),
               ),
             ),
-            const SizedBox(height: 8),
-            Divider(color: Colors.grey.shade300),
-            const SizedBox(height: 8),
+            SizedBox(height: screenHeight * 0.01),
+            Divider(color: Colors.grey.shade300, thickness: 1),
+            SizedBox(height: screenHeight * 0.02),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: SizedBox(
-                    height: 28,
-                    width: 28,
-                    child: SvgPicture.asset(
-                      'assets/icons/med.svg',
-                    ),
+                SizedBox(
+                  height: screenWidth * 0.08,
+                  width: screenWidth * 0.08,
+                  child: SvgPicture.asset(
+                    'assets/icons/med.svg',
                   ),
                 ),
-                Text(
-                  appointment['title'] ?? '',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Montserrat',
+                SizedBox(width: screenWidth * 0.03),
+                Flexible(
+                  child: Text(
+                    appointment['title'] ?? '',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.075,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Montserrat',
+                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 18),
+            SizedBox(height: screenHeight * 0.03),
             InfoRow(
               label: 'Luogo',
               value: appointment['location'] ?? '',
-              
             ),
             const Divider(),
-            const SizedBox(height: 15),
+            SizedBox(height: screenHeight * 0.02),
             InfoRow(
               label: 'Data',
               value: appointment['date'] ?? '',
             ),
             const Divider(),
-            const SizedBox(height: 15),
+            SizedBox(height: screenHeight * 0.02),
             InfoRow(
               label: 'Orario',
               value: appointment['time'] ?? '',
             ),
             const Divider(),
-            const SizedBox(height: 15),
+            SizedBox(height: screenHeight * 0.02),
             InfoRow(
               label: 'Medico',
               value: appointment['doctor'] ?? '',
             ),
             const Divider(),
-            const SizedBox(height: 15),
-            const SizedBox(height: 18),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Posizione Luogo Della Visita',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 17,
-                ),
+            SizedBox(height: screenHeight * 0.03),
+            Text(
+              'Posizione Luogo Della Visita',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: screenWidth * 0.045,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: screenHeight * 0.015),
             ClipRRect(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(screenWidth * 0.04),
               child: Image.asset(
                 'assets/images/map.png',
-                height: 140,
+                height: screenHeight * 0.18,
                 width: double.infinity,
                 fit: BoxFit.cover,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: screenHeight * 0.02),
           ],
         ),
       ),
