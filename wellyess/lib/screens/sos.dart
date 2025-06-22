@@ -47,7 +47,6 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
     });
   }
 
-  // MODIFICATO: Stile e testo del popup resi più rassicuranti
   Future<void> _showCaregiverNotifiedDialog(
       BuildContext context, double screenWidth, double screenHeight) {
     return showDialog<void>(
@@ -62,16 +61,14 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              // Icona di conferma visiva
               Icon(
                 Icons.check_circle_outline,
                 color: Colors.green,
                 size: screenWidth * 0.15,
               ),
               SizedBox(height: screenHeight * 0.02),
-              // Testo più rassicurante e informativo
               Text(
-                'Richiesta Inviata!\nIl tuo caregiver è stato.',
+                'Richiesta Inviata!\nIl tuo caregiver è stato avvisato.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: screenWidth * 0.045,
@@ -80,19 +77,17 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
                 ),
               ),
               SizedBox(height: screenHeight * 0.03),
-              // Pulsante di chiusura coerente con il messaggio di successo
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(dialogContext).pop();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green, // Colore cambiato in verde
+                  backgroundColor: Colors.green,
                   shape: const CircleBorder(),
                   padding: EdgeInsets.all(screenWidth * 0.04),
                 ),
-                child: Icon(Icons.check, // Icona cambiata in spunta
-                    color: Colors.white,
-                    size: screenWidth * 0.07),
+                child: Icon(Icons.check,
+                    color: Colors.white, size: screenWidth * 0.07),
               ),
             ],
           ),
@@ -110,136 +105,159 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
       onBackPressed: () => Navigator.of(context).pop(),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.08),
-        child: Column(
-          children: [
-            Text(
-              'Emergenza',
-              style: TextStyle(
-                fontSize: screenWidth * 0.07,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            SizedBox(height: screenHeight * 0.01),
-            Divider(color: Colors.grey.shade300),
-            const Spacer(flex: 2),
-
-            Row(
-              children: [
-                Icon(Icons.info_outline,
-                    color: Colors.blue.shade700, size: screenWidth * 0.06),
-                SizedBox(width: screenWidth * 0.02),
-                Expanded(
-                  child: Text(
-                    "Per inviare una richiesta di emergenza, premi il pulsante due volte.",
-                    style: TextStyle(
-                      fontSize: screenWidth * 0.038,
-                      fontStyle: FontStyle.italic,
-                      color: Colors.grey.shade700,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            const Spacer(flex: 1),
-
-            ScaleTransition(
-              scale: _scaleAnimation,
-              child: GestureDetector(
-                onTap: () {
-                  if (!_isFirstTap) {
-                    setState(() {
-                      _isFirstTap = true;
-                      _buttonText = 'Tocca di nuovo\nper confermare';
-                      _animationController.stop();
-                    });
-                    _resetTapTimer?.cancel();
-                    _resetTapTimer =
-                        Timer(const Duration(seconds: 3), _resetButtonState);
-                  } else {
-                    _resetTapTimer?.cancel();
-                    _showCaregiverNotifiedDialog(
-                            context, screenWidth, screenHeight)
-                        .then((_) {
-                      _resetButtonState();
-                    });
-                  }
-                },
-                child: Container(
-                  width: screenWidth * 0.7,
-                  height: screenWidth * 0.7,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [Colors.red.shade400, Colors.red.shade800],
-                      center: Alignment.center,
-                      radius: 0.8,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.red.withOpacity(0.4),
-                        spreadRadius: 4,
-                        blurRadius: 15,
-                        offset: const Offset(0, 5),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      // --- Contenuto allineato in alto ---
+                      Text(
+                        'Emergenza',
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.07,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
                       ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Text(
-                      _buttonText,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: _isFirstTap
-                            ? screenWidth * 0.07
-                            : screenWidth * 0.18,
-                        fontWeight: FontWeight.bold,
-                        shadows: [
-                          const Shadow(
-                            blurRadius: 10.0,
-                            color: Colors.black38,
-                            offset: Offset(2.0, 2.0),
+                      SizedBox(height: screenHeight * 0.01),
+                      Divider(color: Colors.grey.shade300),
+                      SizedBox(height: screenHeight * 0.04),
+                      Row(
+                        children: [
+                          Icon(Icons.info_outline,
+                              color: Colors.blue.shade700,
+                              size: screenWidth * 0.06),
+                          SizedBox(width: screenWidth * 0.02),
+                          Expanded(
+                            child: Text(
+                              "Per inviare una richiesta di emergenza, premi il pulsante due volte.",
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.038,
+                                fontStyle: FontStyle.italic,
+                                color: Colors.grey.shade700,
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                    ),
+
+                      // --- Spacer per posizionare il pulsante SOS al centro ---
+                      const Spacer(flex: 3),
+
+                      // --- Pulsante SOS ---
+                      ScaleTransition(
+                        scale: _scaleAnimation,
+                        child: GestureDetector(
+                          onTap: () {
+                            if (!_isFirstTap) {
+                              setState(() {
+                                _isFirstTap = true;
+                                _buttonText = 'Tocca di nuovo\nper confermare';
+                                _animationController.stop();
+                              });
+                              _resetTapTimer?.cancel();
+                              _resetTapTimer = Timer(
+                                  const Duration(seconds: 3), _resetButtonState);
+                            } else {
+                              _resetTapTimer?.cancel();
+                              _showCaregiverNotifiedDialog(
+                                      context, screenWidth, screenHeight)
+                                  .then((_) {
+                                _resetButtonState();
+                              });
+                            }
+                          },
+                          child: Container(
+                            width: screenWidth * 0.7,
+                            height: screenWidth * 0.7,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: RadialGradient(
+                                colors: [
+                                  Colors.red.shade400,
+                                  Colors.red.shade800
+                                ],
+                                center: Alignment.center,
+                                radius: 0.8,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.red.withOpacity(0.4),
+                                  spreadRadius: 4,
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(
+                                _buttonText,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: _isFirstTap
+                                      ? screenWidth * 0.07
+                                      : screenWidth * 0.18,
+                                  fontWeight: FontWeight.bold,
+                                  shadows: [
+                                    const Shadow(
+                                      blurRadius: 10.0,
+                                      color: Colors.black38,
+                                      offset: Offset(2.0, 2.0),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      // --- Spacer per spingere il pulsante in fondo ---
+                      const Spacer(flex: 2),
+
+                      // --- Contenuto allineato in basso ---
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            // Azione per "Aggiungi Alla Schermata Di Home"
+                          },
+                          icon: Icon(
+                            Icons.home_filled,
+                            color: Colors.white,
+                            size: screenWidth * 0.07,
+                          ),
+                          label: Text(
+                            'Aggiungi Alla Schermata Di Home',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: screenWidth * 0.04),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0XFF5DB47F),
+                            padding: EdgeInsets.symmetric(
+                                vertical: screenHeight * 0.025,
+                                horizontal: screenWidth * 0.04),
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(screenWidth * 0.03),
+                            ),
+                            elevation: 3,
+                          ),
+                        ),
+                      ),
+                      // Aggiunto un piccolo spazio in fondo per estetica
+                      SizedBox(height: screenHeight * 0.02),
+                    ],
                   ),
                 ),
               ),
-            ),
-
-            const Spacer(flex: 3),
-
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  // Azione per "Aggiungi Alla Schermata Di Home"
-                },
-                icon: Icon(
-                  Icons.home_filled,
-                  color: Colors.white,
-                  size: screenWidth * 0.07,
-                ),
-                label: Text(
-                  'Aggiungi Alla Schermata Di Home',
-                  style: TextStyle(
-                      color: Colors.white, fontSize: screenWidth * 0.04),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0XFF5DB47F),
-                  padding: EdgeInsets.symmetric(
-                      vertical: screenHeight * 0.025,
-                      horizontal: screenWidth * 0.04),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(screenWidth * 0.03),
-                  ),
-                  elevation: 3,
-                ),
-              ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
