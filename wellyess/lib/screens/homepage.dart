@@ -117,8 +117,8 @@ class HomePage extends StatelessWidget {
                         child: FeatureCard(
                           icon: SvgPicture.asset(
                             'assets/icons/calendar.svg',
-                            height: iconSize,
-                            width: iconSize,
+                            height: iconSize - 10,
+                            width: iconSize - 10,
                             colorFilter: const ColorFilter.mode(
                                 Color(0xFF5DB47F), BlendMode.srcIn),
                           ),
@@ -138,8 +138,8 @@ class HomePage extends StatelessWidget {
                         child: FeatureCard(
                           icon: SvgPicture.asset(
                             'assets/icons/sport_food.svg',
-                            height: iconSize,
-                            width: iconSize,
+                            height: iconSize - 10,
+                            width: iconSize - 10,
                             colorFilter: const ColorFilter.mode(
                                 Color(0xFF5DB47F), BlendMode.srcIn),
                           ),
