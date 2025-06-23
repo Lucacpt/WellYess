@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart'; // Per FlSpot
+import 'package:fl_chart/fl_chart.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:wellyess/models/parameter_model.dart';
 import 'package:wellyess/widgets/base_layout.dart';
 import 'package:wellyess/widgets/custom_main_button.dart';
 import 'package:wellyess/widgets/parameters_card.dart';
@@ -13,46 +15,17 @@ class MonitoraggioParametriPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Dati fittizi di esempio per grafici (FlSpot(x, y))
-    final List<FlSpot> diaData = [
-      FlSpot(0, 80),
-      FlSpot(1, 82),
-      FlSpot(2, 78),
-      FlSpot(3, 85),
-      FlSpot(4, 84),
-    ];
-    final List<FlSpot> sysData = [
-      FlSpot(0, 130),
-      FlSpot(1, 135),
-      FlSpot(2, 138),
-      FlSpot(3, 140),
-      FlSpot(4, 142),
-    ];
-    final List<FlSpot> bpmData = [
-      FlSpot(0, 75),
-      FlSpot(1, 78),
-      FlSpot(2, 80),
-      FlSpot(3, 85),
-      FlSpot(4, 90),
-    ];
+    // dati fittizi di esempio per i grafici
+    final diaData = [FlSpot(0, 80), FlSpot(1, 82), FlSpot(2, 78), FlSpot(3, 85), FlSpot(4, 84)];
+    final sysData = [FlSpot(0, 130), FlSpot(1, 132), FlSpot(2, 128), FlSpot(3, 135), FlSpot(4, 134)];
+    final bpmData = [FlSpot(0, 70), FlSpot(1, 72), FlSpot(2, 68), FlSpot(3, 75), FlSpot(4, 74)];
+    final hgtData = [FlSpot(0, 5.5), FlSpot(1, 5.8), FlSpot(2, 6.0), FlSpot(3, 5.7), FlSpot(4, 5.9)];
+    final spo2Data = [FlSpot(0, 97), FlSpot(1, 96), FlSpot(2, 98), FlSpot(3, 95), FlSpot(4, 97)];
 
-    final List<FlSpot> hgtData = [
-      FlSpot(0, 70),
-      FlSpot(1, 72),
-      FlSpot(2, 75),
-      FlSpot(3, 78),
-      FlSpot(4, 78),
-    ];
-
-    final List<FlSpot> spo2Data = [
-      FlSpot(0, 95),
-      FlSpot(1, 96),
-      FlSpot(2, 97),
-      FlSpot(3, 98),
-      FlSpot(4, 97),
-    ];
+    final box = Hive.box<ParameterEntry>('parameters');
 
     return BaseLayout(
+      currentIndex: 3,
       onBackPressed: () => Navigator.pop(context),
       child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -64,81 +37,65 @@ class MonitoraggioParametriPage extends StatelessWidget {
               child: Text(
                 'Monitoraggio Parametri',
                 style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center
+                textAlign: TextAlign.center,
               ),
             ),
-
             const Divider(),
             const SizedBox(height: 24),
 
-            TodayParametersCard(
-              time: const TimeOfDay(hour: 10, minute: 30),
-              sys: 140,
-              dia: 84,
-              bpm: 90,
-              hgt: 78,
-              spo2: 97,
-            ),
-
-            const SizedBox(height: 24),
-
-            CustomMainButton(
-              text: '+ Aggiungi Parametri',
-              color: const Color(0xFF5DB47F),
-              onTap: () {
-                Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AggiungiMonitoraggioPage(),
-                        ),
-                      );
-              },
-            ),
-
-            const SizedBox(height: 24),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: const Icon(Icons.keyboard_arrow_down, size: 28, color: Colors.black87),
-                ),
-                const SizedBox(width: 10),
-                const Text(
-                  'Scorri per vedere lo storico',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-              ],
-            ),
-
+            // Chart fittizio
+            PressureChart(diaData: diaData, sysData: sysData, bpmData: bpmData),
+            const SizedBox(height: 20),
+            GlucoseChart(hgtData: hgtData),
+            const SizedBox(height: 20),
+            OxygenChart(spo2Data: spo2Data),
             const SizedBox(height: 24),
             const Divider(),
             const SizedBox(height: 24),
 
             const Text(
-              'Storico',
+              'Storico Registrazioni',
               style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
               textAlign: TextAlign.left,
             ),
-
             const SizedBox(height: 16),
 
-    
-
-            PressureChart(
-              diaData: diaData,
-              sysData: sysData,
-              bpmData: bpmData,
+            // sezione dinamica dai dati in Hive
+            ValueListenableBuilder<Box<ParameterEntry>>(
+              valueListenable: box.listenable(),
+              builder: (context, box, _) {
+                final entries = box.values.toList()
+                  ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+                if (entries.isEmpty) {
+                  return const Center(child: Text('Nessun dato salvato'));
+                }
+                return Column(
+                  children: entries.map((e) {
+                    final time = TimeOfDay.fromDateTime(e.timestamp);
+                    return TodayParametersCard(
+                      time: time,
+                      sys: e.sys,
+                      dia: e.dia,
+                      bpm: e.bpm,
+                      hgt: e.hgt,
+                      spo2: e.spo2,
+                    );
+                  }).toList(),
+                );
+              },
             ),
 
-            const SizedBox(height: 20),
-
-            GlucoseChart(hgtData: hgtData),
-
-            const SizedBox(height: 20),
-
-            OxygenChart(spo2Data: spo2Data),
+            const SizedBox(height: 24),
+            CustomMainButton(
+              text: '+ Aggiungi Parametri',
+              color: const Color(0xFF5DB47F),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AggiungiMonitoraggioPage()),
+                );
+              },
+            ),
           ],
         ),
       ),

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:wellyess/models/parameter_model.dart';
+import 'package:wellyess/widgets/confirm_popup.dart';
+import 'package:wellyess/widgets/pop_up_conferma.dart';
 import 'package:wellyess/widgets/base_layout.dart';
 import 'package:wellyess/widgets/custom_main_button.dart';
-import 'package:wellyess/widgets/confirm_popup.dart';
 
 class AggiungiMonitoraggioPage extends StatefulWidget {
   const AggiungiMonitoraggioPage({super.key});
@@ -86,6 +89,27 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
     );
   }
 
+  void _save() async {
+    final entry = ParameterEntry(
+      timestamp: DateTime.now(),
+      sys: int.parse(controllers['SYS']!.text),
+      dia: int.parse(controllers['DIA']!.text),
+      bpm: int.parse(controllers['BPM']!.text),
+      hgt: int.parse(controllers['HGT']!.text),
+      spo2: int.parse(controllers['SpO2']!.text),
+    );
+    final box = Hive.box<ParameterEntry>('parameters');
+    await box.add(entry);
+
+    await showDialog(
+      context: context,
+      builder: (_) => const PopUpConferma(
+        message: 'Parametri salvati con successo',
+      ),
+    );
+    Navigator.of(context).pop();
+  }
+
   @override
   void dispose() {
     for (var controller in controllers.values) {
@@ -129,12 +153,7 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
               CustomMainButton(
                 text: 'Salva',
                 color: const Color(0xFF5DB47F),
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Monitoraggio salvato con successo')),
-                  );
-                  Navigator.pop(context);
-                },
+                onTap: _save,
               ),
               const SizedBox(height: 10),
               Center(
