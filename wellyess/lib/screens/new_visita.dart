@@ -1,194 +1,113 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:wellyess/models/appointment_model.dart';
 import 'package:wellyess/widgets/base_layout.dart';
 import 'package:wellyess/widgets/input_field.dart';
-import 'package:wellyess/widgets/dropdown_field.dart';
-import 'package:wellyess/widgets/time_picker_field.dart';
-import 'package:wellyess/widgets/confirm_popup.dart';
 import 'package:wellyess/widgets/custom_main_button.dart';
+import 'package:wellyess/widgets/pop_up_conferma.dart';  // <-- import popup
 
 class NewVisitaScreen extends StatefulWidget {
-  const NewVisitaScreen({super.key});
-
+  const NewVisitaScreen({Key? key}) : super(key: key);
   @override
   State<NewVisitaScreen> createState() => _NewVisitaScreenState();
 }
 
 class _NewVisitaScreenState extends State<NewVisitaScreen> {
-  final TextEditingController _locationController = TextEditingController();
-  final TextEditingController _notesController = TextEditingController();
-
-  final List<String> _dateOptions = ['7 Maggio 2025', '8 Maggio 2025', '9 Maggio 2025'];
-  String? _selectedDate;
-
+  DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
+  final _tipoCtrl = TextEditingController();
+  final _luogoCtrl = TextEditingController();
+  final _noteCtrl  = TextEditingController();
 
-  Future<bool> _showExitConfirmation() async {
-    final result = await showDialog<bool>(
+  Future _pickDate() async {
+    final now = DateTime.now();
+    final d = await showDatePicker(
       context: context,
-      builder: (context) => ConfirmDialog(
-        titleText: 'Vuoi davvero annullare?\nTutti i dati inseriti andranno persi.',
-        cancelButtonText: 'No, riprendi',
-        confirmButtonText: 'Sì, esci',
-        onCancel: () => Navigator.of(context).pop(false),
-        onConfirm: () => Navigator.of(context).pop(true),
-      ),
+      initialDate: now,
+      firstDate: DateTime(now.year - 1),
+      lastDate: DateTime(now.year + 1),
     );
-    return result == true;
+    if (d != null) setState(() => _selectedDate = d);
   }
 
-  @override
-  void dispose() {
-    _locationController.dispose();
-    _notesController.dispose();
-    super.dispose();
+  Future _pickTime() async {
+    final t = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (t != null) setState(() => _selectedTime = t);
+  }
+
+  void _save() async {
+    if (_selectedDate == null || _selectedTime == null) return;
+    final box = Hive.box<AppointmentModel>('appointments');
+    final app = AppointmentModel(
+      tipoVisita: _tipoCtrl.text.trim(),
+      luogo: _luogoCtrl.text.trim(),
+      data: _selectedDate!,
+      ora: DateTime(
+        _selectedDate!.year,
+        _selectedDate!.month,
+        _selectedDate!.day,
+        _selectedTime!.hour,
+        _selectedTime!.minute,
+      ),
+      note: _noteCtrl.text.trim(),
+    );
+    await box.add(app);
+
+    // mostra popup di conferma
+    await showDialog(
+      context: context,
+      builder: (_) => const PopUpConferma(
+        message: 'Visita salvata con successo',
+      ),
+    );
+
+    Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _showExitConfirmation,
-      child: BaseLayout(
-        onBackPressed: () async {
-          if (await _showExitConfirmation()) {
-            Navigator.of(context).pop();
-          }
-        },
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 8),
-                const Center(
-                  child: Text(
-                    'Aggiungi Visita',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Divider(color: Colors.grey.shade300),
-                const SizedBox(height: 24),
+    return BaseLayout(
+      onBackPressed: () => Navigator.of(context).pop(),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            InputField(controller: _tipoCtrl, placeholder: 'Tipo di visita'),
+            const SizedBox(height: 12),
+            InputField(controller: _luogoCtrl, placeholder: 'Luogo'),
+            const SizedBox(height: 12),
 
-                const Text(
-                  'Tipo di Visita',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                InputField(
-                  controller: TextEditingController(),
-                  placeholder: 'Es. Controllo cardiologico',
-                ),
-                const SizedBox(height: 16),
-
-                const Text(
-                  'Luogo della Visita',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                InputField(
-                  controller: _locationController,
-                  placeholder: 'Es. Ospedale San Luca, Salerno',
-                ),
-                const SizedBox(height: 16),
-
-                const Text(
-                  'Data della Visita',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                DropdownField(
-                  options: _dateOptions,
-                  value: _selectedDate,
-                  placeholder: 'Seleziona una data',
-                  onChanged: (newValue) {
-                    setState(() {
-                      _selectedDate = newValue;
-                    });
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                const Text(
-                  'Orario',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                TimePickerField(
-                  value: _selectedTime,
-                  placeholder: 'Scegli un orario',
-                  onChanged: (newTime) {
-                    setState(() {
-                      _selectedTime = newTime;
-                    });
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                const Text(
-                  'Note',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                InputField(
-                  controller: _notesController,
-                  placeholder: 'Aggiungi note sulla visita',
-                ),
-                const SizedBox(height: 32),
-
-                CustomMainButton(
-                text: 'Salva',
-                color: const Color(0xFF5DB47F),
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Visita salvata con successo')),
-                  );
-                  Navigator.pop(context);
-                },
+            // Date picker
+            ListTile(
+              title: Text(
+                _selectedDate == null
+                  ? 'Seleziona data'
+                  : '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}',
               ),
-              const SizedBox(height: 10),
-              Center(
-                child: GestureDetector(
-                  onTap: () async {
-                    if (await _showExitConfirmation()) {
-                      Navigator.of(context).pop();
-                    }
-                  },
-                  child: const Text(
-                    'Annulla',
-                    style: TextStyle(
-                      color: Colors.black,
-                      decoration: TextDecoration.underline,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              ],
+              leading: const Icon(Icons.calendar_today),
+              onTap: _pickDate,
             ),
-          ),
+
+            // Time picker
+            ListTile(
+              title: Text(
+                _selectedTime == null
+                  ? 'Seleziona orario'
+                  : _selectedTime!.format(context),
+              ),
+              leading: const Icon(Icons.access_time),
+              onTap: _pickTime,
+            ),
+
+            const SizedBox(height: 12),
+            InputField(controller: _noteCtrl, placeholder: 'Note'),
+
+            const Spacer(),
+            CustomMainButton(text: 'Salva', color: const Color(0xFF5DB47F), onTap: _save),
+          ],
         ),
       ),
     );

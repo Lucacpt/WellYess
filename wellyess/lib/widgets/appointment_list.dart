@@ -1,36 +1,19 @@
 import 'package:flutter/material.dart';
-import '../../models/appointment_model.dart';
+import 'package:wellyess/models/appointment_model.dart'; // <— usa AppointmentModel
 import 'appointment_card.dart';
 
 class AppointmentList extends StatelessWidget {
-  final List<Appointment> appointments;
+  final List<AppointmentModel> appointments; // <— tipo corretto
 
-  const AppointmentList({super.key, required this.appointments});
+  const AppointmentList({Key? key, required this.appointments}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-
     if (appointments.isEmpty) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.calendar_today_outlined,
-                size: screenWidth * 0.15, color: Colors.grey.shade400),
-            const SizedBox(height: 16),
-            Text("Nessun appuntamento per oggi",
-                style: TextStyle(
-                    fontSize: screenWidth * 0.04,
-                    color: Colors.grey.shade600)),
-          ],
-        ),
+        child: Text("Nessun appuntamento per oggi", style: TextStyle(fontSize: 16, color: Colors.grey)),
       );
     }
-
-    // MODIFICA: Il widget deve essere un ListView.builder per essere scorrevole
-    // all'interno del widget Expanded.
     return ListView.builder(
       itemCount: appointments.length,
       itemBuilder: (context, index) {

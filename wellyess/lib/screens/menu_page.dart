@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:wellyess/widgets/base_layout.dart';
 import 'package:wellyess/screens/med_section.dart';      // FarmaciPage
 import 'package:wellyess/screens/consigli_salute.dart'; // ConsigliSalutePage
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/intl.dart';                         // <— import Intl
+import 'package:wellyess/models/appointment_model.dart'; // <— import model
+import '../widgets/appointment_list.dart';
+import '../widgets/appointment_horizontal_day_scroller.dart';
+import '../widgets/appointment_week_navigation.dart';
 
 class MenuPage extends StatelessWidget {
   const MenuPage({super.key});
@@ -56,6 +62,11 @@ class MenuPage extends StatelessWidget {
               context,
               MaterialPageRoute(builder: (_) => const ConsigliSalutePage()),
             );
+          } else if (label == 'Agenda Medica') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const MedDiaryPage()),
+            );
           } else {
             // TODO: sostituire con navigazione reale o disabilitare
           }
@@ -73,6 +84,59 @@ class MenuPage extends StatelessWidget {
           ),
           child: Text(label, style: const TextStyle(fontSize: 20, color: Colors.white)),
         ),
+      ),
+    );
+  }
+}
+
+class MedDiaryPage extends StatefulWidget {
+  const MedDiaryPage({Key? key}) : super(key: key);
+  @override
+  State<MedDiaryPage> createState() => _MedDiaryPageState();
+}
+
+class _MedDiaryPageState extends State<MedDiaryPage> {
+  DateTime _selectedDate = DateTime.now();
+
+  void _onDaySelected(DateTime d) => setState(() => _selectedDate = d);
+  void _onWeekChanged(int days) => setState(() => _selectedDate = _selectedDate.add(Duration(days: days)));
+
+  @override
+  Widget build(BuildContext context) {
+    final box = Hive.box<AppointmentModel>('appointments');
+    final allAppointments = box.values.toList(); // <— definisci lista
+
+    return BaseLayout(
+      onBackPressed: () => Navigator.of(context).pop(),
+      child: Column(
+        children: [
+          Text('Agenda Medica', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+          WeekNavigator(selectedDate: _selectedDate, onWeekChanged: _onWeekChanged),
+          HorizontalDayScroller(
+            selectedDate: _selectedDate,
+            allAppointments: allAppointments, // <— passa qui
+            onDaySelected: _onDaySelected,
+          ),
+          Expanded(
+            child: AppointmentList(
+              appointments: allAppointments.where((a) =>
+                a.data.year == _selectedDate.year &&
+                a.data.month == _selectedDate.month &&
+                a.data.day == _selectedDate.day
+              ).toList(),
+            ),
+          ),
+          const SizedBox(height: 12),
+          ElevatedButton.icon(
+            icon: const Icon(Icons.add),
+            label: const Text('Aggiungi appuntamento'),
+            onPressed: () => Navigator.pushNamed(context, '/new_visita'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF5DB47F),
+              minimumSize: const Size.fromHeight(50),
+            ),
+          ),
+        ],
       ),
     );
   }
