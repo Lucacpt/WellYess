@@ -1,20 +1,28 @@
-class Appointment {
-  final String tipoVisita;
-  final String luogo;
-  final DateTime data;
-  final DateTime ora;
-  final String medico;
+import 'package:hive/hive.dart';
 
-  Appointment({
+part 'appointment_model.g.dart';
+
+@HiveType(typeId: 3) // cambiato da 2 a 3
+class AppointmentModel extends HiveObject {
+  @HiveField(0)
+  final String tipoVisita;
+  @HiveField(1)
+  final String luogo;
+  @HiveField(2)
+  final DateTime data;
+  @HiveField(3)
+  final DateTime ora;
+  @HiveField(4)
+  final String note;
+
+  AppointmentModel({
     required this.tipoVisita,
     required this.luogo,
     required this.data,
     required this.ora,
-    required this.medico,
+    required this.note,
   });
 
-  // MODIFICA: Aggiunto un getter per combinare data e ora.
-  // Questo crea un DateTime completo che può essere usato dal resto dell'app.
   DateTime get dateTime {
     return DateTime(
       data.year,

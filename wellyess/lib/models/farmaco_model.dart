@@ -2,7 +2,7 @@ import 'package:hive/hive.dart';
 
 part 'farmaco_model.g.dart';
 
-@HiveType(typeId: 1)
+@HiveType(typeId: 2) // cambiato da 1 a 2
 class FarmacoModel {
   @HiveField(0)
   final String nome;
