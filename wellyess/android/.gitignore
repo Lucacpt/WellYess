@@ -1,14 +1,69 @@
-gradle-wrapper.jar
-/.gradle
-/captures/
-/gradlew
-/gradlew.bat
-/local.properties
-GeneratedPluginRegistrant.java
-.cxx/
+# File generati da Dart e Flutter
+.dart_tool/
+.packages
+build/
+pubspec.lock
 
-# Remember to never publicly share your keystore.
-# See https://flutter.dev/to/reference-keystore
+# File di configurazione degli editor e IDE
+.idea/
+.vscode/
+*.iml
+*.flutter-plugins
+*.flutter-plugins-dependencies
+
+# File specifici dei sistemi operativi
+.DS_Store
+Thumbs.db
+
+# Log e report di test
+*.log
+coverage/
+
+# File generati dalle piattaforme
+
+## Android
+android/app/build/
+android/build/
+android/.gradle/
+android/gradlew
+android/gradlew.bat
+android/local.properties
+android/gradle-wrapper.jar
+android/captures/
+android/.cxx/
+
+## iOS
+ios/build/
+ios/Pods/
+ios/.symlinks/
+ios/Runner.xcworkspace
+ios/Runner.xcodeproj/project.xcworkspace
+ios/Runner.xcodeproj/xcuserdata/
+ios/Podfile.lock
+
+## macOS
+macos/build/
+macos/Pods/
+macos/.symlinks/
+macos/Runner.xcworkspace
+macos/Runner.xcodeproj/project.xcworkspace
+macos/Runner.xcodeproj/xcuserdata/
+macos/Podfile.lock
+
+## Linux
+linux/build/
+
+## Windows
+windows/build/
+
+## Web
+web/build/
+
+# File sensibili (credenziali, chiavi, etc.)
+# Ricorda di non condividere mai pubblicamente le tue chiavi di firma.
+# Vedi: https://flutter.dev/to/reference-keystore
+*.jks
+*.keystore
 key.properties
-**/*.keystore
-**/*.jks
+*.env
+secrets.json
