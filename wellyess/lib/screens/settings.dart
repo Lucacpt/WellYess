@@ -1,21 +1,58 @@
 import 'package:flutter/material.dart';
-import '../widgets/base_layout.dart';
-import 'package:wellyess/screens/user_profile.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wellyess/models/user_model.dart';
+import 'package:wellyess/screens/login_page.dart';
 import 'package:wellyess/screens/profilo_caregiver.dart';
-import 'login_page.dart';
+import 'package:wellyess/screens/user_profile.dart';
+import '../widgets/base_layout.dart';
 
-class SettingsPage extends StatelessWidget {
+// MODIFICA: Convertito in StatefulWidget
+class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
   @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  UserType? _userType;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserType();
+  }
+
+  Future<void> _loadUserType() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userTypeString = prefs.getString('userType');
+    if (mounted) {
+      setState(() {
+        if (userTypeString != null) {
+          _userType =
+              UserType.values.firstWhere((e) => e.toString() == userTypeString);
+        }
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final double iconSize = screenWidth * 0.08; // Dimensione base per le icone
+    final double iconSize = screenWidth * 0.08;
+    final isCaregiver = _userType == UserType.caregiver;
 
     return BaseLayout(
-      currentIndex: 2, // Indice per la pagina delle impostazioni nella navbar
+      userType: _userType,
+      currentIndex: 2,
       onBackPressed: () => Navigator.of(context).pop(),
       child: Align(
         alignment: Alignment.topCenter,
@@ -29,15 +66,14 @@ class SettingsPage extends StatelessWidget {
                 Text(
                   'Impostazioni',
                   style: TextStyle(
-                    fontSize: screenWidth * 0.08, // Reso responsivo
+                    fontSize: screenWidth * 0.08,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: screenHeight * 0.02), // Reso responsivo
+                SizedBox(height: screenHeight * 0.02),
                 const Divider(),
-                SizedBox(height: screenHeight * 0.01), // Reso responsivo
-                SizedBox(height: screenHeight * 0.03), // Reso responsivo
-
+                SizedBox(height: screenHeight * 0.01),
+                SizedBox(height: screenHeight * 0.03),
                 _SettingsRow(
                   iconWidget: SvgPicture.asset(
                     'assets/icons/Account_Icon.svg',
@@ -54,8 +90,7 @@ class SettingsPage extends StatelessWidget {
                   },
                 ),
                 const Divider(),
-                SizedBox(height: screenHeight * 0.025), // Reso responsivo
-
+                SizedBox(height: screenHeight * 0.025),
                 _SettingsRow(
                   iconWidget: SvgPicture.asset(
                     'assets/icons/Alert Icon.svg',
@@ -66,8 +101,7 @@ class SettingsPage extends StatelessWidget {
                   onTap: () {},
                 ),
                 const Divider(),
-                SizedBox(height: screenHeight * 0.025), // Reso responsivo
-
+                SizedBox(height: screenHeight * 0.025),
                 _SettingsRow(
                   iconWidget: SvgPicture.asset(
                     'assets/icons/Accessibiliy Icon.svg',
@@ -78,26 +112,36 @@ class SettingsPage extends StatelessWidget {
                   onTap: () {},
                 ),
                 const Divider(),
-                SizedBox(height: screenHeight * 0.025), // Reso responsivo
-
+                SizedBox(height: screenHeight * 0.025),
+                // MODIFICA: Riga dinamica per Assistente/Assistito
                 _SettingsRow(
                   iconWidget: SvgPicture.asset(
                     'assets/icons/Caregiver Icon.svg',
                     width: iconSize,
                     height: iconSize,
                   ),
-                  label: 'Assistente',
+                  label: isCaregiver ? 'Assistito' : 'Assistente',
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const CaregiverProfilePage()),
-                    );
+                    if (isCaregiver) {
+                      // Il caregiver visualizza il profilo dell'anziano
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const ProfiloUtente(forceElderView: true)),
+                      );
+                    } else {
+                      // L'anziano visualizza il profilo del caregiver
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const CaregiverProfilePage()),
+                      );
+                    }
                   },
                 ),
                 const Divider(),
-                SizedBox(height: screenHeight * 0.025), // Reso responsivo
-
+                SizedBox(height: screenHeight * 0.025),
                 _SettingsRow(
                   iconWidget: SvgPicture.asset(
                     'assets/icons/Logout.svg',
@@ -106,9 +150,10 @@ class SettingsPage extends StatelessWidget {
                   ),
                   label: 'Esci dal profilo',
                   onTap: () {
-                    Navigator.push(
+                    Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => const LoginPage()),
+                      (Route<dynamic> route) => false,
                     );
                   },
                 ),
