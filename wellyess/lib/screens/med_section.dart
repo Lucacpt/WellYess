@@ -10,6 +10,8 @@ import 'package:wellyess/widgets/confirm_popup.dart';
 import 'package:wellyess/widgets/med_legenda.dart';
 import 'package:wellyess/widgets/custom_main_button.dart';
 import 'package:wellyess/widgets/med_card.dart';
+import 'package:wellyess/main.dart'; // Per farmacoDaMostrare
+import 'package:wellyess/services/notification_service.dart'; // Per sendFarmacoNotification
 
 class FarmaciPage extends StatefulWidget {
   const FarmaciPage({Key? key}) : super(key: key);
@@ -28,6 +30,41 @@ class _FarmaciPageState extends State<FarmaciPage> {
   void initState() {
     super.initState();
     _loadUserTypeAndData();
+
+    // Mostra il popup se la pagina viene aperta dalla notifica
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (farmacoDaMostrare != null) {
+        final key = int.tryParse(farmacoDaMostrare!);
+        farmacoDaMostrare = null;
+        if (key != null) {
+          final farmaco = Hive.box<FarmacoModel>('farmaci').get(key);
+          if (farmaco != null) {
+            showDialog(
+              context: context,
+              builder: (BuildContext dialogContext) {
+                return ConfirmDialog(
+                  titleText: 'Hai assunto ${farmaco.nome}?',
+                  confirmButtonText: 'Sì',
+                  cancelButtonText: 'No',
+                  onConfirm: () {
+                    setState(() {
+                      _statiFarmaci[key] = Colors.green;
+                    });
+                    Navigator.of(dialogContext).pop();
+                  },
+                  onCancel: () {
+                    setState(() {
+                      _statiFarmaci[key] = Colors.red;
+                    });
+                    Navigator.of(dialogContext).pop();
+                  },
+                );
+              },
+            );
+          }
+        }
+      }
+    });
   }
 
   Future<void> _loadUserTypeAndData() async {
@@ -67,6 +104,10 @@ class _FarmaciPageState extends State<FarmaciPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
+    // Stampa le chiavi dei farmaci in console per debug
+    final farmaciKeys = Hive.box<FarmacoModel>('farmaci').keys.toList();
+    print('Chiavi farmaci disponibili: $farmaciKeys');
+
     if (_isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
@@ -75,7 +116,6 @@ class _FarmaciPageState extends State<FarmaciPage> {
 
     final isCaregiver = _userType == UserType.caregiver;
 
-    // MODIFICA: Passa il tipo di utente corretto al BaseLayout
     return BaseLayout(
       userType: _userType,
       currentIndex: 1,
@@ -86,6 +126,28 @@ class _FarmaciPageState extends State<FarmaciPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Pulsante di test per inviare una notifica
+            ElevatedButton(
+              onPressed: () {
+                if (farmaciKeys.isNotEmpty) {
+                  // Prendi la prima chiave e il nome del farmaco associato
+                  final testKey = farmaciKeys.first;
+                  final testFarmaco = Hive.box<FarmacoModel>('farmaci').get(testKey);
+                  if (testFarmaco != null) {
+                    sendFarmacoNotification(testKey.toString(), testFarmaco.nome);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Notifica inviata per ${testFarmaco.nome} (key: $testKey)')),
+                    );
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Nessun farmaco disponibile per il test')),
+                  );
+                }
+              },
+              child: const Text('Test Notifica Farmaco'),
+            ),
+            SizedBox(height: screenHeight * 0.012),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(

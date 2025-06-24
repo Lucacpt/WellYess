@@ -26,15 +26,21 @@ dependencies:
   flutter_svg: ^2.1.0  # Aggiunto per supportare SVG
 
   # Line Chart dependencies
-  fl_chart: ^0.66.0  # o la versione più recente disponibile
+  fl_chart: ^1.0.0  
 
   # Date and Time dependencies
-  intl: ^0.18.1  # Per la formattazione delle date
+  intl: ^0.20.2  # Per la formattazione delle date
+
+  # Notifications dependencies
+  flutter_local_notifications: ^19.3.0  
+
+  # Timezone dependencies
+  timezone: ^0.10.0  # Per gestire i fusi orari
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
   build_runner: ^2.4.0
 
 flutter:
@@ -42,4 +48,4 @@ flutter:
   assets:
   - assets/icons/ # permette di usare tutte le icone SVG
   - assets/images/ # permette di usare tutte le immagini
-  - assets/logo/
+  - assets/logo/ # permette di usare il logo dell'app

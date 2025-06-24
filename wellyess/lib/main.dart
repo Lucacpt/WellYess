@@ -8,19 +8,34 @@ import 'package:wellyess/services/auth_service.dart';
 import 'package:wellyess/screens/login_page.dart';
 import 'package:wellyess/screens/homepage.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:wellyess/screens/med_section.dart';
 
-// MODIFICA: La funzione main è ora asincrona per completare l'init prima di runApp.
+// Import per la pianificazione delle notifiche
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+
+// Variabile globale per la gestione della notifica farmaco
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+String? farmacoDaMostrare;
+
+
 Future<void> main() async {
-  // Assicura che i binding di Flutter siano pronti.
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Esegue tutta la logica di inizializzazione qui.
+  // Inizializzazione Timezone per la pianificazione
+  tz.initializeTimeZones();
+  // Imposta il fuso orario locale (es. per l'Italia)
+  tz.setLocalLocation(tz.getLocation('Europe/Rome'));
+
   await Hive.initFlutter();
-  Hive.registerAdapter(UserTypeAdapter()); // 0
-  Hive.registerAdapter(UserModelAdapter()); // 1
-  Hive.registerAdapter(FarmacoModelAdapter()); // 2
-  Hive.registerAdapter(AppointmentModelAdapter()); // 3
-  Hive.registerAdapter(ParameterEntryAdapter()); // 4
+  Hive.registerAdapter(UserTypeAdapter());
+  Hive.registerAdapter(UserModelAdapter());
+  Hive.registerAdapter(FarmacoModelAdapter());
+  Hive.registerAdapter(AppointmentModelAdapter());
+  Hive.registerAdapter(ParameterEntryAdapter());
 
   await Hive.openBox<UserModel>('users');
   await Hive.openBox<FarmacoModel>('farmaci');
@@ -29,24 +44,38 @@ Future<void> main() async {
   await AuthService.init();
 
   await initializeDateFormatting('it_IT', null);
-  debugPrint('ℹ️ App Initialized. isLoggedIn = ${AuthService.isLoggedIn}');
 
-  // Solo ora, con tutto pronto, avviamo l'app.
+  // Inizializzazione notifiche locali: UNA SOLA VOLTA!
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+  const InitializationSettings initializationSettings =
+      InitializationSettings(android: initializationSettingsAndroid);
+
+  await flutterLocalNotificationsPlugin.initialize(
+    initializationSettings,
+    onDidReceiveNotificationResponse: (NotificationResponse response) async {
+      farmacoDaMostrare = response.payload;
+      navigatorKey.currentState?.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const FarmaciPage()),
+        (route) => false,
+      );
+    },
+  );
+
   runApp(const MyApp());
 }
 
-// MODIFICA: MyApp è ora un semplice StatelessWidget, non ha più bisogno del FutureBuilder.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // In questo punto, AuthService.isLoggedIn ha già il valore corretto e affidabile.
     final startPage =
         AuthService.isLoggedIn ? const HomePage() : const LoginPage();
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey,
       home: startPage,
     );
   }
