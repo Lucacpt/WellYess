@@ -5,11 +5,14 @@ class CustomBottomNavBar extends StatelessWidget {
   final ValueChanged<int>? onTap;
   /// Indice selezionato (per evidenziare l’icona)
   final int currentIndex;
+  /// Indica se il menu popup è aperto
+  final bool isMenuOpen;
 
   const CustomBottomNavBar({
     super.key,
     this.onTap,
     this.currentIndex = 1,
+    this.isMenuOpen = false,
   });
 
   @override
@@ -35,29 +38,45 @@ class CustomBottomNavBar extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Menu
-                  IconButton(
-                    iconSize: 30,
-                    icon: Icon(
-                      Icons.menu,
-                      color: currentIndex == 0 ? Colors.white : Colors.white70,
+                  Container(
+                    decoration: isMenuOpen
+                        ? BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 2),
+                          )
+                        : null,
+                    child: IconButton(
+                      iconSize: 30,
+                      icon: Icon(
+                        Icons.menu,
+                        color: isMenuOpen ? Colors.white : Colors.white70,
+                      ),
+                      onPressed: () => onTap?.call(0),
                     ),
-                    onPressed: () => onTap?.call(0),
                   ),
                   // Impostazioni
-                  IconButton(
-                    iconSize: 30,
-                    icon: Icon(
-                      Icons.settings,
-                      color: currentIndex == 2 ? Colors.white : Colors.white70,
+                  Container(
+                    decoration: currentIndex == 2
+                        ? BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 2),
+                          )
+                        : null,
+                    child: IconButton(
+                      iconSize: 30,
+                      icon: Icon(
+                        Icons.settings,
+                        color: currentIndex == 2 ? Colors.white : Colors.white70,
+                      ),
+                      onPressed: () => onTap?.call(2),
                     ),
-                    onPressed: () => onTap?.call(2),
                   ),
                 ],
               ),
             ),
           ),
 
-          // Home centrale
+          // Home centrale (sempre verde scuro)
           Positioned(
             bottom: 5,
             child: GestureDetector(
@@ -66,9 +85,7 @@ class CustomBottomNavBar extends StatelessWidget {
                 width: 70,
                 height: 70,
                 decoration: BoxDecoration(
-                  color: currentIndex == 1
-                      ? const Color(0xFF375647)
-                      : Colors.grey.shade600,
+                  color: const Color(0xFF375647),
                   shape: BoxShape.circle,
                   boxShadow: const [
                     BoxShadow(
@@ -77,6 +94,9 @@ class CustomBottomNavBar extends StatelessWidget {
                       offset: Offset(0, 4),
                     ),
                   ],
+                  border: currentIndex == 1
+                      ? Border.all(color: Colors.white, width: 3)
+                      : null,
                 ),
                 child: const Icon(Icons.home, size: 36, color: Colors.white),
               ),

@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:wellyess/models/user_model.dart';
-import 'package:wellyess/screens/menu_page.dart';
 import 'package:wellyess/screens/settings.dart';
 import 'bottom_navbar.dart';
 import 'go_back_button.dart';
 import 'package:wellyess/screens/user_profile.dart';
+import 'package:wellyess/widgets/menu.dart'; 
 
-class BaseLayout extends StatelessWidget {
+class BaseLayout extends StatefulWidget {
   final Widget child;
   final int currentIndex;
   final VoidCallback? onBackPressed;
-  // MODIFICA: Aggiunto userType per rendere il layout dinamico
   final UserType? userType;
 
   const BaseLayout({
@@ -18,21 +17,43 @@ class BaseLayout extends StatelessWidget {
     required this.child,
     this.currentIndex = 0,
     this.onBackPressed,
-    this.userType, // MODIFICA: Aggiunto al costruttore
+    this.userType,
   });
+
+  @override
+  State<BaseLayout> createState() => _BaseLayoutState();
+}
+
+class _BaseLayoutState extends State<BaseLayout> {
+  bool _menuOpen = false;
+
+  void _toggleMenuPopup(BuildContext context) async {
+    if (_menuOpen) {
+      Navigator.of(context, rootNavigator: true).pop();
+      setState(() => _menuOpen = false);
+    } else {
+      setState(() => _menuOpen = true);
+      await showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (ctx) => MenuPopup(
+          userType: widget.userType ?? UserType.elder,
+        ),
+      );
+      setState(() => _menuOpen = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // MODIFICA: Determina l'immagine e la pagina del profilo in base a userType
-    final isCaregiver = userType == UserType.caregiver;
+    final isCaregiver = widget.userType == UserType.caregiver;
     final profileImageAsset = isCaregiver
         ? 'assets/images/svetlana.jpg'
         : 'assets/images/elder_profile_pic.png';
-    final profilePage =
-        isCaregiver ? const ProfiloUtente() : const ProfiloUtente();
+    final profilePage = const ProfiloUtente();
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FF),
@@ -101,14 +122,14 @@ class BaseLayout extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (onBackPressed != null) ...[
+                          if (widget.onBackPressed != null) ...[
                             Semantics(
                               button: true,
-                              child: BackCircleButton(onPressed: onBackPressed),
+                              child: BackCircleButton(onPressed: widget.onBackPressed),
                             ),
                             SizedBox(height: screenHeight * 0.025),
                           ],
-                          Expanded(child: child),
+                          Expanded(child: widget.child),
                         ],
                       ),
                     ),
@@ -124,14 +145,12 @@ class BaseLayout extends StatelessWidget {
                 container: true,
                 label: 'Barra di navigazione principale',
                 child: CustomBottomNavBar(
-                  currentIndex: currentIndex,
+                  currentIndex: widget.currentIndex,
+                  isMenuOpen: _menuOpen,
                   onTap: (index) {
                     switch (index) {
                       case 0:
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const MenuPage()));
+                        _toggleMenuPopup(context);
                         break;
                       case 1:
                         Navigator.popUntil(context, (r) => r.isFirst);
