@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../widgets/base_layout.dart';
-// Rimuovi: import 'package:wellyess/screens/alimentazione.dart'; // Non più necessario per la navigazione tra tab
 
-// Rinomina la classe e rendila StatefulWidget
 class ConsigliSalutePage extends StatefulWidget {
   const ConsigliSalutePage({super.key});
 
@@ -12,64 +10,54 @@ class ConsigliSalutePage extends StatefulWidget {
 }
 
 class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
-  int _currentTabIndex = 0; // 0 per Attività Fisica, 1 per Alimentazione
-  Offset _slideBeginOffset = const Offset(1.0, 0.0); // Offset iniziale per l'animazione
+  int _currentTabIndex = 0;
+  Offset _slideBeginOffset = const Offset(1.0, 0.0);
 
-  Widget _buildAttivitaFisicaContent() {
-    return ListView(
-      key: const ValueKey('attivita_fisica_list'), // Chiave per AnimatedSwitcher
-      children: const [
-        _HealthTipCard(
-          svgAssetPath: 'assets/icons/Vector.svg',
-          title: 'Camminata leggera',
-          subtitle: 'Almeno 30 minuti al giorno',
-        ),
-        _HealthTipCard(
-          svgAssetPath: 'assets/icons/dolce.svg',
-          title: 'Stretching dolce',
-          subtitle: 'Esercizi di mobilità',
-        ),
-        _HealthTipCard(
-          svgAssetPath: 'assets/icons/compass.svg',
-          title: 'Orari consigliati',
-          subtitle: 'Evitare le ore calde',
-        ),
-        _HealthTipCard(
-          svgAssetPath: 'assets/icons/divano.svg',
-          title: 'Esercizi da seduti',
-          subtitle: 'Attiva la circolazione',
-        ),
-      ],
-    );
-  }
+  final List<Map<String, String>> _attivitaFisicaTips = const [
+    {
+      "svgAssetPath": "assets/icons/Vector.svg",
+      "title": "Camminata leggera",
+      "subtitle": "Almeno 30 minuti al giorno",
+    },
+    {
+      "svgAssetPath": "assets/icons/dolce.svg",
+      "title": "Stretching dolce",
+      "subtitle": "Esercizi di mobilità",
+    },
+    {
+      "svgAssetPath": "assets/icons/compass.svg",
+      "title": "Orari consigliati",
+      "subtitle": "Evitare le ore calde",
+    },
+    {
+      "svgAssetPath": "assets/icons/divano.svg",
+      "title": "Esercizi da seduti",
+      "subtitle": "Attiva la circolazione",
+    },
+  ];
 
-  Widget _buildAlimentazioneContent() {
-    return ListView(
-      key: const ValueKey('alimentazione_list'), // Chiave per AnimatedSwitcher
-      children: const [
-        _HealthTipCard(
-          svgAssetPath: 'assets/icons/mela.svg',
-          title: 'Frutta e verdura',
-          subtitle: 'Cinque porzioni al giorno',
-        ),
-        _HealthTipCard(
-          svgAssetPath: 'assets/icons/fish.svg',
-          title: 'Proteine magre',
-          subtitle: 'Pesce, legumi, carni bianche',
-        ),
-        _HealthTipCard(
-          svgAssetPath: 'assets/icons/no_sugar.svg',
-          title: 'Limitare lo zucchero',
-          subtitle: 'Evitare bevande zuccherate',
-        ),
-        _HealthTipCard(
-          svgAssetPath: 'assets/icons/bottle.svg',
-          title: 'Bere regolarmente',
-          subtitle: 'Mantieni il corpo idratato',
-        ),
-      ],
-    );
-  }
+  final List<Map<String, String>> _alimentazioneTips = const [
+    {
+      "svgAssetPath": "assets/icons/mela.svg",
+      "title": "Frutta e verdura",
+      "subtitle": "Cinque porzioni al giorno",
+    },
+    {
+      "svgAssetPath": "assets/icons/fish.svg",
+      "title": "Proteine magre",
+      "subtitle": "Pesce, legumi, carni bianche",
+    },
+    {
+      "svgAssetPath": "assets/icons/no_sugar.svg",
+      "title": "Limitare lo zucchero",
+      "subtitle": "Evitare bevande zuccherate",
+    },
+    {
+      "svgAssetPath": "assets/icons/bottle.svg",
+      "title": "Bere regolarmente",
+      "subtitle": "Mantieni il corpo idratato",
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +79,6 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
             ),
             const Divider(),
             const SizedBox(height: 12),
-            // Tabs
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -102,9 +89,9 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
                   Expanded(
                     child: InkWell(
                       onTap: () {
-                        if (_currentTabIndex == 1) { // Se si proviene da Alimentazione
+                        if (_currentTabIndex == 1) {
                           setState(() {
-                            _slideBeginOffset = const Offset(-1.0, 0.0); // Attività Fisica scorre da sinistra
+                            _slideBeginOffset = const Offset(-1.0, 0.0);
                             _currentTabIndex = 0;
                           });
                         }
@@ -139,9 +126,9 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
                   Expanded(
                     child: InkWell(
                       onTap: () {
-                        if (_currentTabIndex == 0) { // Se si proviene da Attività Fisica
-                           setState(() {
-                            _slideBeginOffset = const Offset(1.0, 0.0); // Alimentazione scorre da destra
+                        if (_currentTabIndex == 0) {
+                          setState(() {
+                            _slideBeginOffset = const Offset(1.0, 0.0);
                             _currentTabIndex = 1;
                           });
                         }
@@ -178,76 +165,80 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
             ),
             const SizedBox(height: 20),
             Expanded(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder: (Widget child, Animation<double> animation) {
-                  final tween = Tween<Offset>(begin: _slideBeginOffset, end: Offset.zero)
-                      .chain(CurveTween(curve: Curves.easeInOut));
-                  return SlideTransition(
-                    position: animation.drive(tween),
-                    child: child,
-                  );
-                },
-                child: _currentTabIndex == 0
-                    ? _buildAttivitaFisicaContent()
-                    : _buildAlimentazioneContent(),
+              child: ClipRect(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder: (Widget child, Animation<double> animation) {
+                    final tween = Tween<Offset>(begin: _slideBeginOffset, end: Offset.zero)
+                        .chain(CurveTween(curve: Curves.easeInOut));
+                    return SlideTransition(
+                      position: animation.drive(tween),
+                      child: child,
+                    );
+                  },
+                  child: LayoutBuilder(
+                    key: ValueKey(_currentTabIndex),
+                    builder: (context, constraints) {
+                      final tips = _currentTabIndex == 0
+                          ? _attivitaFisicaTips
+                          : _alimentazioneTips;
+
+                      final bool isLargeScreen = constraints.maxWidth > 600;
+                      final double titleFontSize = isLargeScreen ? 24 : 17;
+                      final double subtitleFontSize = isLargeScreen ? 18 : 14;
+                      final double iconSize = isLargeScreen ? 52 : 40;
+
+                      Widget buildCard(Map<String, String> tip) {
+                        return Card(
+                          color: Colors.white,
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                            leading: SvgPicture.asset(
+                              tip['svgAssetPath']!,
+                              height: iconSize,
+                              width: iconSize,
+                              colorFilter: ColorFilter.mode(Colors.green.shade700, BlendMode.srcIn),
+                            ),
+                            title: Text(
+                              tip['title']!,
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: titleFontSize, color: Colors.black),
+                              textAlign: TextAlign.center,
+                            ),
+                            subtitle: Text(
+                              tip['subtitle']!,
+                              style: TextStyle(fontSize: subtitleFontSize, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 167, 167, 167)),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        );
+                      }
+
+                      if (isLargeScreen) {
+                        return GridView.builder(
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 3.5,
+                            crossAxisSpacing: 8,
+                            mainAxisSpacing: 8,
+                          ),
+                          itemCount: tips.length,
+                          itemBuilder: (context, index) => buildCard(tips[index]),
+                        );
+                      } else {
+                        return ListView.builder(
+                          itemCount: tips.length,
+                          itemBuilder: (context, index) => buildCard(tips[index]),
+                        );
+                      }
+                    },
+                  ),
+                ),
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-}
-
-class _HealthTipCard extends StatelessWidget {
-  final String svgAssetPath;
-  final String title;
-  final String subtitle;
-
-  const _HealthTipCard({
-    required this.svgAssetPath,
-    required this.title,
-    required this.subtitle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    // Aggiunto Padding orizzontale per ridurre la larghezza della Card
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4.0), // Ridotto per allargare la card
-      child: Card(
-        color: Colors.white,
-        elevation: 3,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        margin: const EdgeInsets.symmetric(vertical: 14), // Margine tra le card
-        child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-          leading: SvgPicture.asset(
-            svgAssetPath,
-            height: 40,
-            width: 40,
-            colorFilter: ColorFilter.mode(Colors.green.shade700, BlendMode.srcIn),
-          ),
-          title: Text(
-            title,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 17,
-              color: Colors.black,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          subtitle: Text(
-            subtitle,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Color.fromARGB(255, 167, 167, 167),
-            ),
-            textAlign: TextAlign.center,
-          ),
         ),
       ),
     );
