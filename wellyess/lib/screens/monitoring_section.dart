@@ -153,7 +153,7 @@ class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
               },
             ),
             // MODIFICA: Il pulsante viene mostrato solo se non è un caregiver
-            if (!isCaregiver) ...[
+            
               const SizedBox(height: 24),
               CustomMainButton(
                 text: '+ Aggiungi Parametri',
@@ -166,7 +166,6 @@ class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
                   );
                 },
               ),
-            ]
           ],
         ),
       ),

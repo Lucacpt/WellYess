@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wellyess/widgets/base_layout.dart';
+import 'package:wellyess/models/user_model.dart';
 
-class DetailedChartScreen extends StatelessWidget {
+class DetailedChartScreen extends StatefulWidget {
   final String title;
 
   const DetailedChartScreen({
@@ -9,13 +11,41 @@ class DetailedChartScreen extends StatelessWidget {
     required this.title,
   });
 
+  @override
+  State<DetailedChartScreen> createState() => _DetailedChartScreenState();
+}
+
+class _DetailedChartScreenState extends State<DetailedChartScreen> {
+  UserType? _userType;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserType();
+  }
+
+  Future<void> _loadUserType() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userTypeString = prefs.getString('userType');
+    if (mounted) {
+      setState(() {
+        if (userTypeString != null) {
+          _userType =
+              UserType.values.firstWhere((e) => e.toString() == userTypeString);
+        }
+        _isLoading = false;
+      });
+    }
+  }
+
   String _generateOverallAnalysis() {
     // Analisi semplificata generica — puoi differenziare anche qui se vuoi
     return "I valori medi sono nella norma. Continua così!";
   }
 
   List<String> _generateAdviceList() {
-    switch (title.toLowerCase()) {
+    switch (widget.title.toLowerCase()) {
       case 'glicemia':
         return [
           "Limita l'assunzione di zuccheri semplici.",
@@ -53,7 +83,11 @@ class DetailedChartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
     return BaseLayout(
+      userType: _userType,
       currentIndex: -1,
       onBackPressed: () => Navigator.pop(context),
       child: SingleChildScrollView(
@@ -62,7 +96,7 @@ class DetailedChartScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Dettagli - $title',
+              'Dettagli - ${widget.title}',
               style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
             ),
             const Divider(height: 40, thickness: 1.5),

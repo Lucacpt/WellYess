@@ -5,6 +5,8 @@ import 'package:wellyess/widgets/confirm_popup.dart';
 import 'package:wellyess/widgets/pop_up_conferma.dart';
 import 'package:wellyess/widgets/base_layout.dart';
 import 'package:wellyess/widgets/custom_main_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wellyess/models/user_model.dart';
 
 class AggiungiMonitoraggioPage extends StatefulWidget {
   const AggiungiMonitoraggioPage({super.key});
@@ -21,6 +23,29 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
     'HGT': TextEditingController(text: '0'),
     'SpO2': TextEditingController(text: '0'),
   };
+
+  UserType? _userType;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserType();
+  }
+
+  Future<void> _loadUserType() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userTypeString = prefs.getString('userType');
+    if (mounted) {
+      setState(() {
+        if (userTypeString != null) {
+          _userType =
+              UserType.values.firstWhere((e) => e.toString() == userTypeString);
+        }
+        _isLoading = false;
+      });
+    }
+  }
 
   void increment(String key) {
     final value = int.tryParse(controllers[key]!.text) ?? 0;
@@ -120,9 +145,13 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
     return WillPopScope(
       onWillPop: _showExitConfirmation,
       child: BaseLayout(
+        userType: _userType,
         onBackPressed: () async {
           if (await _showExitConfirmation()) {
             Navigator.pop(context);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wellyess/models/farmaco_model.dart';
 import 'package:wellyess/widgets/pop_up_conferma.dart';
 import '../widgets/base_layout.dart';
@@ -7,6 +8,7 @@ import '../widgets/custom_main_button.dart';
 import '../widgets/input_field.dart';
 import '../widgets/dropdown_field.dart';
 import '../widgets/time_picker_field.dart';
+import 'package:wellyess/models/user_model.dart';
 
 class AggiungiFarmacoPage extends StatefulWidget {
   const AggiungiFarmacoPage({super.key});
@@ -20,6 +22,9 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
   String? formaTerapeuticaValue;
   TimeOfDay? orarioValue;
   String? frequenzaValue;
+
+  UserType? _userType;
+  bool _isLoading = true;
 
   final List<String> doseOptions = ['10 mg', '20 mg', '50 mg', '100 mg'];
   final List<String> formaOptions = [
@@ -35,11 +40,36 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _loadUserType();
+  }
+
+  Future<void> _loadUserType() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userTypeString = prefs.getString('userType');
+    if (mounted) {
+      setState(() {
+        if (userTypeString != null) {
+          _userType =
+              UserType.values.firstWhere((e) => e.toString() == userTypeString);
+        }
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
+    if (_isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return BaseLayout(
+      userType: _userType,
       onBackPressed: () => Navigator.of(context).pop(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -47,7 +77,7 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
           Expanded(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
-                    .copyWith(bottom: screenHeight * 0.01),
+                  .copyWith(bottom: screenHeight * 0.01),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -59,8 +89,7 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
                               fontWeight: FontWeight.bold))),
                   Divider(
                       height: screenHeight * 0.05, thickness: 1.5),
-                  
-                  // NUOVO: Testo informativo per lo scorrimento
+                  // Testo informativo per lo scorrimento
                   Row(
                     children: [
                       Icon(Icons.info_outline,
@@ -79,8 +108,7 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: screenHeight * 0.025), // Spazio dopo il testo info
-
+                  SizedBox(height: screenHeight * 0.025),
                   Text('Nome',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,

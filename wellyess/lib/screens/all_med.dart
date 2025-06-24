@@ -1,38 +1,70 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:intl/intl.dart'; // <-- Aggiunto questo import
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wellyess/models/farmaco_model.dart';
+import 'package:wellyess/models/user_model.dart';
 import 'package:wellyess/screens/add_new_med.dart';
 import 'package:wellyess/screens/med_details.dart';
 import 'package:wellyess/widgets/base_layout.dart';
 import 'package:wellyess/widgets/custom_main_button.dart';
 
-// NUOVO: Helper per interpretare qualsiasi stringa di orario
+// Helper per interpretare qualsiasi stringa di orario
 DateTime? _parseTime(String timeString) {
   try {
-    // Prova a interpretare il formato "h:mm a" (es. "8:00 PM")
     return DateFormat("h:mm a").parse(timeString);
   } catch (e) {
     try {
-      // Se fallisce, prova a interpretare il formato "HH:mm" (es. "20:00")
       return DateFormat("HH:mm").parse(timeString);
     } catch (e) {
-      // Se entrambi falliscono, non è un formato valido
       return null;
     }
   }
 }
 
-class AllMedsPage extends StatelessWidget {
+class AllMedsPage extends StatefulWidget {
   const AllMedsPage({Key? key}) : super(key: key);
 
   @override
+  State<AllMedsPage> createState() => _AllMedsPageState();
+}
+
+class _AllMedsPageState extends State<AllMedsPage> {
+  UserType? _userType;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserType();
+  }
+
+  Future<void> _loadUserType() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userTypeString = prefs.getString('userType');
+    if (mounted) {
+      setState(() {
+        if (userTypeString != null) {
+          _userType =
+              UserType.values.firstWhere((e) => e.toString() == userTypeString);
+        }
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     final box = Hive.box<FarmacoModel>('farmaci');
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
     return BaseLayout(
+      userType: _userType,
       currentIndex: 1,
       onBackPressed: () => Navigator.pop(context),
       child: Padding(
@@ -40,19 +72,16 @@ class AllMedsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // --- INTESTAZIONE FISSA ---
+            // Intestazione
             Text(
               'Tutta la Terapia',
               style: TextStyle(
-                  fontSize: screenWidth * 0.08,
-                  fontWeight: FontWeight.bold),
+                  fontSize: screenWidth * 0.08, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
-            Divider(
-                thickness: 1.5,
-                height: screenHeight * 0.04),
-            
-            // --- CORPO DINAMICO (SCORREVOLE O VUOTO) ---
+            Divider(thickness: 1.5, height: screenHeight * 0.04),
+
+            // Corpo dinamico (scorrevole o vuoto)
             Expanded(
               child: ValueListenableBuilder<Box<FarmacoModel>>(
                 valueListenable: box.listenable(),
@@ -65,8 +94,7 @@ class AllMedsPage extends StatelessWidget {
                         'Nessun farmaco aggiunto.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: screenWidth * 0.045,
-                            color: Colors.grey),
+                            fontSize: screenWidth * 0.045, color: Colors.grey),
                       ),
                     );
                   }
@@ -102,24 +130,22 @@ class AllMedsPage extends StatelessWidget {
                       // Lista dei farmaci (unica parte scorrevole)
                       Expanded(
                         child: ListView.builder(
-                          // Padding aggiunto per distanziare le card dai bordi
-                          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.01),
                           itemCount: farmaciEntries.length,
                           itemBuilder: (context, index) {
                             final entry = farmaciEntries[index];
                             final farmaco = entry.value;
                             final farmacoKey = entry.key;
 
-                            // MODIFICATO: Formatta sempre l'orario in 24 ore per la visualizzazione
                             final orario24h = _parseTime(farmaco.orario);
                             final orarioDaMostrare = orario24h != null
                                 ? DateFormat('HH:mm').format(orario24h)
-                                : farmaco.orario; // Fallback
+                                : farmaco.orario;
 
                             return Card(
                               color: Colors.white,
                               elevation: 4,
-                              // Margine verticale aumentato per più spazio
                               margin: EdgeInsets.symmetric(
                                   vertical: screenHeight * 0.01),
                               child: ListTile(
@@ -135,7 +161,7 @@ class AllMedsPage extends StatelessWidget {
                                       fontSize: screenWidth * 0.05),
                                 ),
                                 subtitle: Text(
-                                  '${farmaco.dose} - $orarioDaMostrare', // Usa l'orario formattato
+                                  '${farmaco.dose} - $orarioDaMostrare',
                                   style: TextStyle(
                                       fontSize: screenWidth * 0.045),
                                 ),
@@ -161,8 +187,8 @@ class AllMedsPage extends StatelessWidget {
                 },
               ),
             ),
-            
-            // --- FOOTER FISSO ---
+
+            // Footer fisso
             SizedBox(height: screenHeight * 0.02),
             CustomMainButton(
               text: '+ Aggiungi farmaco',
