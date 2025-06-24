@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wellyess/models/parameter_model.dart';
+import 'package:wellyess/models/user_model.dart';
 import 'package:wellyess/widgets/base_layout.dart';
 import 'package:wellyess/widgets/custom_main_button.dart';
 import 'package:wellyess/widgets/parameters_card.dart';
@@ -10,21 +12,92 @@ import 'package:wellyess/widgets/glucose_chart.dart';
 import 'package:wellyess/widgets/oxygen_chart.dart';
 import 'add_new_parameters.dart';
 
-class MonitoraggioParametriPage extends StatelessWidget {
+// MODIFICA: Convertito in StatefulWidget
+class MonitoraggioParametriPage extends StatefulWidget {
   const MonitoraggioParametriPage({super.key});
 
   @override
+  State<MonitoraggioParametriPage> createState() =>
+      _MonitoraggioParametriPageState();
+}
+
+class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
+  UserType? _userType;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserType();
+  }
+
+  Future<void> _loadUserType() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userTypeString = prefs.getString('userType');
+    if (mounted) {
+      setState(() {
+        if (userTypeString != null) {
+          _userType =
+              UserType.values.firstWhere((e) => e.toString() == userTypeString);
+        }
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // MODIFICA: Mostra una schermata di caricamento per evitare lo sfarfallio
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final isCaregiver = _userType == UserType.caregiver;
+
     // dati fittizi di esempio per i grafici
-    final diaData = [FlSpot(0, 80), FlSpot(1, 82), FlSpot(2, 78), FlSpot(3, 85), FlSpot(4, 84)];
-    final sysData = [FlSpot(0, 130), FlSpot(1, 132), FlSpot(2, 128), FlSpot(3, 135), FlSpot(4, 134)];
-    final bpmData = [FlSpot(0, 70), FlSpot(1, 72), FlSpot(2, 68), FlSpot(3, 75), FlSpot(4, 74)];
-    final hgtData = [FlSpot(0, 5.5), FlSpot(1, 5.8), FlSpot(2, 6.0), FlSpot(3, 5.7), FlSpot(4, 5.9)];
-    final spo2Data = [FlSpot(0, 97), FlSpot(1, 96), FlSpot(2, 98), FlSpot(3, 95), FlSpot(4, 97)];
+    final diaData = [
+      const FlSpot(0, 80),
+      const FlSpot(1, 82),
+      const FlSpot(2, 78),
+      const FlSpot(3, 85),
+      const FlSpot(4, 84)
+    ];
+    final sysData = [
+      const FlSpot(0, 130),
+      const FlSpot(1, 132),
+      const FlSpot(2, 128),
+      const FlSpot(3, 135),
+      const FlSpot(4, 134)
+    ];
+    final bpmData = [
+      const FlSpot(0, 70),
+      const FlSpot(1, 72),
+      const FlSpot(2, 68),
+      const FlSpot(3, 75),
+      const FlSpot(4, 74)
+    ];
+    final hgtData = [
+      const FlSpot(0, 5.5),
+      const FlSpot(1, 5.8),
+      const FlSpot(2, 6.0),
+      const FlSpot(3, 5.7),
+      const FlSpot(4, 5.9)
+    ];
+    final spo2Data = [
+      const FlSpot(0, 97),
+      const FlSpot(1, 96),
+      const FlSpot(2, 98),
+      const FlSpot(3, 95),
+      const FlSpot(4, 97)
+    ];
 
     final box = Hive.box<ParameterEntry>('parameters');
 
     return BaseLayout(
+      // MODIFICA: Passa il tipo di utente corretto
+      userType: _userType,
       currentIndex: 3,
       onBackPressed: () => Navigator.pop(context),
       child: SingleChildScrollView(
@@ -42,8 +115,6 @@ class MonitoraggioParametriPage extends StatelessWidget {
             ),
             const Divider(),
             const SizedBox(height: 24),
-
-            // Chart fittizio
             PressureChart(diaData: diaData, sysData: sysData, bpmData: bpmData),
             const SizedBox(height: 20),
             GlucoseChart(hgtData: hgtData),
@@ -52,15 +123,12 @@ class MonitoraggioParametriPage extends StatelessWidget {
             const SizedBox(height: 24),
             const Divider(),
             const SizedBox(height: 24),
-
             const Text(
               'Storico Registrazioni',
               style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
               textAlign: TextAlign.left,
             ),
             const SizedBox(height: 16),
-
-            // sezione dinamica dai dati in Hive
             ValueListenableBuilder<Box<ParameterEntry>>(
               valueListenable: box.listenable(),
               builder: (context, box, _) {
@@ -84,18 +152,21 @@ class MonitoraggioParametriPage extends StatelessWidget {
                 );
               },
             ),
-
-            const SizedBox(height: 24),
-            CustomMainButton(
-              text: '+ Aggiungi Parametri',
-              color: const Color(0xFF5DB47F),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const AggiungiMonitoraggioPage()),
-                );
-              },
-            ),
+            // MODIFICA: Il pulsante viene mostrato solo se non è un caregiver
+            if (!isCaregiver) ...[
+              const SizedBox(height: 24),
+              CustomMainButton(
+                text: '+ Aggiungi Parametri',
+                color: const Color(0xFF5DB47F),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const AggiungiMonitoraggioPage()),
+                  );
+                },
+              ),
+            ]
           ],
         ),
       ),

@@ -18,6 +18,10 @@ dependencies:
   path_provider: ^2.1.2
   hive_generator: ^2.0.0
 
+  # Shared Preferences dependencies
+  shared_preferences: ^2.2.3 
+
+
   # Svg support dependencies
   flutter_svg: ^2.1.0  # Aggiunto per supportare SVG
 
@@ -37,5 +41,5 @@ flutter:
   uses-material-design: true
   assets:
   - assets/icons/ # permette di usare tutte le icone SVG
-  - assets/images/ # permette di usare tutte le immaginiù
+  - assets/images/ # permette di usare tutte le immagini
   - assets/logo/

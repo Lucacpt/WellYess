@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:intl/intl.dart'; // <-- Aggiunto questo import
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wellyess/models/farmaco_model.dart';
+import 'package:wellyess/models/user_model.dart';
 import 'package:wellyess/screens/all_med.dart';
 import 'package:wellyess/widgets/base_layout.dart';
 import 'package:wellyess/widgets/confirm_popup.dart';
@@ -19,27 +21,42 @@ class FarmaciPage extends StatefulWidget {
 class _FarmaciPageState extends State<FarmaciPage> {
   final Map<dynamic, Color> _statiFarmaci = {};
   late final Box<FarmacoModel> _farmaciBox;
+  UserType? _userType;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    _loadUserTypeAndData();
+  }
+
+  Future<void> _loadUserTypeAndData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userTypeString = prefs.getString('userType');
+
     _farmaciBox = Hive.box<FarmacoModel>('farmaci');
     for (var key in _farmaciBox.keys) {
       _statiFarmaci.putIfAbsent(key, () => Colors.orange);
     }
+
+    if (mounted) {
+      setState(() {
+        if (userTypeString != null) {
+          _userType =
+              UserType.values.firstWhere((e) => e.toString() == userTypeString);
+        }
+        _isLoading = false;
+      });
+    }
   }
 
-  // NUOVO: Helper per interpretare qualsiasi stringa di orario
   DateTime? _parseTime(String timeString) {
     try {
-      // Prova a interpretare il formato "h:mm a" (es. "8:00 PM")
       return DateFormat("h:mm a").parse(timeString);
     } catch (e) {
       try {
-        // Se fallisce, prova a interpretare il formato "HH:mm" (es. "20:00")
         return DateFormat("HH:mm").parse(timeString);
       } catch (e) {
-        // Se entrambi falliscono, non è un formato valido
         return null;
       }
     }
@@ -50,12 +67,22 @@ class _FarmaciPageState extends State<FarmaciPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final isCaregiver = _userType == UserType.caregiver;
+
+    // MODIFICA: Passa il tipo di utente corretto al BaseLayout
     return BaseLayout(
+      userType: _userType,
       currentIndex: 1,
       onBackPressed: () => Navigator.of(context).pop(),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
-                    .copyWith(bottom: screenHeight * 0.01),
+            .copyWith(bottom: screenHeight * 0.01),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -72,9 +99,7 @@ class _FarmaciPageState extends State<FarmaciPage> {
                             fontWeight: FontWeight.bold),
                       ),
                     ),
-                    Divider(
-                        thickness: 1.5,
-                        height: screenHeight * 0.05),
+                    Divider(thickness: 1.5, height: screenHeight * 0.05),
                     Text(
                       'Farmaci di Oggi',
                       style: TextStyle(
@@ -91,24 +116,25 @@ class _FarmaciPageState extends State<FarmaciPage> {
                       ],
                     ),
                     SizedBox(height: screenHeight * 0.02),
-                    Row(
-                      children: [
-                        Icon(Icons.info_outline,
-                            color: Colors.blue.shade700,
-                            size: screenWidth * 0.06),
-                        SizedBox(width: screenWidth * 0.02),
-                        Expanded(
-                          child: Text(
-                            "Tocca un farmaco per segnarlo come 'Assunto' o 'Saltato'.",
-                            style: TextStyle(
-                              fontSize: screenWidth * 0.04,
-                              fontStyle: FontStyle.italic,
-                              color: Colors.grey.shade700,
+                    if (!isCaregiver)
+                      Row(
+                        children: [
+                          Icon(Icons.info_outline,
+                              color: Colors.blue.shade700,
+                              size: screenWidth * 0.06),
+                          SizedBox(width: screenWidth * 0.02),
+                          Expanded(
+                            child: Text(
+                              "Tocca un farmaco per segnarlo come 'Assunto' o 'Saltato'.",
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.04,
+                                fontStyle: FontStyle.italic,
+                                color: Colors.grey.shade700,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
                     SizedBox(height: screenHeight * 0.025),
                     ValueListenableBuilder<Box<FarmacoModel>>(
                       valueListenable: _farmaciBox.listenable(),
@@ -119,12 +145,11 @@ class _FarmaciPageState extends State<FarmaciPage> {
                           _statiFarmaci.putIfAbsent(key, () => Colors.orange);
                         }
 
-                        // MODIFICATO: Ordinamento robusto basato sull'orario reale
                         farmaciKeys.sort((a, b) {
                           final farmacoA = box.get(a);
                           final farmacoB = box.get(b);
                           if (farmacoA == null || farmacoB == null) return 0;
-                          
+
                           final timeA = _parseTime(farmacoA.orario);
                           final timeB = _parseTime(farmacoB.orario);
 
@@ -159,12 +184,11 @@ class _FarmaciPageState extends State<FarmaciPage> {
 
                             final coloreStato =
                                 _statiFarmaci[key] ?? Colors.orange;
-                            
-                            // MODIFICATO: Formatta sempre l'orario in 24 ore per la visualizzazione
+
                             final orario24h = _parseTime(farmaco.orario);
                             final orarioDaMostrare = orario24h != null
                                 ? DateFormat('HH:mm').format(orario24h)
-                                : farmaco.orario; // Fallback
+                                : farmaco.orario;
 
                             return Column(
                               key: ValueKey(key),
@@ -172,39 +196,43 @@ class _FarmaciPageState extends State<FarmaciPage> {
                               children: [
                                 FarmacoCard(
                                   statoColore: coloreStato,
-                                  orario: orarioDaMostrare, // Usa l'orario formattato
+                                  orario: orarioDaMostrare,
                                   nome: farmaco.nome,
                                   dose: farmaco.dose,
-                                  onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext dialogContext) {
-                                        return ConfirmDialog(
-                                          titleText:
-                                              'Hai assunto ${farmaco.nome}?',
-                                          confirmButtonText: 'Sì',
-                                          cancelButtonText: 'No',
-                                          onConfirm: () {
-                                            setState(() {
-                                              _statiFarmaci[key] =
-                                                  Colors.green;
-                                            });
-                                            Navigator.of(dialogContext).pop();
-                                          },
-                                          onCancel: () {
-                                            setState(() {
-                                              _statiFarmaci[key] = Colors.red;
-                                            });
-                                            Navigator.of(dialogContext).pop();
-                                          },
-                                        );
-                                      },
-                                    );
-                                  },
+                                  onTap: isCaregiver
+                                      ? null
+                                      : () {
+                                          showDialog(
+                                            context: context,
+                                            builder:
+                                                (BuildContext dialogContext) {
+                                              return ConfirmDialog(
+                                                titleText:
+                                                    'Hai assunto ${farmaco.nome}?',
+                                                confirmButtonText: 'Sì',
+                                                cancelButtonText: 'No',
+                                                onConfirm: () {
+                                                  setState(() {
+                                                    _statiFarmaci[key] =
+                                                        Colors.green;
+                                                  });
+                                                  Navigator.of(dialogContext)
+                                                      .pop();
+                                                },
+                                                onCancel: () {
+                                                  setState(() {
+                                                    _statiFarmaci[key] =
+                                                        Colors.red;
+                                                  });
+                                                  Navigator.of(dialogContext)
+                                                      .pop();
+                                                },
+                                              );
+                                            },
+                                          );
+                                        },
                                 ),
-                                SizedBox(
-                                    height: screenHeight *
-                                        0.012),
+                                SizedBox(height: screenHeight * 0.012),
                               ],
                             );
                           },

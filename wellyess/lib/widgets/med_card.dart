@@ -6,7 +6,7 @@ class FarmacoCard extends StatelessWidget {
   final String orario;
   final String nome;
   final String dose;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const FarmacoCard({
     Key? key,
@@ -14,7 +14,7 @@ class FarmacoCard extends StatelessWidget {
     required this.orario,
     required this.nome,
     required this.dose,
-    required this.onTap,
+    this.onTap,
   }) : super(key: key);
 
   @override
@@ -58,7 +58,7 @@ class FarmacoCard extends StatelessWidget {
                       Text(
                         orario,
                         style: TextStyle(
-                            fontSize: screenWidth * 0.045, // Reso responsivo (era 18)
+                            fontSize: screenWidth * 0.04, // Reso responsivo (era 18)
                             fontWeight: FontWeight.bold),
                       ),
                       SizedBox(
@@ -68,13 +68,14 @@ class FarmacoCard extends StatelessWidget {
                           '$nome $dose',
                           style: TextStyle(
                               fontSize:
-                                  screenWidth * 0.045), // Reso responsivo (era 18)
+                                  screenWidth * 0.04), // Reso responsivo (era 18)
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      Icon(Icons.chevron_right,
-                          color: Colors.grey,
-                          size: screenWidth * 0.06), // Reso responsivo
+                      if (onTap != null)
+                        Icon(Icons.chevron_right,
+                            color: Colors.grey,
+                            size: screenWidth * 0.06), // Reso responsivo
                     ],
                   ),
                 ),

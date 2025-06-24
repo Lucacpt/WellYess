@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/base_layout.dart';
-import 'package:wellyess/screens/elder_profile.dart';
+import 'package:wellyess/screens/user_profile.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wellyess/screens/profilo_caregiver.dart';
 import 'login_page.dart';
@@ -49,7 +49,7 @@ class SettingsPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const ProfiloAnziano()),
+                          builder: (context) => const ProfiloUtente()),
                     );
                   },
                 ),

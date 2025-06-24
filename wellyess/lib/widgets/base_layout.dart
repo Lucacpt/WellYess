@@ -1,27 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:wellyess/models/user_model.dart';
 import 'package:wellyess/screens/menu_page.dart';
 import 'package:wellyess/screens/settings.dart';
 import 'bottom_navbar.dart';
 import 'go_back_button.dart';
-import 'package:wellyess/screens/elder_profile.dart';
+import 'package:wellyess/screens/user_profile.dart';
 
 class BaseLayout extends StatelessWidget {
   final Widget child;
   final int currentIndex;
   final VoidCallback? onBackPressed;
+  // MODIFICA: Aggiunto userType per rendere il layout dinamico
+  final UserType? userType;
 
   const BaseLayout({
     super.key,
     required this.child,
     this.currentIndex = 0,
     this.onBackPressed,
+    this.userType, // MODIFICA: Aggiunto al costruttore
   });
 
   @override
   Widget build(BuildContext context) {
-    // Otteniamo le dimensioni dello schermo per i calcoli
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+
+    // MODIFICA: Determina l'immagine e la pagina del profilo in base a userType
+    final isCaregiver = userType == UserType.caregiver;
+    final profileImageAsset = isCaregiver
+        ? 'assets/images/svetlana.jpg'
+        : 'assets/images/elder_profile_pic.png';
+    final profilePage =
+        isCaregiver ? const ProfiloUtente() : const ProfiloUtente();
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FF),
@@ -29,17 +40,15 @@ class BaseLayout extends StatelessWidget {
         child: Stack(
           children: [
             Padding(
-              // Padding reso responsivo
               padding: EdgeInsets.fromLTRB(
-                screenWidth * 0.05, // 20
-                screenHeight * 0.012, // 10
-                screenWidth * 0.05, // 20
-                screenHeight * 0.12, // 90, per la navbar
+                screenWidth * 0.05,
+                screenHeight * 0.012,
+                screenWidth * 0.05,
+                screenHeight * 0.12,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // RIGA SUPERIORE con logo e avatar
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -51,8 +60,7 @@ class BaseLayout extends StatelessWidget {
                           label: 'Logo Wellyess',
                           child: Image.asset(
                             'assets/logo/wellyess.png',
-                            // Altezza del logo resa responsiva
-                            height: screenHeight * 0.06, // 55
+                            height: screenHeight * 0.06,
                           ),
                         ),
                       ),
@@ -63,35 +71,25 @@ class BaseLayout extends StatelessWidget {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                builder: (context) => const ProfiloAnziano(),
-                              ),
+                              MaterialPageRoute(builder: (context) => profilePage),
                             );
                           },
                           child: CircleAvatar(
-                            // Raggio dell'avatar reso responsivo
-                            radius: screenWidth * 0.075, // 30
-                            backgroundImage: const AssetImage(
-                                'assets/images/elder_profile_pic.png'),
+                            radius: screenWidth * 0.075,
+                            backgroundImage: AssetImage(profileImageAsset),
                           ),
                         ),
                       ),
                     ],
                   ),
-
-                  // Spazio reso responsivo
-                  SizedBox(height: screenHeight * 0.018), // 15
-
-                  // CONTAINER PRINCIPALE
+                  SizedBox(height: screenHeight * 0.018),
                   Expanded(
                     child: Container(
-                      // Padding del container reso responsivo
-                      padding: EdgeInsets.all(screenWidth * 0.075), // 30
+                      padding: EdgeInsets.all(screenWidth * 0.075),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        // Raggio del bordo reso responsivo
                         borderRadius:
-                            BorderRadius.circular(screenWidth * 0.075), // 30
+                            BorderRadius.circular(screenWidth * 0.075),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
@@ -103,17 +101,13 @@ class BaseLayout extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Freccia indietro
                           if (onBackPressed != null) ...[
                             Semantics(
                               button: true,
                               child: BackCircleButton(onPressed: onBackPressed),
                             ),
-                            // Spazio reso responsivo
-                            SizedBox(height: screenHeight * 0.025), // 20
+                            SizedBox(height: screenHeight * 0.025),
                           ],
-
-                          // Contenuto della pagina
                           Expanded(child: child),
                         ],
                       ),
@@ -122,13 +116,10 @@ class BaseLayout extends StatelessWidget {
                 ],
               ),
             ),
-
-            // NAVBAR IN FONDO
             Positioned(
               left: 0,
               right: 0,
-              // Posizione dal basso resa responsiva
-              bottom: screenHeight * 0.006, // 5
+              bottom: screenHeight * 0.006,
               child: Semantics(
                 container: true,
                 label: 'Barra di navigazione principale',

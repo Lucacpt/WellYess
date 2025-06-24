@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wellyess/models/user_model.dart';
 import '../widgets/base_layout.dart';
 import '../widgets/feature_card.dart';
 import '../widgets/sos_button.dart';
@@ -8,177 +10,243 @@ import 'consigli_salute.dart';
 import 'sos.dart';
 import 'monitoring_section.dart';
 import 'med_diary.dart';
+import 'user_profile.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  UserType? _userType;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserType();
+  }
+
+  Future<void> _loadUserType() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userTypeString = prefs.getString('userType');
+    if (userTypeString != null) {
+      setState(() {
+        _userType =
+            UserType.values.firstWhere((e) => e.toString() == userTypeString);
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final double iconSize = screenWidth * 0.14;
+    // MODIFICA: Aggiunta una variabile per l'altezza delle card
+    final double cardHeight = screenHeight * 0.14;
+
+    if (_isLoading) {
+      return BaseLayout(
+        userType: _userType,
+        child: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final isCaregiver = _userType == UserType.caregiver;
 
     return BaseLayout(
       currentIndex: 1,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(height: screenHeight * 0.01),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: GestureDetector(
-                  onTap: () {
-                    if (Navigator.canPop(context)) {
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF5DB47F),
-                      shape: BoxShape.circle,
-                    ),
-                    padding: EdgeInsets.all(screenWidth * 0.02),
-                    child: const Icon(Icons.arrow_back, color: Colors.white),
-                  ),
-                ),
+      userType: _userType,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(height: screenHeight * 0.01),
+            Text(
+              isCaregiver ? "Bentornata,\nFederica!" : "Bentornato,\nMichele!",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: screenWidth * 0.1,
+                fontWeight: FontWeight.bold,
               ),
-              SizedBox(height: screenHeight * 0.01),
-              Text(
-                "Bentornato,\nMichele!",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: screenWidth * 0.1,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Divider(
-                color: Colors.grey,
-                thickness: 1,
-              ),
-              SizedBox(height: screenHeight * 0.05),
-
-              // NUOVA STRUTTURA ROBUSTA CON COLUMN E ROW
-              Column(
-                children: [
-                  // Prima riga di card
-                  Row(
+            ),
+            const Divider(
+              color: Colors.grey,
+              thickness: 1,
+            ),
+            SizedBox(height: screenHeight * 0.02),
+            Column(
+              children: [
+                IntrinsicHeight(
+                  child: Row(
                     children: [
                       Expanded(
-                        child: FeatureCard(
-                          icon: SvgPicture.asset(
-                            'assets/icons/pills.svg',
-                            height: iconSize,
-                            width: iconSize,
-                            colorFilter: const ColorFilter.mode(
-                                Color(0xFF5DB47F), BlendMode.srcIn),
+                        // MODIFICA: Aggiunto SizedBox per definire l'altezza
+                        child: SizedBox(
+                          height: cardHeight,
+                          child: FeatureCard(
+                            icon: SvgPicture.asset(
+                              'assets/icons/pills.svg',
+                              height: iconSize,
+                              width: iconSize,
+                              colorFilter: const ColorFilter.mode(
+                                  Color(0xFF5DB47F), BlendMode.srcIn),
+                            ),
+                            label: "Farmaci",
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const FarmaciPage(),
+                                ),
+                              );
+                            },
                           ),
-                          label: "Farmaci",
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const FarmaciPage(),
-                              ),
-                            );
-                          },
                         ),
                       ),
-                      SizedBox(width: screenWidth * 0.04), // Spazio orizzontale
+                      SizedBox(width: screenWidth * 0.04),
                       Expanded(
-                        child: FeatureCard(
-                          icon: SvgPicture.asset(
-                            'assets/icons/heartbeat.svg',
-                            height: iconSize,
-                            width: iconSize,
-                            colorFilter: const ColorFilter.mode(
-                                Color(0xFF5DB47F), BlendMode.srcIn),
+                        // MODIFICA: Aggiunto SizedBox per definire l'altezza
+                        child: SizedBox(
+                          height: cardHeight,
+                          child: FeatureCard(
+                            icon: SvgPicture.asset(
+                              'assets/icons/heartbeat.svg',
+                              height: iconSize,
+                              width: iconSize,
+                              colorFilter: const ColorFilter.mode(
+                                  Color(0xFF5DB47F), BlendMode.srcIn),
+                            ),
+                            label: "Parametri",
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const MonitoraggioParametriPage()),
+                              );
+                            },
                           ),
-                          label: "Parametri",
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const MonitoraggioParametriPage()),
-                            );
-                          },
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: screenWidth * 0.04), // Spazio verticale
-                  // Seconda riga di card
-                  Row(
+                ),
+                SizedBox(height: screenWidth * 0.04),
+                IntrinsicHeight(
+                  child: Row(
                     children: [
                       Expanded(
-                        child: FeatureCard(
-                          icon: SvgPicture.asset(
-                            'assets/icons/calendar.svg',
-                            height: iconSize - 10,
-                            width: iconSize - 10,
-                            colorFilter: const ColorFilter.mode(
-                                Color(0xFF5DB47F), BlendMode.srcIn),
+                        // MODIFICA: Aggiunto SizedBox per definire l'altezza
+                        child: SizedBox(
+                          height: cardHeight,
+                          child: FeatureCard(
+                            icon: SvgPicture.asset(
+                              'assets/icons/calendar.svg',
+                              height: iconSize,
+                              width: iconSize,
+                              colorFilter: const ColorFilter.mode(
+                                  Color(0xFF5DB47F), BlendMode.srcIn),
+                            ),
+                            label: "Agenda",
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const MedDiaryPage(),
+                                ),
+                              );
+                            },
                           ),
-                          label: "Agenda Medica",
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const MedDiaryPage(),
-                              ),
-                            );
-                          },
                         ),
                       ),
-                      SizedBox(width: screenWidth * 0.04), // Spazio orizzontale
+                      SizedBox(width: screenWidth * 0.04),
                       Expanded(
-                        child: FeatureCard(
-                          icon: SvgPicture.asset(
-                            'assets/icons/sport_food.svg',
-                            height: iconSize - 10,
-                            width: iconSize - 10,
-                            colorFilter: const ColorFilter.mode(
-                                Color(0xFF5DB47F), BlendMode.srcIn),
-                          ),
-                          label: "Consigli Di\nSalute",
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const ConsigliSalutePage(),
-                              ),
-                            );
-                          },
+                        // MODIFICA: Aggiunto SizedBox per definire l'altezza
+                        child: SizedBox(
+                          height: cardHeight,
+                          child: isCaregiver
+                              ? _buildAssistitoCard(iconSize)
+                              : _buildConsigliCard(iconSize),
                         ),
                       ),
                     ],
                   ),
-                ],
-              ),
-
-              SizedBox(height: screenHeight * 0.05),
-
-              SizedBox(
-                width: double.infinity,
-                height: screenHeight * 0.1,
-                child: SosButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const EmergenzaScreen()),
-                    );
-                  },
                 ),
+              ],
+            ),
+            SizedBox(height: screenHeight * 0.03),
+            // MODIFICA: Aggiornato il pulsante SOS per passare i nuovi parametri
+            SizedBox(
+              width: double.infinity,
+              height: screenHeight * 0.1,
+              child: SosButton(
+                userType: _userType!,
+                // Per questo prototipo, mostriamo la notifica se l'utente è un caregiver
+                hasNewRequest: isCaregiver,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const EmergenzaScreen()),
+                  );
+                },
               ),
-              SizedBox(height: screenHeight * 0.01),
-            ],
-          ),
+            ),
+            SizedBox(height: screenHeight * 0.01),
+          ],
         ),
       ),
+    );
+  }
+
+  Widget _buildAssistitoCard(double iconSize) {
+    return FeatureCard(
+      icon: SvgPicture.asset(
+        'assets/icons/elder_ic.svg',
+        height: iconSize,
+        width: iconSize,
+        colorFilter:
+            const ColorFilter.mode(Color(0xFF5DB47F), BlendMode.srcIn),
+      ),
+      label: "Assistito",
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ProfiloUtente(forceElderView: true),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildConsigliCard(double iconSize) {
+    return FeatureCard(
+      icon: SvgPicture.asset(
+        'assets/icons/sport_food.svg',
+        height: iconSize,
+        width: iconSize,
+        colorFilter:
+            const ColorFilter.mode(Color(0xFF5DB47F), BlendMode.srcIn),
+      ),
+      label: "Salute",
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ConsigliSalutePage(),
+          ),
+        );
+      },
     );
   }
 }
