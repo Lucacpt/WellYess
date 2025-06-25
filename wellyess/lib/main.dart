@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';           // <-- add this
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:wellyess/models/user_model.dart';
@@ -14,6 +15,7 @@ import 'package:wellyess/screens/med_section.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';   // <-- add
 
 // Funzione di callback per Android Alarm Manager
 @pragma('vm:entry-point')
@@ -56,7 +58,8 @@ String? farmacoDaMostrare;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (Platform.isAndroid) {
+  // only initialize alarm manager on non-web Android
+  if (!kIsWeb && Platform.isAndroid) {
     await AndroidAlarmManager.initialize();
   }
 
@@ -82,11 +85,14 @@ Future<void> main() async {
       AndroidInitializationSettings('@mipmap/ic_launcher');
   const DarwinInitializationSettings initializationSettingsIOS =
       DarwinInitializationSettings(
-          requestAlertPermission: true,
-          requestBadgePermission: true,
-          requestSoundPermission: true);
+        requestAlertPermission: true,
+        requestBadgePermission:  true,
+        requestSoundPermission:  true,
+      );
   const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+    android: initializationSettingsAndroid,
+    iOS: initializationSettingsIOS,
+  );
 
   await flutterLocalNotificationsPlugin.initialize(
     initializationSettings,
@@ -117,20 +123,28 @@ Future<void> main() async {
     }
   }
 
-  runApp(const MyApp());
+  // 1) legge il tipo utente salvato (se esiste)
+  final prefs = await SharedPreferences.getInstance();
+  final saved = prefs.getString('userType');
+
+  // 2) imposta la pagina di partenza in base al valore
+  final startPage = saved != null
+      ? const HomePage()
+      : const LoginPage();
+
+  runApp(MyApp(startPage: startPage));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final Widget startPage;
+  const MyApp({Key? key, required this.startPage}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final startPage =
-        AuthService.isLoggedIn ? const HomePage() : const LoginPage();
     return MaterialApp(
+      title: 'WellYess',
       debugShowCheckedModeBanner: false,
-      navigatorKey: navigatorKey,
-      home: startPage,
+      home: startPage,   // <-- usa startPage calcolata sopra
     );
   }
 }

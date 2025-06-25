@@ -149,11 +149,13 @@ class _SettingsPageState extends State<SettingsPage> {
                     height: iconSize,
                   ),
                   label: 'Esci dal profilo',
-                  onTap: () {
+                  onTap: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.remove('userType'); // <-- rimuove le credenziali
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => const LoginPage()),
-                      (Route<dynamic> route) => false,
+                      MaterialPageRoute(builder: (_) => const LoginPage()),
+                      (r) => false,
                     );
                   },
                 ),
