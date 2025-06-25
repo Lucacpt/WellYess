@@ -29,13 +29,16 @@ dependencies:
   fl_chart: ^1.0.0  
 
   # Date and Time dependencies
-  intl: ^0.20.2  # Per la formattazione delle date
+  intl: ^0.18.1  # Per la formattazione delle date
 
   # Notifications dependencies
-  flutter_local_notifications: ^19.3.0  
+  flutter_local_notifications: ^17.0.0 
+
+  # Alarm Manager dependencies
+  android_alarm_manager_plus: ^4.0.7
 
   # Timezone dependencies
-  timezone: ^0.10.0  # Per gestire i fusi orari
+  timezone: ^0.9.2  # Per gestire i fusi orari
 
 dev_dependencies:
   flutter_test:

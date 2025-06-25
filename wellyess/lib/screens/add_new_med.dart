@@ -9,6 +9,8 @@ import '../widgets/input_field.dart';
 import '../widgets/dropdown_field.dart';
 import '../widgets/time_picker_field.dart';
 import 'package:wellyess/models/user_model.dart';
+import 'package:wellyess/services/notification_service.dart';
+
 
 class AggiungiFarmacoPage extends StatefulWidget {
   const AggiungiFarmacoPage({super.key});
@@ -167,21 +169,51 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
             child: CustomMainButton(
               text: 'Salva',
               color: const Color(0xFF5DB47F),
+              // SOSTITUISCI TUTTO IL BLOCCO onTap CON QUESTO
               onTap: () async {
-                final box = Hive.box<FarmacoModel>('farmaci');
-                final nuovo = FarmacoModel(
+                // 1. Controllo di validità per evitare crash
+                if (nomeController.text.trim().isEmpty ||
+                    doseValue == null ||
+                    formaTerapeuticaValue == null ||
+                    orarioValue == null ||
+                    frequenzaValue == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Per favore, compila tutti i campi.'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                  return; // Interrompe il salvataggio se i campi sono vuoti
+                }
+
+                // 2. Creazione del modello del farmaco
+                final orarioString = orarioValue!.format(context);
+                final nuovoFarmaco = FarmacoModel(
                   nome: nomeController.text.trim(),
                   dose: doseValue!,
                   formaTerapeutica: formaTerapeuticaValue!,
-                  orario: orarioValue!.format(context),
+                  orario: orarioString,
                   frequenza: frequenzaValue!,
                 );
-                await box.add(nuovo);
 
+                // 3. Salvataggio in Hive e recupero della chiave
+                final box = Hive.box<FarmacoModel>('farmaci');
+                final key = await box.add(nuovoFarmaco);
+
+                // 4. PIANIFICAZIONE AUTOMATICA DELLA NOTIFICA!
+                await scheduleFarmacoNotification(
+                  key,
+                  nuovoFarmaco.nome,
+                  nuovoFarmaco.dose,
+                  nuovoFarmaco.orario,
+                );
+
+                // 5. Conferma e navigazione
+                if (!mounted) return;
                 await showDialog(
                   context: context,
                   builder: (_) => const PopUpConferma(
-                    message: 'Farmaco aggiunto con successo',
+                    message: 'Farmaco aggiunto e notifica pianificata!',
                   ),
                 );
 

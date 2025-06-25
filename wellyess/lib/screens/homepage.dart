@@ -13,7 +13,9 @@ import 'med_diary.dart';
 import 'user_profile.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final int? farmacoKeyToShow;
+
+  const HomePage({super.key, this.farmacoKeyToShow});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -27,19 +29,31 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _loadUserType();
+
+    // Se c'è una chiave da evidenziare, apri subito la FarmaciPage
+    if (widget.farmacoKeyToShow != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) =>
+                  FarmaciPage(farmacoKeyToShow: widget.farmacoKeyToShow!),
+            ),
+          );
+        }
+      });
+    }
   }
 
   Future<void> _loadUserType() async {
     final prefs = await SharedPreferences.getInstance();
     final userTypeString = prefs.getString('userType');
-    if (userTypeString != null) {
+    if (mounted) {
       setState(() {
-        _userType =
-            UserType.values.firstWhere((e) => e.toString() == userTypeString);
-        _isLoading = false;
-      });
-    } else {
-      setState(() {
+        _userType = userTypeString != null
+            ? UserType.values
+                .firstWhere((e) => e.toString() == userTypeString)
+            : null;
         _isLoading = false;
       });
     }
@@ -50,7 +64,6 @@ class _HomePageState extends State<HomePage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final double iconSize = screenWidth * 0.14;
-    // MODIFICA: Aggiunta una variabile per l'altezza delle card
     final double cardHeight = screenHeight * 0.14;
 
     if (_isLoading) {
@@ -89,7 +102,6 @@ class _HomePageState extends State<HomePage> {
                   child: Row(
                     children: [
                       Expanded(
-                        // MODIFICA: Aggiunto SizedBox per definire l'altezza
                         child: SizedBox(
                           height: cardHeight,
                           child: FeatureCard(
@@ -114,7 +126,6 @@ class _HomePageState extends State<HomePage> {
                       ),
                       SizedBox(width: screenWidth * 0.04),
                       Expanded(
-                        // MODIFICA: Aggiunto SizedBox per definire l'altezza
                         child: SizedBox(
                           height: cardHeight,
                           child: FeatureCard(
@@ -145,7 +156,6 @@ class _HomePageState extends State<HomePage> {
                   child: Row(
                     children: [
                       Expanded(
-                        // MODIFICA: Aggiunto SizedBox per definire l'altezza
                         child: SizedBox(
                           height: cardHeight,
                           child: FeatureCard(
@@ -170,7 +180,6 @@ class _HomePageState extends State<HomePage> {
                       ),
                       SizedBox(width: screenWidth * 0.04),
                       Expanded(
-                        // MODIFICA: Aggiunto SizedBox per definire l'altezza
                         child: SizedBox(
                           height: cardHeight,
                           child: isCaregiver
@@ -184,13 +193,11 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             SizedBox(height: screenHeight * 0.03),
-            // MODIFICA: Aggiornato il pulsante SOS per passare i nuovi parametri
             SizedBox(
               width: double.infinity,
               height: screenHeight * 0.1,
               child: SosButton(
                 userType: _userType!,
-                // Per questo prototipo, mostriamo la notifica se l'utente è un caregiver
                 hasNewRequest: isCaregiver,
                 onPressed: () {
                   Navigator.push(
