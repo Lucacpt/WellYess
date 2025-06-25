@@ -10,11 +10,11 @@ import 'package:wellyess/widgets/confirm_popup.dart';
 import 'package:wellyess/widgets/med_legenda.dart';
 import 'package:wellyess/widgets/custom_main_button.dart';
 import 'package:wellyess/widgets/med_card.dart';
-import 'package:wellyess/main.dart'; // Per farmacoDaMostrare
-import 'package:wellyess/services/notification_service.dart'; // Per sendFarmacoNotification
 
 class FarmaciPage extends StatefulWidget {
-  const FarmaciPage({Key? key}) : super(key: key);
+  final int? farmacoKeyToShow;
+
+  const FarmaciPage({Key? key, this.farmacoKeyToShow}) : super(key: key);
 
   @override
   State<FarmaciPage> createState() => _FarmaciPageState();
@@ -29,59 +29,25 @@ class _FarmaciPageState extends State<FarmaciPage> {
   @override
   void initState() {
     super.initState();
-    _loadUserTypeAndData();
-
-    // Mostra il popup se la pagina viene aperta dalla notifica
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (farmacoDaMostrare != null) {
-        final key = int.tryParse(farmacoDaMostrare!);
-        farmacoDaMostrare = null;
-        if (key != null) {
-          final farmaco = Hive.box<FarmacoModel>('farmaci').get(key);
-          if (farmaco != null) {
-            showDialog(
-              context: context,
-              builder: (BuildContext dialogContext) {
-                return ConfirmDialog(
-                  titleText: 'Hai assunto ${farmaco.nome}?',
-                  confirmButtonText: 'Sì',
-                  cancelButtonText: 'No',
-                  onConfirm: () {
-                    setState(() {
-                      _statiFarmaci[key] = Colors.green;
-                    });
-                    Navigator.of(dialogContext).pop();
-                  },
-                  onCancel: () {
-                    setState(() {
-                      _statiFarmaci[key] = Colors.red;
-                    });
-                    Navigator.of(dialogContext).pop();
-                  },
-                );
-              },
-            );
-          }
-        }
-      }
-    });
+    _initializePage();
   }
 
-  Future<void> _loadUserTypeAndData() async {
+  Future<void> _initializePage() async {
     final prefs = await SharedPreferences.getInstance();
     final userTypeString = prefs.getString('userType');
-
     _farmaciBox = Hive.box<FarmacoModel>('farmaci');
+
     for (var key in _farmaciBox.keys) {
       _statiFarmaci.putIfAbsent(key, () => Colors.orange);
     }
 
+    if (userTypeString != null) {
+      _userType =
+          UserType.values.firstWhere((e) => e.toString() == userTypeString);
+    }
+
     if (mounted) {
       setState(() {
-        if (userTypeString != null) {
-          _userType =
-              UserType.values.firstWhere((e) => e.toString() == userTypeString);
-        }
         _isLoading = false;
       });
     }
@@ -99,14 +65,38 @@ class _FarmaciPageState extends State<FarmaciPage> {
     }
   }
 
+  void _showConfirmationDialog(int key) {
+    final farmaco = _farmaciBox.get(key);
+    if (farmaco == null) return;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return ConfirmDialog(
+          titleText: 'Hai assunto ${farmaco.nome}?',
+          confirmButtonText: 'Sì',
+          cancelButtonText: 'No',
+          onConfirm: () {
+            setState(() {
+              _statiFarmaci[key] = Colors.green;
+            });
+            Navigator.of(dialogContext).pop();
+          },
+          onCancel: () {
+            setState(() {
+              _statiFarmaci[key] = Colors.red;
+            });
+            Navigator.of(dialogContext).pop();
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-
-    // Stampa le chiavi dei farmaci in console per debug
-    final farmaciKeys = Hive.box<FarmacoModel>('farmaci').keys.toList();
-    print('Chiavi farmaci disponibili: $farmaciKeys');
 
     if (_isLoading) {
       return const Scaffold(
@@ -126,28 +116,6 @@ class _FarmaciPageState extends State<FarmaciPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Pulsante di test per inviare una notifica
-            ElevatedButton(
-              onPressed: () {
-                if (farmaciKeys.isNotEmpty) {
-                  // Prendi la prima chiave e il nome del farmaco associato
-                  final testKey = farmaciKeys.first;
-                  final testFarmaco = Hive.box<FarmacoModel>('farmaci').get(testKey);
-                  if (testFarmaco != null) {
-                    sendFarmacoNotification(testKey.toString(), testFarmaco.nome);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Notifica inviata per ${testFarmaco.nome} (key: $testKey)')),
-                    );
-                  }
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Nessun farmaco disponibile per il test')),
-                  );
-                }
-              },
-              child: const Text('Test Notifica Farmaco'),
-            ),
-            SizedBox(height: screenHeight * 0.012),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -261,38 +229,10 @@ class _FarmaciPageState extends State<FarmaciPage> {
                                   orario: orarioDaMostrare,
                                   nome: farmaco.nome,
                                   dose: farmaco.dose,
+                                  isHighlighted: false,
                                   onTap: isCaregiver
                                       ? null
-                                      : () {
-                                          showDialog(
-                                            context: context,
-                                            builder:
-                                                (BuildContext dialogContext) {
-                                              return ConfirmDialog(
-                                                titleText:
-                                                    'Hai assunto ${farmaco.nome}?',
-                                                confirmButtonText: 'Sì',
-                                                cancelButtonText: 'No',
-                                                onConfirm: () {
-                                                  setState(() {
-                                                    _statiFarmaci[key] =
-                                                        Colors.green;
-                                                  });
-                                                  Navigator.of(dialogContext)
-                                                      .pop();
-                                                },
-                                                onCancel: () {
-                                                  setState(() {
-                                                    _statiFarmaci[key] =
-                                                        Colors.red;
-                                                  });
-                                                  Navigator.of(dialogContext)
-                                                      .pop();
-                                                },
-                                              );
-                                            },
-                                          );
-                                        },
+                                      : () => _showConfirmationDialog(key),
                                 ),
                                 SizedBox(height: screenHeight * 0.012),
                               ],

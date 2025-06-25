@@ -7,6 +7,7 @@ class FarmacoCard extends StatelessWidget {
   final String nome;
   final String dose;
   final VoidCallback? onTap;
+  final bool isHighlighted;
 
   const FarmacoCard({
     Key? key,
@@ -15,6 +16,7 @@ class FarmacoCard extends StatelessWidget {
     required this.nome,
     required this.dose,
     this.onTap,
+    this.isHighlighted = false,
   }) : super(key: key);
 
   @override
@@ -27,16 +29,19 @@ class FarmacoCard extends StatelessWidget {
         color: Colors.white,
         elevation: 4,
         margin: EdgeInsets.symmetric(
-            vertical: screenWidth * 0.015), // Reso responsivo (era 6)
+            vertical: screenWidth * 0.015),
         shape: RoundedRectangleBorder(
-            borderRadius:
-                BorderRadius.circular(15)), // Il valore fisso qui è ok
+          borderRadius: BorderRadius.circular(15),
+          side: isHighlighted
+              ? const BorderSide(color: Colors.blue, width: 3)
+              : BorderSide.none,
+        ),
         child: IntrinsicHeight(
           child: Row(
             children: [
               // Barra colorata
               Container(
-                width: screenWidth * 0.06, // Reso responsivo (era 25)
+                width: screenWidth * 0.06,
                 decoration: BoxDecoration(
                   color: statoColore,
                   borderRadius: const BorderRadius.only(
@@ -45,37 +50,34 @@ class FarmacoCard extends StatelessWidget {
                   ),
                 ),
               ),
-
               // Contenuto
               Expanded(
                 child: Padding(
                   padding: EdgeInsets.symmetric(
                       horizontal: screenWidth * 0.04,
-                      vertical: screenWidth * 0.03), // Reso responsivo
+                      vertical: screenWidth * 0.03),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         orario,
                         style: TextStyle(
-                            fontSize: screenWidth * 0.04, // Reso responsivo (era 18)
+                            fontSize: screenWidth * 0.04,
                             fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(
-                          width: screenWidth * 0.03), // Reso responsivo (era 12)
+                      SizedBox(width: screenWidth * 0.03),
                       Expanded(
                         child: Text(
                           '$nome $dose',
                           style: TextStyle(
-                              fontSize:
-                                  screenWidth * 0.04), // Reso responsivo (era 18)
+                              fontSize: screenWidth * 0.04),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       if (onTap != null)
                         Icon(Icons.chevron_right,
                             color: Colors.grey,
-                            size: screenWidth * 0.06), // Reso responsivo
+                            size: screenWidth * 0.06),
                     ],
                   ),
                 ),
