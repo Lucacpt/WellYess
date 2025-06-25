@@ -1,26 +1,64 @@
-# Flutter files da ignorare
-
-# Cartella di build
+# Flutter/Dart build e tool
 build/
-
-# File generati dal tool Flutter
+.dart_tool/
 .flutter/
 .packages
-.dart_tool/
+.pub-cache/
 pubspec.lock
+.flutter-plugins
 .flutter-plugins-dependencies
-
-# File di cache
+.melos_tool/
+generated/
 *.log
 
-# File degli IDE (es. IntelliJ, Visual Studio Code)
+# IDEs
 .idea/
 .vscode/
 *.iml
 
-# File generati dal plugin Flutter
+# Output app
 *.apk
 *.ipa
 
-# Outros files da Flutter
-generated/
+# File generati da plugin Flutter (Android/iOS/macOS/Windows)
+**/GeneratedPluginRegistrant.java
+**/GeneratedPluginRegistrant.swift
+**/generated_plugins.cmake
+
+# Android
+android/.gradle/
+android/gradlew
+android/gradlew.bat
+android/local.properties
+android/gradle-wrapper.jar
+android/captures/
+android/.cxx/
+android/build/
+*.bin
+*.lock
+*.probe
+
+# iOS
+ios/build/
+ios/Pods/
+ios/.symlinks/
+ios/Runner.xcworkspace
+ios/Runner.xcodeproj/project.xcworkspace
+ios/Runner.xcodeproj/xcuserdata/
+ios/Podfile.lock
+
+# macOS
+macos/build/
+macos/Pods/
+macos/.symlinks/
+macos/Runner.xcworkspace
+macos/Runner.xcodeproj/project.xcworkspace
+macos/Runner.xcodeproj/xcuserdata/
+macos/Podfile.lock
+
+# Windows
+windows/build/
+windows/flutter/generated_plugins.cmake
+
+# Altri file sensibili o temporanei
+secrets.json
