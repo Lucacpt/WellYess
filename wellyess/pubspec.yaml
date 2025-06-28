@@ -21,6 +21,8 @@ dependencies:
   # Shared Preferences dependencies
   shared_preferences: ^2.2.3 
 
+  # Provider dependencies
+  provider: ^6.1.2
 
   # Svg support dependencies
   flutter_svg: ^2.1.0  # Aggiunto per supportare SVG

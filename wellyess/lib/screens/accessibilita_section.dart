@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../widgets/base_layout.dart';
 import '../widgets/custom_main_button.dart';
-
+import 'package:provider/provider.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
 
 class AccessibilitaSection extends StatefulWidget {
   const AccessibilitaSection({super.key});
@@ -11,8 +12,21 @@ class AccessibilitaSection extends StatefulWidget {
 }
 
 class _AccessibilitaSectionState extends State<AccessibilitaSection> {
-  double _fontSize = 1.0; // 1.0 = normale, 1.2 = grande, 1.4 = molto grande
+  double _fontSize = 1.0;
   bool _highContrast = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Sincronizza i valori locali con quelli globali del provider
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final access = context.read<AccessibilitaModel>();
+      setState(() {
+        _fontSize = access.fontSizeFactor;
+        _highContrast = access.highContrast;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +52,6 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
           ),
           SizedBox(height: screenHeight * 0.025),
           const Divider(),
-          // Corpo scorrevole
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
@@ -49,7 +62,6 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Info generale
                     Text(
                       "Personalizza l'app per renderla più accessibile alle tue esigenze.",
                       style: TextStyle(
@@ -101,6 +113,7 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
                         setState(() {
                           _fontSize = value;
                         });
+                        context.read<AccessibilitaModel>().setFontSize(value);
                       },
                     ),
                     SizedBox(height: screenHeight * 0.02),
@@ -146,6 +159,7 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
                         setState(() {
                           _highContrast = value;
                         });
+                        context.read<AccessibilitaModel>().setHighContrast(value);
                       },
                     ),
                     SizedBox(height: screenHeight * 0.03),
