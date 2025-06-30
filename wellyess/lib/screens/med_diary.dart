@@ -9,6 +9,7 @@ import '../widgets/base_layout.dart';
 import '../widgets/appointment_list.dart';
 import '../widgets/appointment_horizontal_day_scroller.dart';
 import '../widgets/appointment_week_navigation.dart';
+import '../widgets/custom_main_button.dart';
 
 class MedDiaryPage extends StatefulWidget {
   const MedDiaryPage({Key? key}) : super(key: key);
@@ -107,14 +108,10 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
             ),
           ),
           const SizedBox(height: 12),
-          ElevatedButton.icon(
-            icon: const Icon(Icons.add),
-            label: const Text('+ Aggiungi appuntamento'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF5DB47F),
-              minimumSize: const Size.fromHeight(50),
-            ),
-            onPressed: () {
+          CustomMainButton(
+            text: '+ Aggiungi appuntamento',
+            color: const Color(0xFF5DB47F),
+            onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const NewVisitaScreen()),

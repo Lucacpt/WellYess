@@ -1,5 +1,5 @@
 name: wellyess
-description: "A new Flutter project."
+description: "Benessere per tutte le età"
 publish_to: 'none' 
 version: 1.0.0+1
 
@@ -45,10 +45,17 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^6.0.0
   build_runner: ^2.4.0
+  flutter_launcher_icons: ^0.13.0    # ← aggiungi il package
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/Logo.png"  # ← il tuo logo
+  android_min_sdk: 21                  # ← evita di leggere build.gradle
 
 flutter:
   uses-material-design: true
   assets:
-  - assets/icons/ # permette di usare tutte le icone SVG
-  - assets/images/ # permette di usare tutte le immagini
-  - assets/logo/ # permette di usare il logo dell'app
+    - assets/icons/
+    - assets/images/
+    - assets/logo/
