@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:wellyess/models/farmaco_model.dart';
 import 'package:wellyess/models/user_model.dart';
+
 import 'package:wellyess/screens/all_med.dart';
 import 'package:wellyess/widgets/base_layout.dart';
 import 'package:wellyess/widgets/confirm_popup.dart';
@@ -37,8 +39,14 @@ class _FarmaciPageState extends State<FarmaciPage> {
     final userTypeString = prefs.getString('userType');
     _farmaciBox = Hive.box<FarmacoModel>('farmaci');
 
+    // 1) inizializza la mappa con lo stato salvato
     for (var key in _farmaciBox.keys) {
-      _statiFarmaci.putIfAbsent(key, () => Colors.orange);
+      final f = _farmaciBox.get(key);
+      _statiFarmaci[key] = (f?.assunto == true)
+          ? Colors.green
+          : (f?.assunto == false)
+              ? Colors.red
+              : Colors.orange;
     }
 
     if (userTypeString != null) {
@@ -66,30 +74,26 @@ class _FarmaciPageState extends State<FarmaciPage> {
   }
 
   void _showConfirmationDialog(int key) {
-    final farmaco = _farmaciBox.get(key);
-    if (farmaco == null) return;
-
+    final farmaco = _farmaciBox.get(key)!;
     showDialog(
       context: context,
-      builder: (BuildContext dialogContext) {
-        return ConfirmDialog(
-          titleText: 'Hai assunto ${farmaco.nome}?',
-          confirmButtonText: 'Sì',
-          cancelButtonText: 'No',
-          onConfirm: () {
-            setState(() {
-              _statiFarmaci[key] = Colors.green;
-            });
-            Navigator.of(dialogContext).pop();
-          },
-          onCancel: () {
-            setState(() {
-              _statiFarmaci[key] = Colors.red;
-            });
-            Navigator.of(dialogContext).pop();
-          },
-        );
-      },
+      builder: (ctx) => ConfirmDialog(
+        titleText: 'Hai assunto ${farmaco.nome}?',
+        cancelButtonText: 'No',
+        confirmButtonText: 'Sì',
+        onCancel: () {
+          Navigator.of(ctx).pop();              // chiudo il dialog
+          farmaco.assunto = false;
+          farmaco.save();
+          setState(() => _statiFarmaci[key] = Colors.red);
+        },
+        onConfirm: () {
+          Navigator.of(ctx).pop();
+          farmaco.assunto = true;
+          farmaco.save();
+          setState(() => _statiFarmaci[key] = Colors.green);
+        },
+      ),
     );
   }
 
@@ -169,25 +173,20 @@ class _FarmaciPageState extends State<FarmaciPage> {
                     ValueListenableBuilder<Box<FarmacoModel>>(
                       valueListenable: _farmaciBox.listenable(),
                       builder: (context, box, _) {
-                        final farmaciKeys = box.keys.toList();
+                        final keys = box.keys.toList()..sort(
+                          (a, b) {
+                            final farmacoA = box.get(a);
+                            final farmacoB = box.get(b);
+                            if (farmacoA == null || farmacoB == null) return 0;
 
-                        for (var key in farmaciKeys) {
-                          _statiFarmaci.putIfAbsent(key, () => Colors.orange);
-                        }
+                            final timeA = _parseTime(farmacoA.orario);
+                            final timeB = _parseTime(farmacoB.orario);
 
-                        farmaciKeys.sort((a, b) {
-                          final farmacoA = box.get(a);
-                          final farmacoB = box.get(b);
-                          if (farmacoA == null || farmacoB == null) return 0;
-
-                          final timeA = _parseTime(farmacoA.orario);
-                          final timeB = _parseTime(farmacoB.orario);
-
-                          if (timeA == null || timeB == null) return 0;
-                          return timeA.compareTo(timeB);
-                        });
-
-                        if (farmaciKeys.isEmpty) {
+                            if (timeA == null || timeB == null) return 0;
+                            return timeA.compareTo(timeB);
+                          },
+                        );
+                        if (keys.isEmpty) {
                           return Center(
                             child: Padding(
                               padding: EdgeInsets.symmetric(
@@ -202,39 +201,39 @@ class _FarmaciPageState extends State<FarmaciPage> {
                             ),
                           );
                         }
+
                         return ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          itemCount: farmaciKeys.length,
-                          itemBuilder: (context, index) {
-                            final key = farmaciKeys[index];
-                            final farmaco = box.get(key);
+                          itemCount: keys.length,
+                          itemBuilder: (ctx, i) {
+                            final key = keys[i];
+                            final f = box.get(key)!;
 
-                            if (farmaco == null) return const SizedBox.shrink();
+                            // invece di farmaco:
+                            // final orario24h = _parseTime(farmaco.orario);
+                            // final orarioDaMostrare = orario24h != null
+                            //     ? DateFormat('HH:mm').format(orario24h)
+                            //     : farmaco.orario;
 
-                            final coloreStato =
-                                _statiFarmaci[key] ?? Colors.orange;
-
-                            final orario24h = _parseTime(farmaco.orario);
+                            // usa f:
+                            final orario24h = _parseTime(f.orario);
                             final orarioDaMostrare = orario24h != null
                                 ? DateFormat('HH:mm').format(orario24h)
-                                : farmaco.orario;
+                                : f.orario;
 
                             return Column(
                               key: ValueKey(key),
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 FarmacoCard(
-                                  statoColore: coloreStato,
+                                  statoColore: _statiFarmaci[key] ?? Colors.orange,
                                   orario: orarioDaMostrare,
-                                  nome: farmaco.nome,
-                                  dose: farmaco.dose,
-                                  isHighlighted: false,
-                                  onTap: isCaregiver
-                                      ? null
-                                      : () => _showConfirmationDialog(key),
+                                  nome: f.nome,
+                                  dose: f.dose,
+                                  onTap: () => _showConfirmationDialog(key),
                                 ),
-                                SizedBox(height: screenHeight * 0.012),
+                                const SizedBox(height: 8),
                               ],
                             );
                           },

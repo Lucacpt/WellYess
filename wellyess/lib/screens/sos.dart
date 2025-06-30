@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wellyess/models/user_model.dart';
 import '../widgets/base_layout.dart';
 import '../widgets/sos_request_card.dart';
+import 'package:wellyess/widgets/go_back_button.dart'; // <- importa il BackCircleButton
 
 class EmergenzaScreen extends StatefulWidget {
   const EmergenzaScreen({super.key});
@@ -126,12 +127,10 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    final isCaregiver = _userType == UserType.caregiver;
-
     return BaseLayout(
       userType: _userType,
-      onBackPressed: () => Navigator.of(context).pop(),
-      child: isCaregiver
+      // rimuovo onBackPressed: per non duplicare la freccia
+      child: _userType == UserType.caregiver
           ? _buildCaregiverView(context)
           : _buildElderView(context),
     );
@@ -192,151 +191,148 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
 
   // --- VISTA ESISTENTE PER L'ANZIANO ---
   Widget _buildElderView(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    final sw = MediaQuery.of(context).size.width;
+    final sh = MediaQuery.of(context).size.height;
+
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.08),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight),
-              child: IntrinsicHeight(
-                child: Column(
-                  children: [
-                    Text(
-                      'Emergenza',
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.07,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
+      padding: EdgeInsets.symmetric(horizontal: sw * 0.08),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(   // <-- qui metto freccia e titolo affiancati
+            children: [
+              BackCircleButton(onPressed: () => Navigator.of(context).pop()),
+              SizedBox(width: sw * 0.04),
+              Text(
+                'Emergenza',
+                style: TextStyle(
+                  fontSize: sw * 0.07,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: sh * 0.01),
+          const Divider(color: Colors.grey),
+          SizedBox(height: sh * 0.01),
+          Row(
+            children: [
+              Icon(Icons.info_outline,
+                  color: Colors.blue.shade700,
+                  size: sw * 0.06),
+              SizedBox(width: sw * 0.02),
+              Expanded(
+                child: Text(
+                  "Per inviare una richiesta di emergenza, premi il pulsante due volte.",
+                  style: TextStyle(
+                    fontSize: sw * 0.038,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const Spacer(flex: 3),
+          ScaleTransition(
+            scale: _scaleAnimation,
+            child: GestureDetector(
+              onTap: () {
+                if (!_isFirstTap) {
+                  setState(() {
+                    _isFirstTap = true;
+                    _buttonText = 'Tocca di nuovo\nper confermare';
+                    _animationController.stop();
+              });
+                  _resetTapTimer?.cancel();
+                  _resetTapTimer = Timer(
+                      const Duration(seconds: 3), _resetButtonState);
+                } else {
+                  _resetTapTimer?.cancel();
+                  _showCaregiverNotifiedDialog(
+                          context, sw, sh)
+                      .then((_) {
+                    _resetButtonState();
+                  });
+                }
+              },
+              child: Container(
+                width: sw * 0.55,
+                height: sw * 0.55,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      Colors.red.shade400,
+                      Colors.red.shade800
+                    ],
+                    center: Alignment.center,
+                    radius: 0.8,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.red.withOpacity(0.4),
+                      spreadRadius: 4,
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
                     ),
-                    SizedBox(height: screenHeight * 0.01),
-                    Divider(color: Colors.grey.shade300),
-                    SizedBox(height: screenHeight * 0.01),
-                    Row(
-                      children: [
-                        Icon(Icons.info_outline,
-                            color: Colors.blue.shade700,
-                            size: screenWidth * 0.06),
-                        SizedBox(width: screenWidth * 0.02),
-                        Expanded(
-                          child: Text(
-                            "Per inviare una richiesta di emergenza, premi il pulsante due volte.",
-                            style: TextStyle(
-                              fontSize: screenWidth * 0.038,
-                              fontStyle: FontStyle.italic,
-                              color: Colors.grey.shade700,
-                            ),
-                          ),
+                  ],
+                ),
+                child: Center(
+                  child: Text(
+                    _buttonText,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: _isFirstTap
+                          ? sw * 0.07
+                          : sw * 0.18,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        const Shadow(
+                          blurRadius: 10.0,
+                          color: Colors.black38,
+                          offset: Offset(2.0, 2.0),
                         ),
                       ],
                     ),
-                    const Spacer(flex: 3),
-                    ScaleTransition(
-                      scale: _scaleAnimation,
-                      child: GestureDetector(
-                        onTap: () {
-                          if (!_isFirstTap) {
-                            setState(() {
-                              _isFirstTap = true;
-                              _buttonText = 'Tocca di nuovo\nper confermare';
-                              _animationController.stop();
-                            });
-                            _resetTapTimer?.cancel();
-                            _resetTapTimer = Timer(
-                                const Duration(seconds: 3), _resetButtonState);
-                          } else {
-                            _resetTapTimer?.cancel();
-                            _showCaregiverNotifiedDialog(
-                                    context, screenWidth, screenHeight)
-                                .then((_) {
-                              _resetButtonState();
-                            });
-                          }
-                        },
-                        child: Container(
-                          width: screenWidth * 0.55,
-                          height: screenWidth * 0.55,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: RadialGradient(
-                              colors: [
-                                Colors.red.shade400,
-                                Colors.red.shade800
-                              ],
-                              center: Alignment.center,
-                              radius: 0.8,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.red.withOpacity(0.4),
-                                spreadRadius: 4,
-                                blurRadius: 15,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: Center(
-                            child: Text(
-                              _buttonText,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: _isFirstTap
-                                    ? screenWidth * 0.07
-                                    : screenWidth * 0.18,
-                                fontWeight: FontWeight.bold,
-                                shadows: [
-                                  const Shadow(
-                                    blurRadius: 10.0,
-                                    color: Colors.black38,
-                                    offset: Offset(2.0, 2.0),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Spacer(flex: 3),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.home_filled,
-                          color: Colors.white,
-                          size: screenWidth * 0.07,
-                        ),
-                        label: Text(
-                          'Aggiungi Alla Schermata Di Home',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: screenWidth * 0.04),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0XFF5DB47F),
-                          padding: EdgeInsets.symmetric(
-                              vertical: screenHeight * 0.025,
-                              horizontal: screenWidth * 0.04),
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(screenWidth * 0.03),
-                          ),
-                          elevation: 3,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: screenHeight * 0.02),
-                  ],
+                  ),
                 ),
               ),
             ),
-          );
-        },
+          ),
+          const Spacer(flex: 3),
+          SizedBox(height: sh * 0.04),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () {},
+              icon: Icon(
+                Icons.home_filled,
+                color: Colors.white,
+                size: sw * 0.07,
+              ),
+              label: Text(
+                'Aggiungi Alla Schermata Di Home',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: sw * 0.04),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0XFF5DB47F),
+                padding: EdgeInsets.symmetric(
+                    vertical: sh * 0.025),
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(sw * 0.03),
+                ),
+                elevation: 3,
+              ),
+            ),
+          ),
+          SizedBox(height: sh * 0.02),
+        ],
       ),
     );
   }
