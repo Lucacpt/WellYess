@@ -228,7 +228,6 @@ class _FarmaciPageState extends State<FarmaciPage> {
                                   statoColore: coloreStato,
                                   orario: orarioDaMostrare,
                                   nome: farmaco.nome,
-                                  dose: farmaco.dose,
                                   isHighlighted: false,
                                   onTap: isCaregiver
                                       ? null

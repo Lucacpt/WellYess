@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
 
 class InfoRow extends StatelessWidget {
   final String label;
@@ -13,6 +15,9 @@ class InfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final access = context.watch<AccessibilitaModel>();
+    final fontSizeFactor = access.fontSizeFactor;
+    final highContrast = access.highContrast;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -21,13 +26,15 @@ class InfoRow extends StatelessWidget {
           label,
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: screenWidth * 0.045, // Reso responsivo (era 18)
+            fontSize: screenWidth * 0.045 * fontSizeFactor,
+            color: highContrast ? Colors.black : Colors.black,
           ),
         ),
         Text(
           value,
           style: TextStyle(
-            fontSize: screenWidth * 0.045, // Reso responsivo (era 18)
+            fontSize: screenWidth * 0.045 * fontSizeFactor,
+            color: highContrast ? Colors.black : Colors.black,
           ),
         ),
       ],

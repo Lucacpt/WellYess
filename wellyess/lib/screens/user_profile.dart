@@ -68,7 +68,10 @@ class ProfiloUtente extends StatelessWidget {
                         fontWeight: FontWeight.bold),
                   ),
                 ),
-                const Divider(thickness: 1, color: Colors.grey),
+                const Divider(
+                  color: Colors.grey,
+                  thickness: 1,
+                ),                
                 SizedBox(height: screenHeight * 0.025),
                 Center(
                   child: Column(
@@ -91,38 +94,68 @@ class ProfiloUtente extends StatelessWidget {
                 // MODIFICA: La logica if/else ora usa la nuova variabile
                 if (!showElderProfile) ...[
                   // Mostra i dati del caregiver solo se non stiamo forzando la vista anziano
-                  const InfoRow(label: 'Data nascita', value: '30 Ott 1991'),
-                  const Divider(thickness: 1, color: Colors.grey),
+                  const InfoRow(label: 'Data nascita', value: '30/10/1991'),
+                  const Divider(
+                    color: Colors.grey,
+                    thickness: 1,
+                  ),
                   SizedBox(height: screenHeight * 0.018),
                   const InfoRow(label: 'Sesso', value: 'Femmina'),
-                  const Divider(thickness: 1, color: Colors.grey),
+                  const Divider(
+                    color: Colors.grey,
+                    thickness: 1,
+                  ),                  
                   SizedBox(height: screenHeight * 0.018),
                   const InfoRow(
                       label: 'Assistito', value: 'Michele Verdi'),
-                  const Divider(thickness: 1, color: Colors.grey),
+                  const Divider(
+                    color: Colors.grey,
+                    thickness: 1,
+                  ),
                   SizedBox(height: screenHeight * 0.018),
                   const InfoRow(
                       label: 'Email', value: 'federica.rossi@email.com'),
-                  const Divider(thickness: 1, color: Colors.grey),
+                  const Divider(
+                    color: Colors.grey,
+                    thickness: 1,
+                  ),
                   SizedBox(height: screenHeight * 0.018),
                   const InfoRow(label: 'Telefono', value: '333 1234567'),
-                  const Divider(thickness: 1, color: Colors.grey),
+                  const Divider(
+                    color: Colors.grey,
+                    thickness: 1,
+                  ),
                 ] else ...[
                   // Mostra i dati dell'anziano in tutti gli altri casi
-                  const InfoRow(label: 'Data nascita', value: '15 Mag 1948'),
-                  const Divider(thickness: 1, color: Colors.grey),
+                  const InfoRow(label: 'Data nascita', value: '15/05/1948'),
+                  const Divider(
+                    color: Colors.grey,
+                    thickness: 1,
+                  ),                  
                   SizedBox(height: screenHeight * 0.018),
                   const InfoRow(label: 'Sesso', value: 'Maschile'),
-                  const Divider(thickness: 1, color: Colors.grey),
+                  const Divider(
+                    color: Colors.grey,
+                    thickness: 1,
+                  ),                  
                   SizedBox(height: screenHeight * 0.018),
                   const InfoRow(label: 'Allergie', value: 'Polline'),
-                  const Divider(thickness: 1, color: Colors.grey),
+                  const Divider(
+                    color: Colors.grey,
+                    thickness: 1,
+                  ),                  
                   SizedBox(height: screenHeight * 0.018),
                   const InfoRow(label: 'Intolleranze', value: 'Lattosio'),
-                  const Divider(thickness: 1, color: Colors.grey),
+                  const Divider(
+                    color: Colors.grey,
+                    thickness: 1,
+                  ),                  
                   SizedBox(height: screenHeight * 0.018),
                   const InfoRow(label: 'Gruppo sanguigno', value: 'A+'),
-                  const Divider(thickness: 1, color: Colors.grey),
+                  const Divider(
+                    color: Colors.grey,
+                    thickness: 1,
+                  ),                
                 ]
               ],
             ),

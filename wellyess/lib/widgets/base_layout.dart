@@ -4,7 +4,9 @@ import 'package:wellyess/screens/settings.dart';
 import 'bottom_navbar.dart';
 import 'go_back_button.dart';
 import 'package:wellyess/screens/user_profile.dart';
-import 'package:wellyess/widgets/menu.dart'; 
+import 'package:wellyess/widgets/menu.dart';
+import 'package:provider/provider.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
 
 class BaseLayout extends StatefulWidget {
   final Widget child;
@@ -46,6 +48,10 @@ class _BaseLayoutState extends State<BaseLayout> {
 
   @override
   Widget build(BuildContext context) {
+    final access = context.watch<AccessibilitaModel>();
+    final fontSize = access.fontSizeFactor;
+    final highContrast = access.highContrast;
+
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
@@ -56,7 +62,7 @@ class _BaseLayoutState extends State<BaseLayout> {
     final profilePage = const ProfiloUtente();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FF),
+      backgroundColor: highContrast ? Colors.white : const Color(0xFFF5F7FF),
       body: SafeArea(
         child: Stack(
           children: [
@@ -108,7 +114,7 @@ class _BaseLayoutState extends State<BaseLayout> {
                     child: Container(
                       padding: EdgeInsets.all(screenWidth * 0.075),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: highContrast ? Colors.white : Colors.white,
                         borderRadius:
                             BorderRadius.circular(screenWidth * 0.075),
                         boxShadow: [
@@ -118,6 +124,9 @@ class _BaseLayoutState extends State<BaseLayout> {
                             offset: const Offset(0, 10),
                           ),
                         ],
+                        border: highContrast
+                            ? Border.all(color: Colors.black, width: 2)
+                            : null,
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,7 +136,6 @@ class _BaseLayoutState extends State<BaseLayout> {
                               button: true,
                               child: BackCircleButton(onPressed: widget.onBackPressed),
                             ),
-                            SizedBox(height: screenHeight * 0.025),
                           ],
                           Expanded(child: widget.child),
                         ],
@@ -163,6 +171,8 @@ class _BaseLayoutState extends State<BaseLayout> {
                         break;
                     }
                   },
+                  highContrast: highContrast,
+                  fontSize: fontSize,
                 ),
               ),
             ),

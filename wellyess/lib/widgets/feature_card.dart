@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
 
 class FeatureCard extends StatelessWidget {
   final Widget icon;
@@ -14,37 +16,49 @@ class FeatureCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Otteniamo la larghezza dello schermo per rendere responsive gli elementi interni
     final screenWidth = MediaQuery.of(context).size.width;
+    final access = context.watch<AccessibilitaModel>();
+    final fontSizeFactor = access.fontSizeFactor;
+    final highContrast = access.highContrast;
 
     return Card(
-      color: Colors.white,
+      color: highContrast ? Colors.yellow.shade700 : Colors.white,
       elevation: 5,
       shadowColor: Colors.grey.shade500,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: highContrast ? const BorderSide(color: Colors.black, width: 2) : BorderSide.none,
+      ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(10), // Abbina al raggio della Card
+        borderRadius: BorderRadius.circular(10),
         child: Padding(
-          // Padding interno reso responsive
           padding: EdgeInsets.all(screenWidth * 0.03),
-          child: Column(
-            // MainAxisAlignment.spaceEvenly distribuisce lo spazio verticale
-            // in modo uniforme, rendendo il layout flessibile.
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              icon,
-              // Il SizedBox fisso è stato rimosso. Lo spazio è gestito da spaceEvenly.
-              Text(
-                label,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  // Anche la dimensione del font è resa responsive
-                  fontSize: screenWidth * 0.045,
-                  fontWeight: FontWeight.bold,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                icon,
+                SizedBox(height: screenWidth * 0.02),
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      label,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.055 * fontSizeFactor,
+                        fontWeight: FontWeight.bold,
+                        color: highContrast ? Colors.black : Colors.black,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

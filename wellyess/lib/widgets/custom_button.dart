@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
   final Color? color;
   final double? fontSize;
-  final IconData? icon; // <- parametro opzionale per l'icona
+  final IconData? icon; // parametro opzionale per l'icona
 
   const CustomButton({
     super.key,
@@ -18,26 +20,34 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // MODIFICATO: Aggiunto MediaQuery per dimensioni responsive
+    final access = context.watch<AccessibilitaModel>();
+    final fontSizeFactor = access.fontSizeFactor;
+    final highContrast = access.highContrast;
+
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // MODIFICATO: Dimensione del font di default resa responsive
-    final double responsiveFontSize = fontSize ?? screenWidth * 0.04;
+    final double responsiveFontSize = (fontSize ?? screenWidth * 0.04) *
+        fontSizeFactor;
 
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: color ?? const Color(0xFF5DB47F),
-        foregroundColor: Colors.white,
-        // MODIFICATO: Padding reso responsive per un aspetto migliore
+        backgroundColor: highContrast
+            ? (color ?? Colors.yellow.shade700)
+            : (color ?? const Color(0xFF5DB47F)),
+        foregroundColor: highContrast ? Colors.black : Colors.white,
         padding: EdgeInsets.symmetric(
           horizontal: screenWidth * 0.03,
           vertical: screenHeight * 0.01,
         ),
-        // MODIFICATO: Bordo reso responsive
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(screenWidth * 0.02)),
+          borderRadius: BorderRadius.circular(screenWidth * 0.02),
+          side: highContrast
+              ? const BorderSide(color: Colors.black, width: 2)
+              : BorderSide.none,
+        ),
         elevation: 2,
+        textStyle: TextStyle(fontSize: responsiveFontSize),
       ),
       onPressed: onPressed,
       child: icon != null
@@ -48,10 +58,12 @@ class CustomButton extends StatelessWidget {
                   text,
                   style: TextStyle(fontSize: responsiveFontSize),
                 ),
-                // MODIFICATO: Spaziatura resa responsive
                 SizedBox(width: screenWidth * 0.02),
-                // MODIFICATO: Dimensione icona resa responsive
-                Icon(icon, size: responsiveFontSize * 1.1),
+                Icon(
+                  icon,
+                  size: responsiveFontSize * 1.1,
+                  color: highContrast ? Colors.black : Colors.white,
+                ),
               ],
             )
           : Text(

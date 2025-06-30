@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wellyess/models/user_model.dart';
 import 'package:wellyess/screens/med_diary.dart';
 import 'package:wellyess/screens/sos.dart';
@@ -6,6 +7,7 @@ import 'package:wellyess/screens/monitoring_section.dart';
 import 'package:wellyess/screens/login_page.dart';
 import 'package:wellyess/screens/consigli_salute.dart';
 import 'package:wellyess/screens/med_section.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
 
 class MenuPopup extends StatelessWidget {
   final UserType userType;
@@ -46,6 +48,10 @@ class MenuPopup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final access = context.watch<AccessibilitaModel>();
+    final fontSizeFactor = access.fontSizeFactor;
+    final highContrast = access.highContrast;
+
     final isCaregiver = userType == UserType.caregiver;
     final menuItems = isCaregiver
         ? [
@@ -64,6 +70,17 @@ class MenuPopup extends StatelessWidget {
             _MenuItemData('SOS', Icons.sos, 'sos_elder', isSos: true),
           ];
 
+    // Colori accessibili
+    final Color bgColor = highContrast ? Colors.yellow.shade100 : Colors.white;
+    final Color borderColor = highContrast ? Colors.black : Colors.transparent;
+    final Color defaultTextColor = highContrast ? Colors.black : Colors.black87;
+    final Color defaultIconColor = highContrast ? Colors.black : const Color(0xFF5DB47F);
+    final Color sosBgColor = highContrast ? Colors.black : const Color(0xFFFF1744);
+    final Color sosTextColor = highContrast ? Colors.yellow.shade700 : Colors.white;
+    final Color sosIconColor = highContrast ? Colors.yellow.shade700 : Colors.white;
+    final Color logoutTextColor = highContrast ? Colors.black : Colors.red;
+    final Color logoutIconColor = highContrast ? Colors.red.shade800 : Colors.red.shade300;
+
     return Center(
       child: Material(
         color: Colors.transparent,
@@ -71,8 +88,9 @@ class MenuPopup extends StatelessWidget {
           width: 320,
           padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 18),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: bgColor,
             borderRadius: BorderRadius.circular(28),
+            border: Border.all(color: borderColor, width: highContrast ? 2 : 0),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.18),
@@ -94,12 +112,12 @@ class MenuPopup extends StatelessWidget {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           color: item.isSos == true
-                              ? const Color(0xFFFF1744) // tutto rosso acceso per SOS
+                              ? sosBgColor
                               : item.key == 'logout'
-                                  ? Colors.grey.shade200 // grigio chiaro per logout
-                                  : const Color(0xFF5DB47F).withOpacity(0.08),
+                                ? (highContrast ? Colors.yellow.shade200 : Colors.grey.shade200) // <-- più chiaro in contrasto
+                                : (highContrast ? Colors.yellow.shade600 : const Color(0xFF5DB47F).withOpacity(0.08)),
                           border: item.isSos == true
-                              ? Border.all(color: const Color(0xFFFF1744), width: 2.5)
+                              ? Border.all(color: sosBgColor, width: 2.5)
                               : null,
                         ),
                         child: Row(
@@ -107,30 +125,30 @@ class MenuPopup extends StatelessWidget {
                             Icon(
                               item.icon,
                               color: item.isSos == true
-                                  ? Colors.white // icona bianca per SOS
+                                  ? sosIconColor
                                   : item.key == 'logout'
-                                      ? Colors.red.shade300
-                                      : const Color(0xFF5DB47F),
-                              size: item.isSos == true ? 34 : 28, // SOS più grande
+                                      ? logoutIconColor
+                                      : defaultIconColor,
+                              size: item.isSos == true ? 34 : 28,
                             ),
                             const SizedBox(width: 18),
                             Expanded(
                               child: Text(
                                 item.label,
                                 style: TextStyle(
-                                  fontSize: item.isSos == true ? 22 : 19, // SOS più grande
+                                  fontSize: ((item.isSos == true ? 22 : 19) * fontSizeFactor).clamp(16.0, 26.0),
                                   fontWeight: item.isSos == true ? FontWeight.bold : FontWeight.w600,
                                   color: item.isSos == true
-                                      ? Colors.white // testo bianco per SOS
+                                      ? sosTextColor
                                       : item.key == 'logout'
-                                          ? Colors.red // testo rosso per logout
-                                          : Colors.black87,
+                                          ? logoutTextColor
+                                          : defaultTextColor,
                                   letterSpacing: item.isSos == true ? 1.2 : 0,
                                 ),
                               ),
                             ),
                             if (!item.isSos)
-                              const Icon(Icons.chevron_right, color: Colors.grey, size: 22),
+                              Icon(Icons.chevron_right, color: highContrast ? Colors.black : Colors.grey, size: 22),
                           ],
                         ),
                       ),

@@ -11,6 +11,8 @@ import 'sos.dart';
 import 'monitoring_section.dart';
 import 'med_diary.dart';
 import 'user_profile.dart';
+import 'package:provider/provider.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
 
 class HomePage extends StatefulWidget {
   final int? farmacoKeyToShow;
@@ -59,12 +61,43 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  String _getIconAsset(String baseName, bool highContrast) {
+    // Usa la versione nera se highContrast, altrimenti la versione verde
+    switch (baseName) {
+      case 'pills':
+        return highContrast
+            ? 'assets/icons/Pill_icon_black_v.svg'
+            : 'assets/icons/pills.svg';
+      case 'heartbeat':
+        return highContrast
+            ? 'assets/icons/Heartbeat_black_v.svg'
+            : 'assets/icons/heartbeat.svg';
+      case 'calendar':
+        return highContrast
+            ? 'assets/icons/Caldendar_black_v.svg'
+            : 'assets/icons/calendar.svg';
+      case 'sport':
+        return highContrast
+            ? 'assets/icons/Sport_black_v.svg'
+            : 'assets/icons/sport_food.svg';
+      case 'elder':
+        return highContrast
+            ? 'assets/icons/Elder_black_v.svg'
+            : 'assets/icons/elder_ic.svg';
+      default:
+        return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final access = context.watch<AccessibilitaModel>();
+    final highContrast = access.highContrast;
+    final fontSizeFactor = access.fontSizeFactor;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final double iconSize = screenWidth * 0.14;
-    final double cardHeight = screenHeight * 0.14;
+    final double iconSize = screenWidth * 0.14 * fontSizeFactor;
+    final double cardHeight = screenHeight * 0.16;
 
     if (_isLoading) {
       return BaseLayout(
@@ -83,12 +116,15 @@ class _HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(height: screenHeight * 0.01),
-            Text(
-              isCaregiver ? "Bentornata,\nFederica!" : "Bentornato,\nMichele!",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: screenWidth * 0.1,
-                fontWeight: FontWeight.bold,
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                isCaregiver ? "Bentornata,\nFederica!" : "Bentornato,\nMichele!",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: screenWidth * 0.092 * fontSizeFactor,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             const Divider(
@@ -106,11 +142,9 @@ class _HomePageState extends State<HomePage> {
                           height: cardHeight,
                           child: FeatureCard(
                             icon: SvgPicture.asset(
-                              'assets/icons/pills.svg',
+                              _getIconAsset('pills', highContrast),
                               height: iconSize,
                               width: iconSize,
-                              colorFilter: const ColorFilter.mode(
-                                  Color(0xFF5DB47F), BlendMode.srcIn),
                             ),
                             label: "Farmaci",
                             onTap: () {
@@ -130,11 +164,9 @@ class _HomePageState extends State<HomePage> {
                           height: cardHeight,
                           child: FeatureCard(
                             icon: SvgPicture.asset(
-                              'assets/icons/heartbeat.svg',
+                              _getIconAsset('heartbeat', highContrast),
                               height: iconSize,
                               width: iconSize,
-                              colorFilter: const ColorFilter.mode(
-                                  Color(0xFF5DB47F), BlendMode.srcIn),
                             ),
                             label: "Parametri",
                             onTap: () {
@@ -160,11 +192,9 @@ class _HomePageState extends State<HomePage> {
                           height: cardHeight,
                           child: FeatureCard(
                             icon: SvgPicture.asset(
-                              'assets/icons/calendar.svg',
+                              _getIconAsset('calendar', highContrast),
                               height: iconSize,
                               width: iconSize,
-                              colorFilter: const ColorFilter.mode(
-                                  Color(0xFF5DB47F), BlendMode.srcIn),
                             ),
                             label: "Agenda",
                             onTap: () {
@@ -183,8 +213,8 @@ class _HomePageState extends State<HomePage> {
                         child: SizedBox(
                           height: cardHeight,
                           child: isCaregiver
-                              ? _buildAssistitoCard(iconSize)
-                              : _buildConsigliCard(iconSize),
+                              ? _buildAssistitoCard(iconSize, highContrast, fontSizeFactor)
+                              : _buildConsigliCard(iconSize, highContrast, fontSizeFactor),
                         ),
                       ),
                     ],
@@ -215,14 +245,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildAssistitoCard(double iconSize) {
+  Widget _buildAssistitoCard(double iconSize, bool highContrast, double fontSizeFactor) {
     return FeatureCard(
       icon: SvgPicture.asset(
-        'assets/icons/elder_ic.svg',
+        _getIconAsset('elder', highContrast),
         height: iconSize,
         width: iconSize,
-        colorFilter:
-            const ColorFilter.mode(Color(0xFF5DB47F), BlendMode.srcIn),
       ),
       label: "Assistito",
       onTap: () {
@@ -236,14 +264,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildConsigliCard(double iconSize) {
+  Widget _buildConsigliCard(double iconSize, bool highContrast, double fontSizeFactor) {
     return FeatureCard(
       icon: SvgPicture.asset(
-        'assets/icons/sport_food.svg',
+        _getIconAsset('sport', highContrast),
         height: iconSize,
         width: iconSize,
-        colorFilter:
-            const ColorFilter.mode(Color(0xFF5DB47F), BlendMode.srcIn),
       ),
       label: "Salute",
       onTap: () {

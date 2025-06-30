@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 
 class CustomBottomNavBar extends StatelessWidget {
   /// Chiamato con 0=Menu, 1=Home, 2=Settings
@@ -7,16 +8,35 @@ class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
   /// Indica se il menu popup è aperto
   final bool isMenuOpen;
+  /// Accessibilità: alto contrasto
+  final bool highContrast;
+  /// Accessibilità: fattore dimensione testo
+  final double fontSize;
 
   const CustomBottomNavBar({
     super.key,
     this.onTap,
     this.currentIndex = 1,
     this.isMenuOpen = false,
+    this.highContrast = false,
+    this.fontSize = 1.0,
   });
 
   @override
   Widget build(BuildContext context) {
+    final Color navBgColor = highContrast ? Colors.black : const Color(0xFF5DB47F);
+    final Color iconActiveColor = highContrast ? Colors.yellow.shade700 : Colors.white;
+    final Color iconInactiveColor = highContrast ? Colors.yellow.shade200 : Colors.white70;
+    final Color homeBgColor = highContrast ? Colors.yellow.shade700 : const Color(0xFF375647);
+    final Color homeIconColor = highContrast ? Colors.black : Colors.white;
+    final Color borderColor = highContrast ? Colors.black : Colors.white;
+
+    // Limiti massimi per evitare overflow
+    final double maxHomeSize = 80;
+    final double homeSize = math.min(70 * fontSize, maxHomeSize);
+    final double homeIconSize = math.min(36 * fontSize, 40);
+    final double iconButtonSize = math.min(30 * fontSize, 36);
+
     return SizedBox(
       height: 90,
       child: Stack(
@@ -30,8 +50,9 @@ class CustomBottomNavBar extends StatelessWidget {
             child: Container(
               height: 60,
               decoration: BoxDecoration(
-                color: const Color(0xFF5DB47F),
+                color: navBgColor,
                 borderRadius: BorderRadius.circular(30),
+                border: highContrast ? Border.all(color: Colors.black, width: 2) : null,
               ),
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: Row(
@@ -42,16 +63,17 @@ class CustomBottomNavBar extends StatelessWidget {
                     decoration: isMenuOpen
                         ? BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2),
+                            border: Border.all(color: borderColor, width: 2),
                           )
                         : null,
                     child: IconButton(
-                      iconSize: 30,
+                      iconSize: iconButtonSize,
                       icon: Icon(
                         Icons.menu,
-                        color: isMenuOpen ? Colors.white : Colors.white70,
+                        color: isMenuOpen ? iconActiveColor : iconInactiveColor,
                       ),
                       onPressed: () => onTap?.call(0),
+                      tooltip: 'Menu',
                     ),
                   ),
                   // Impostazioni
@@ -59,16 +81,17 @@ class CustomBottomNavBar extends StatelessWidget {
                     decoration: currentIndex == 2
                         ? BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2),
+                            border: Border.all(color: borderColor, width: 2),
                           )
                         : null,
                     child: IconButton(
-                      iconSize: 30,
+                      iconSize: iconButtonSize,
                       icon: Icon(
                         Icons.settings,
-                        color: currentIndex == 2 ? Colors.white : Colors.white70,
+                        color: currentIndex == 2 ? iconActiveColor : iconInactiveColor,
                       ),
                       onPressed: () => onTap?.call(2),
+                      tooltip: 'Impostazioni',
                     ),
                   ),
                 ],
@@ -76,16 +99,16 @@ class CustomBottomNavBar extends StatelessWidget {
             ),
           ),
 
-          // Home centrale (sempre verde scuro)
+          // Home centrale (sempre evidenziata)
           Positioned(
             bottom: 5,
             child: GestureDetector(
               onTap: () => onTap?.call(1),
               child: Container(
-                width: 70,
-                height: 70,
+                width: homeSize,
+                height: homeSize,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF375647),
+                  color: homeBgColor,
                   shape: BoxShape.circle,
                   boxShadow: const [
                     BoxShadow(
@@ -95,10 +118,15 @@ class CustomBottomNavBar extends StatelessWidget {
                     ),
                   ],
                   border: currentIndex == 1
-                      ? Border.all(color: Colors.white, width: 3)
+                      ? Border.all(color: borderColor, width: 3)
                       : null,
                 ),
-                child: const Icon(Icons.home, size: 36, color: Colors.white),
+                child: Icon(
+                  Icons.home,
+                  size: homeIconSize,
+                  color: homeIconColor,
+                  semanticLabel: 'Home',
+                ),
               ),
             ),
           ),

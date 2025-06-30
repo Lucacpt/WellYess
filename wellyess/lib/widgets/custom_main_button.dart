@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
 
 class CustomMainButton extends StatelessWidget {
   final String text;
   final Color color;
   final VoidCallback onTap;
-  // MODIFICA: Aggiunto il campo opzionale per l'icona
   final IconData? icon;
 
   const CustomMainButton({
@@ -12,37 +13,53 @@ class CustomMainButton extends StatelessWidget {
     required this.text,
     required this.color,
     required this.onTap,
-    this.icon, // Icona opzionale
+    this.icon,
   });
 
   @override
   Widget build(BuildContext context) {
+    final access = context.watch<AccessibilitaModel>();
+    final fontSizeFactor = access.fontSizeFactor;
+    final highContrast = access.highContrast;
+
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
+    final double responsiveFontSize = screenWidth * 0.05 * fontSizeFactor;
+    final double responsiveIconSize = responsiveFontSize * 1.1;
+
     final buttonStyle = ElevatedButton.styleFrom(
-      backgroundColor: color,
+      backgroundColor: highContrast ? Colors.yellow.shade700 : color,
+      foregroundColor: highContrast ? Colors.black : Colors.white,
       padding: EdgeInsets.symmetric(vertical: screenHeight * 0.018),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(30),
+        side: highContrast ? const BorderSide(color: Colors.black, width: 2) : BorderSide.none,
       ),
       elevation: 3,
+      textStyle: TextStyle(
+        fontSize: responsiveFontSize,
+        fontWeight: FontWeight.w600,
+      ),
     );
 
     final textStyle = TextStyle(
-      color: Colors.white,
-      fontSize: screenWidth * 0.05,
+      color: highContrast ? Colors.black : Colors.white,
+      fontSize: responsiveFontSize,
       fontWeight: FontWeight.w600,
     );
 
     return SizedBox(
       width: double.infinity,
-      // MODIFICA: Logica per mostrare il pulsante con o senza icona
       child: icon != null
           ? ElevatedButton.icon(
               style: buttonStyle,
               onPressed: onTap,
-              icon: Icon(icon, color: Colors.white),
+              icon: Icon(
+                icon,
+                size: responsiveIconSize,
+                color: highContrast ? Colors.black : Colors.white,
+              ),
               label: Text(text, style: textStyle),
             )
           : ElevatedButton(

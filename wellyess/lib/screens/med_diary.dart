@@ -9,6 +9,9 @@ import '../widgets/base_layout.dart';
 import '../widgets/appointment_list.dart';
 import '../widgets/appointment_horizontal_day_scroller.dart';
 import '../widgets/appointment_week_navigation.dart';
+import '../widgets/custom_main_button.dart';
+import 'package:provider/provider.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
 
 class MedDiaryPage extends StatefulWidget {
   const MedDiaryPage({Key? key}) : super(key: key);
@@ -18,14 +21,12 @@ class MedDiaryPage extends StatefulWidget {
 
 class _MedDiaryPageState extends State<MedDiaryPage> {
   DateTime _selectedDate = DateTime.now();
-  // MODIFICA: Aggiunte variabili per gestire il tipo di utente
   UserType? _userType;
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // MODIFICA: Carica il tipo di utente all'avvio della pagina
     _loadUserType();
   }
 
@@ -49,7 +50,11 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
 
   @override
   Widget build(BuildContext context) {
-    // MODIFICA: Mostra un caricamento finché non si conosce l'utente
+    final access = context.watch<AccessibilitaModel>();
+    final fontSizeFactor = access.fontSizeFactor;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     if (_isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
@@ -59,69 +64,77 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
     final box = Hive.box<AppointmentModel>('appointments');
     final allAppointments = box.values.toList();
 
-    // MODIFICA: Passa il tipo di utente corretto al BaseLayout
     return BaseLayout(
       userType: _userType,
       onBackPressed: () => Navigator.of(context).pop(),
-      child: Column(
-        children: [
-          const SizedBox(height: 12),
-          Center(
-            child: Text(
-              'Agenda Medica',
-              style: TextStyle(
-                fontSize: MediaQuery.of(context).size.width * 0.08,
-                fontWeight: FontWeight.bold,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
+            .copyWith(bottom: screenHeight * 0.01),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Text(
+                'Agenda',
+                style: TextStyle(
+                  fontSize: screenWidth * 0.08 * fontSizeFactor,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-          WeekNavigator(
-            selectedDate: _selectedDate,
-            onWeekChanged: _onWeekChanged,
-          ),
-          HorizontalDayScroller(
-            selectedDate: _selectedDate,
-            allAppointments: allAppointments,
-            onDaySelected: _onDaySelected,
-          ),
-          const Divider(),
-          const SizedBox(height: 8),
-          Center(
-            child: Text(
-              'Visite ${DateFormat('d MMMM', 'it_IT').format(_selectedDate)}',
-              style: TextStyle(
-                fontSize: MediaQuery.of(context).size.width * 0.05,
-                fontWeight: FontWeight.w500,
+            const Divider(
+              color: Colors.grey,
+              thickness: 1,
+            ),
+            SizedBox(height: screenHeight * 0.01),
+            WeekNavigator(
+              selectedDate: _selectedDate,
+              onWeekChanged: _onWeekChanged,
+            ),
+            SizedBox(height: screenHeight * 0.01),
+            HorizontalDayScroller(
+              selectedDate: _selectedDate,
+              allAppointments: allAppointments,
+              onDaySelected: _onDaySelected,
+            ),
+            const Divider(
+              color: Colors.grey,
+              thickness: 1,
+            ),
+            Center(
+              child: Text(
+                'Visite ${DateFormat('d MMMM', 'it_IT').format(_selectedDate)}',
+                style: TextStyle(
+                  fontSize: screenWidth * 0.05 * fontSizeFactor,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Expanded(
-            child: AppointmentList(
-              appointments: allAppointments
-                  .where((a) =>
-                      a.dateTime.year == _selectedDate.year &&
-                      a.dateTime.month == _selectedDate.month &&
-                      a.dateTime.day == _selectedDate.day)
-                  .toList(),
+            SizedBox(height: screenHeight * 0.01),
+            Expanded(
+              child: AppointmentList(
+                appointments: allAppointments
+                    .where((a) =>
+                        a.dateTime.year == _selectedDate.year &&
+                        a.dateTime.month == _selectedDate.month &&
+                        a.dateTime.day == _selectedDate.day)
+                    .toList(),
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          ElevatedButton.icon(
-            icon: const Icon(Icons.add),
-            label: const Text('+ Aggiungi appuntamento'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF5DB47F),
-              minimumSize: const Size.fromHeight(50),
+            SizedBox(height: screenHeight * 0.012),
+            CustomMainButton(
+              text: 'Aggiungi visita',
+              color: const Color(0xFF5DB47F),
+              icon: Icons.add,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const NewVisitaScreen()),
+                );
+              },
             ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const NewVisitaScreen()),
-              );
-            },
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

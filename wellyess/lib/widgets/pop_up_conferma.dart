@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
 
 class PopUpConferma extends StatelessWidget {
   final String message;
@@ -12,16 +14,31 @@ class PopUpConferma extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final access = context.watch<AccessibilitaModel>();
+    final fontSizeFactor = access.fontSizeFactor;
+    final highContrast = access.highContrast;
+
+    final Color bgColor = highContrast ? Colors.yellow.shade700 : Colors.white;
+    final Color borderColor = highContrast ? Colors.black : Colors.transparent;
+    final Color textColor = highContrast ? Colors.black : Colors.black87;
+    final Color buttonBg = highContrast ? Colors.black : Colors.redAccent;
+    final Color iconColor = highContrast ? Colors.yellow.shade700 : Colors.white;
+
     return AlertDialog(
-      backgroundColor: Colors.white,
+      backgroundColor: bgColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
+        side: BorderSide(color: borderColor, width: highContrast ? 2 : 0),
       ),
       contentPadding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
       content: Text(
         message,
         textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontSize: (18 * fontSizeFactor).clamp(15.0, 24.0),
+          fontWeight: FontWeight.bold,
+          color: textColor,
+        ),
       ),
       actionsAlignment: MainAxisAlignment.center,
       actions: [
@@ -31,12 +48,12 @@ class PopUpConferma extends StatelessWidget {
             if (onConfirm != null) onConfirm!();
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.redAccent,
+            backgroundColor: buttonBg,
             shape: const CircleBorder(),
             padding: const EdgeInsets.all(16),
             elevation: 6,
           ),
-          child: const Icon(Icons.close, color: Colors.white, size: 28),
+          child: Icon(Icons.close, color: iconColor, size: 28),
         ),
       ],
     );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
 
 class WeekNavigator extends StatelessWidget {
   final DateTime selectedDate;
@@ -14,32 +16,50 @@ class WeekNavigator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final access = context.watch<AccessibilitaModel>();
+    final fontSize = access.fontSizeFactor;
+    final highContrast = access.highContrast;
 
     // Calcola l'intervallo di 4 giorni da visualizzare.
-    // Si basa sulla data attiva (`selectedDate`) per essere sempre coerente
-    // con il giorno evidenziato nel selettore sottostante.
     DateTime startOfRange = selectedDate.subtract(const Duration(days: 1));
     DateTime endOfRange = selectedDate.add(const Duration(days: 2));
 
     String formattedRange =
         "${DateFormat('d MMM', 'it_IT').format(startOfRange)} - ${DateFormat('d MMM yyyy', 'it_IT').format(endOfRange)}";
 
+    // Limita la crescita del font centrale
+    final double rangeFont = (screenWidth * 0.04 * fontSize).clamp(14.0, 20.0);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         IconButton(
-            icon: const Icon(Icons.arrow_back_ios),
-            // Quando si preme, comunica al genitore di spostare il range
-            // indietro di 4 giorni.
-            onPressed: () => onWeekChanged(-4)),
-        Text(formattedRange,
+          icon: Icon(Icons.arrow_back_ios,
+              size: (screenWidth * 0.06 * fontSize).clamp(18.0, 28.0),
+              color: highContrast ? Colors.black : Colors.grey.shade800),
+          onPressed: () => onWeekChanged(-4),
+          tooltip: 'Settimana precedente',
+        ),
+        Expanded(
+          child: Text(
+            formattedRange,
             style: TextStyle(
-                fontSize: screenWidth * 0.04, fontWeight: FontWeight.w500)),
+              fontSize: rangeFont,
+              fontWeight: FontWeight.w500,
+              color: highContrast ? Colors.black : Colors.grey.shade800,
+            ),
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+          ),
+        ),
         IconButton(
-            icon: const Icon(Icons.arrow_forward_ios),
-            // Quando si preme, comunica al genitore di spostare il range
-            // in avanti di 4 giorni.
-            onPressed: () => onWeekChanged(4)),
+          icon: Icon(Icons.arrow_forward_ios,
+              size: (screenWidth * 0.06 * fontSize).clamp(18.0, 28.0),
+              color: highContrast ? Colors.black : Colors.grey.shade800),
+          onPressed: () => onWeekChanged(4),
+          tooltip: 'Settimana successiva',
+        ),
       ],
     );
   }

@@ -7,6 +7,8 @@ import 'package:wellyess/screens/profilo_caregiver.dart';
 import 'package:wellyess/screens/user_profile.dart';
 import '../widgets/base_layout.dart';
 import 'accessibilita_section.dart';
+import 'package:provider/provider.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -39,15 +41,45 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
+  String _getIconAsset(String baseName, bool highContrast) {
+    switch (baseName) {
+      case 'account':
+        return highContrast
+            ? 'assets/icons/Account_Icon_black.svg'
+            : 'assets/icons/Account_Icon.svg';
+      case 'help':
+        return highContrast
+            ? 'assets/icons/Help_black.svg'
+            : 'assets/icons/Help.svg';
+      case 'accessibility':
+        return highContrast
+            ? 'assets/icons/Accessibility_black.svg'
+            : 'assets/icons/Accessibiliy Icon.svg';
+      case 'caregiver':
+        return highContrast
+            ? 'assets/icons/Caregiver_Icon_black.svg'
+            : 'assets/icons/Caregiver Icon.svg';
+      case 'logout':
+        return highContrast
+            ? 'assets/icons/Logout_black.svg'
+            : 'assets/icons/Logout.svg';
+      default:
+        return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
+    final access = context.watch<AccessibilitaModel>();
+    final fontSizeFactor = access.fontSizeFactor;
+    final highContrast = access.highContrast;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final double iconSize = screenWidth * 0.08;
+    final double iconSize = screenWidth * 0.08 * fontSizeFactor;
     final isCaregiver = _userType == UserType.caregiver;
 
     return BaseLayout(
@@ -62,13 +94,16 @@ class _SettingsPageState extends State<SettingsPage> {
             child: Text(
               'Impostazioni',
               style: TextStyle(
-                fontSize: screenWidth * 0.08,
+                fontSize: screenWidth * 0.08 * fontSizeFactor,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
           SizedBox(height: screenHeight * 0.02),
-          const Divider(),
+          const Divider(
+            color: Colors.grey,
+            thickness: 1,
+          ),
           // Solo il contenuto sottostante scorre
           Expanded(
             child: SingleChildScrollView(
@@ -81,11 +116,12 @@ class _SettingsPageState extends State<SettingsPage> {
                     SizedBox(height: screenHeight * 0.01),
                     _SettingsRow(
                       iconWidget: SvgPicture.asset(
-                        'assets/icons/Account_Icon.svg',
+                        _getIconAsset('account', highContrast),
                         width: iconSize,
                         height: iconSize,
                       ),
                       label: 'Profilo',
+                      fontSizeFactor: fontSizeFactor,
                       onTap: () {
                         Navigator.push(
                           context,
@@ -94,28 +130,36 @@ class _SettingsPageState extends State<SettingsPage> {
                         );
                       },
                     ),
-                    const Divider(),
+                    const Divider(
+                      color: Colors.grey,
+                      thickness: 1,
+                    ),
                     SizedBox(height: screenHeight * 0.025),
                     _SettingsRow(
                       iconWidget: SvgPicture.asset(
-                        'assets/icons/Help.svg',
+                        _getIconAsset('help', highContrast),
                         width: iconSize,
                         height: iconSize,
                       ),
                       label: 'Guida rapida',
+                      fontSizeFactor: fontSizeFactor,
                       onTap: () {
                           // Collegare alla pagina guida_rapida_section.dart
                       },
                     ),
-                    const Divider(),
+                    const Divider(
+                      color: Colors.grey,
+                      thickness: 1,
+                    ),
                     SizedBox(height: screenHeight * 0.025),
                     _SettingsRow(
                       iconWidget: SvgPicture.asset(
-                        'assets/icons/Accessibiliy Icon.svg',
+                        _getIconAsset('accessibility', highContrast),
                         width: iconSize,
                         height: iconSize,
                       ),
                       label: 'Accessibilità',
+                      fontSizeFactor: fontSizeFactor,
                       onTap: () {
                         Navigator.push(
                           context,
@@ -123,16 +167,21 @@ class _SettingsPageState extends State<SettingsPage> {
                             builder: (context) => const AccessibilitaSection(),
                           ),
                         );
-                      },                    ),
-                    const Divider(),
+                      },
+                    ),
+                    const Divider(
+                      color: Colors.grey,
+                      thickness: 1,
+                    ),
                     SizedBox(height: screenHeight * 0.025),
                     _SettingsRow(
                       iconWidget: SvgPicture.asset(
-                        'assets/icons/Caregiver Icon.svg',
+                        _getIconAsset('caregiver', highContrast),
                         width: iconSize,
                         height: iconSize,
                       ),
                       label: isCaregiver ? 'Assistito' : 'Assistente',
+                      fontSizeFactor: fontSizeFactor,
                       onTap: () {
                         if (isCaregiver) {
                           Navigator.push(
@@ -150,15 +199,19 @@ class _SettingsPageState extends State<SettingsPage> {
                         }
                       },
                     ),
-                    const Divider(),
+                    const Divider(
+                      color: Colors.grey,
+                      thickness: 1,
+                    ),
                     SizedBox(height: screenHeight * 0.025),
                     _SettingsRow(
                       iconWidget: SvgPicture.asset(
-                        'assets/icons/Logout.svg',
+                        _getIconAsset('logout', highContrast),
                         width: iconSize,
                         height: iconSize,
                       ),
                       label: 'Esci dal profilo',
+                      fontSizeFactor: fontSizeFactor,
                       onTap: () async {
                         final prefs = await SharedPreferences.getInstance();
                         await prefs.remove('userType');
@@ -169,7 +222,10 @@ class _SettingsPageState extends State<SettingsPage> {
                         );
                       },
                     ),
-                    const Divider(),
+                    const Divider(
+                      color: Colors.grey,
+                      thickness: 1,
+                    ),
                   ],
                 ),
               ),
@@ -186,12 +242,14 @@ class _SettingsRow extends StatelessWidget {
   final IconData? iconData;
   final Widget? iconWidget;
   final String label;
+  final double fontSizeFactor;
   final VoidCallback onTap;
 
   const _SettingsRow({
     this.iconData,
     this.iconWidget,
     required this.label,
+    required this.fontSizeFactor,
     required this.onTap,
   }) : assert(iconData != null || iconWidget != null,
             'È necessario fornire iconData o iconWidget');
@@ -206,7 +264,7 @@ class _SettingsRow extends StatelessWidget {
     } else {
       currentIcon = Icon(
         iconData!,
-        size: screenWidth * 0.08,
+        size: screenWidth * 0.08 * fontSizeFactor,
         color: Theme.of(context).brightness == Brightness.dark
             ? Colors.white70
             : Colors.black87,
@@ -230,9 +288,9 @@ class _SettingsRow extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
-                  textAlign: TextAlign.center,
+                  textAlign: TextAlign.center, // sempre centrato
                   style: TextStyle(
-                    fontSize: screenWidth * 0.045,
+                    fontSize: screenWidth * 0.045 * fontSizeFactor, // cresce con fontSizeFactor
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -240,7 +298,7 @@ class _SettingsRow extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only(right: screenWidth * 0.04),
                 child: Icon(Icons.arrow_forward_ios,
-                    size: screenWidth * 0.04, color: Colors.grey.shade600),
+                    size: screenWidth * 0.04 * fontSizeFactor, color: Colors.grey.shade600),
               ),
             ],
           ),
