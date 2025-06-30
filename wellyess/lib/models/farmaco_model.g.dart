@@ -22,13 +22,14 @@ class FarmacoModelAdapter extends TypeAdapter<FarmacoModel> {
       formaTerapeutica: fields[2] as String,
       orario: fields[3] as String,
       frequenza: fields[4] as String,
+      assunto: fields[5] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, FarmacoModel obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.nome)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class FarmacoModelAdapter extends TypeAdapter<FarmacoModel> {
       ..writeByte(3)
       ..write(obj.orario)
       ..writeByte(4)
-      ..write(obj.frequenza);
+      ..write(obj.frequenza)
+      ..writeByte(5)
+      ..write(obj.assunto);
   }
 
   @override
