@@ -122,7 +122,7 @@ class _HomePageState extends State<HomePage> {
                 isCaregiver ? "Bentornata,\nSvetlana!" : "Bentornato,\nMichele!",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: screenWidth * 0.092 * fontSizeFactor,
+                  fontSize: screenWidth * 0.075 * fontSizeFactor,
                   fontWeight: FontWeight.bold,
                 ),
               ),

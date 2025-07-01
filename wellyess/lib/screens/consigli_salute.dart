@@ -3,6 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../widgets/base_layout.dart';
 import 'consiglio_detail.dart';
 import '../utils/consigli_salute_data.dart';
+import 'package:provider/provider.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
 
 class ConsigliSalutePage extends StatefulWidget {
   const ConsigliSalutePage({super.key});
@@ -19,6 +21,11 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+
+    // Accessibilità
+    final access = context.watch<AccessibilitaModel>();
+    final fontSizeFactor = access.fontSizeFactor;
+    final highContrast = access.highContrast;
 
     // Responsive sizes
     final double horizontalPadding = screenWidth * 0.04;
@@ -76,7 +83,9 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
                             ? BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(
-                                    color: Colors.green.shade700,
+                                    color: highContrast
+                                        ? Colors.black
+                                        : Colors.green.shade700,
                                     width: 3,
                                   ),
                                 ),
@@ -86,10 +95,12 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
                           child: Text(
                             'Attività Fisica',
                             style: TextStyle(
-                              fontSize: tabFontSize,
-                              color: _currentTabIndex == 0
-                                  ? Colors.green.shade700
-                                  : Colors.grey.shade600,
+                              fontSize: (tabFontSize * fontSizeFactor).clamp(12, 19),
+                              color: highContrast
+                                  ? Colors.black
+                                  : (_currentTabIndex == 0
+                                      ? Colors.green.shade700
+                                      : Colors.grey.shade600),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -113,7 +124,9 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
                             ? BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(
-                                    color: Colors.green.shade700,
+                                    color: highContrast
+                                        ? Colors.black
+                                        : Colors.green.shade700,
                                     width: 3,
                                   ),
                                 ),
@@ -123,11 +136,13 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
                           child: Text(
                             'Alimentazione',
                             style: TextStyle(
-                              fontSize: tabFontSize,
+                              fontSize: (tabFontSize * fontSizeFactor).clamp(12, 19),
                               fontWeight: FontWeight.bold,
-                              color: _currentTabIndex == 1
-                                  ? Colors.green.shade700
-                                  : Colors.grey.shade600,
+                              color: highContrast
+                                  ? Colors.black
+                                  : (_currentTabIndex == 1
+                                      ? Colors.green.shade700
+                                      : Colors.grey.shade600),
                             ),
                           ),
                         ),
@@ -160,7 +175,12 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
                         return Card(
                           color: Colors.white,
                           elevation: 3,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            side: highContrast
+                                ? const BorderSide(color: Colors.black, width: 2)
+                                : BorderSide.none,
+                          ),
                           margin: EdgeInsets.symmetric(
                             vertical: screenHeight * 0.01,
                             horizontal: screenWidth * 0.01,
@@ -172,15 +192,18 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
                             ),
                             leading: SvgPicture.asset(
                               tip['svgAssetPath']!,
-                              height: iconSize,
-                              width: iconSize,
-                              colorFilter: ColorFilter.mode(Colors.green.shade700, BlendMode.srcIn),
+                              height: iconSize * fontSizeFactor,
+                              width: iconSize * fontSizeFactor,
+                              colorFilter: ColorFilter.mode(
+                                highContrast ? Colors.black : Colors.green.shade700,
+                                BlendMode.srcIn,
+                              ),
                             ),
                             title: Text(
                               tip['title']!,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: cardTitleFontSize,
+                                fontSize: cardTitleFontSize * fontSizeFactor,
                                 color: Colors.black,
                               ),
                               textAlign: TextAlign.center,
@@ -188,9 +211,11 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
                             subtitle: Text(
                               tip['subtitle']!,
                               style: TextStyle(
-                                fontSize: cardSubtitleFontSize,
+                                fontSize: cardSubtitleFontSize * fontSizeFactor,
                                 fontWeight: FontWeight.bold,
-                                color: const Color.fromARGB(255, 167, 167, 167),
+                                color: highContrast
+                                    ? Colors.grey[800]
+                                    : const Color.fromARGB(255, 167, 167, 167),
                               ),
                               textAlign: TextAlign.center,
                             ),

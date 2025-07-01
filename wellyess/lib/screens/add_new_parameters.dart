@@ -7,6 +7,8 @@ import 'package:wellyess/widgets/base_layout.dart';
 import 'package:wellyess/widgets/custom_main_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wellyess/models/user_model.dart';
+import 'package:provider/provider.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
 
 class AggiungiMonitoraggioPage extends StatefulWidget {
   const AggiungiMonitoraggioPage({super.key});
@@ -71,18 +73,22 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
     return result == true;
   }
 
-  Widget buildValueInput(String label, String key) {
+  Widget buildValueInput(String label, String key, double fontSize, bool highContrast) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        Text(label, style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: fontSize,
+          color: highContrast ? Colors.black : Colors.black,
+        )),
         const SizedBox(height: 10),
         Row(
           children: [
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: highContrast ? Colors.yellow.shade700 : Colors.white,
                   borderRadius: BorderRadius.circular(15),
                   boxShadow: [
                     BoxShadow(
@@ -92,6 +98,9 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
                       offset: const Offset(0, 3),
                     ),
                   ],
+                  border: highContrast
+                      ? Border.all(color: Colors.black, width: 2)
+                      : null,
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: TextField(
@@ -100,14 +109,17 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
                   decoration: const InputDecoration(
                     border: InputBorder.none,
                   ),
-                  style: const TextStyle(fontSize: 16),
+                  style: TextStyle(
+                    fontSize: fontSize,
+                    color: highContrast ? Colors.black : Colors.black,
+                  ),
                 ),
               ),
             ),
             const SizedBox(width: 10),
-            _IncrementDecrementButton(icon: Icons.remove, onTap: () => decrement(key)),
+            _IncrementDecrementButton(icon: Icons.remove, onTap: () => decrement(key), highContrast: highContrast),
             const SizedBox(width: 6),
-            _IncrementDecrementButton(icon: Icons.add, onTap: () => increment(key)),
+            _IncrementDecrementButton(icon: Icons.add, onTap: () => increment(key), highContrast: highContrast),
           ],
         ),
       ],
@@ -148,6 +160,16 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
     if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final access = context.watch<AccessibilitaModel>();
+    final fontSizeFactor = access.fontSizeFactor;
+    final highContrast = access.highContrast;
+
+    final double titleFontSize = (screenWidth * 0.08 * fontSizeFactor).clamp(22.0, 32.0);
+    final double fieldFontSize = (screenWidth * 0.05 * fontSizeFactor).clamp(15.0, 22.0);
+
     return WillPopScope(
       onWillPop: _showExitConfirmation,
       child: BaseLayout(
@@ -157,54 +179,79 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
             Navigator.pop(context);
           }
         },
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Center(
-                child: Text(
-                  'Aggiungi Monitoraggio',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // HEADER FISSO
+            Center(
+              child: Text(
+                'Aggiungi Monitoraggio',
+                style: TextStyle(
+                  fontSize: titleFontSize,
+                  fontWeight: FontWeight.bold,
+                  color: highContrast ? Colors.black : Colors.black87,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Divider(
+              color:Colors.grey,
+              thickness: 1
+            ),
+            // CONTENUTO SCORRIBILE
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Testo informativo per lo scorrimento
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          color: Colors.blue.shade700,
+                          size: (screenWidth * 0.06 * fontSizeFactor).clamp(18.0, 28.0),
+                        ),
+                        SizedBox(width: screenWidth * 0.02),
+                        Expanded(
+                          child: Text(
+                            "Scorri verso il basso per compilare tutti i campi.",
+                            style: TextStyle(
+                              fontSize: (screenWidth * 0.038 * fontSizeFactor).clamp(15.0, 24.0),
+                              fontStyle: FontStyle.italic,
+                              color: highContrast ? Colors.black : Colors.grey.shade700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: screenHeight * 0.025),
+                    buildValueInput('Minima (SYS)', 'SYS', fieldFontSize, highContrast),
+                    const SizedBox(height: 20),
+                    buildValueInput('Massima (DIA)', 'DIA', fieldFontSize, highContrast),
+                    const SizedBox(height: 20),
+                    buildValueInput('Frequenza Cardiaca (BPM)', 'BPM', fieldFontSize, highContrast),
+                    const SizedBox(height: 20),
+                    buildValueInput('Glicemia (HGT)', 'HGT', fieldFontSize, highContrast),
+                    const SizedBox(height: 20),
+                    buildValueInput('Saturazione (%SpO2)', 'SpO2', fieldFontSize, highContrast),
+                    const SizedBox(height: 20),
+                  ],
                 ),
               ),
-              const Divider(height: 40, thickness: 1.5),
-              buildValueInput('Minima (SYS)', 'SYS'),
-              const SizedBox(height: 20),
-              buildValueInput('Massima (DIA)', 'DIA'),
-              const SizedBox(height: 20),
-              buildValueInput('Frequenza Cardiaca (BPM)', 'BPM'),
-              const SizedBox(height: 20),
-              buildValueInput('Glicemia (HGT)', 'HGT'),
-              const SizedBox(height: 20),
-              buildValueInput('Saturazione (%SpO2)', 'SpO2'),
-              const SizedBox(height: 40),
-              CustomMainButton(
+            ),
+            // FOOTER FISSO
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
+                  .copyWith(bottom: screenHeight * 0.01, top: screenHeight * 0.01),
+              child: CustomMainButton(
                 text: 'Salva',
                 color: const Color(0xFF5DB47F),
                 onTap: _save,
               ),
-              const SizedBox(height: 10),
-              Center(
-                child: GestureDetector(
-                  onTap: () async {
-                    if (await _showExitConfirmation()) {
-                      Navigator.of(context).pop();
-                    }
-                  },
-                  child: const Text(
-                    'Annulla',
-                    style: TextStyle(
-                      color: Colors.black,
-                      decoration: TextDecoration.underline,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -214,8 +261,13 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
 class _IncrementDecrementButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
+  final bool highContrast;
 
-  const _IncrementDecrementButton({required this.icon, required this.onTap});
+  const _IncrementDecrementButton({
+    required this.icon,
+    required this.onTap,
+    required this.highContrast,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -229,10 +281,17 @@ class _IncrementDecrementButton extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: highContrast ? Colors.yellow.shade700 : Colors.white,
             borderRadius: BorderRadius.circular(8),
+            border: highContrast
+                ? Border.all(color: Colors.black, width: 2)
+                : null,
           ),
-          child: Icon(icon, color: const Color(0xFF5DB47F), size: 22),
+          child: Icon(
+            icon,
+            color: highContrast ? Colors.black : const Color(0xFF5DB47F), // <-- nero se contrasto attivo
+            size: 22,
+          ),
         ),
       ),
     );

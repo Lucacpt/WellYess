@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../widgets/base_layout.dart';
+import 'package:provider/provider.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
 
 class ConsiglioDetailPage extends StatelessWidget {
   final String title;
@@ -23,14 +25,19 @@ class ConsiglioDetailPage extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
+    // Accessibilità
+    final access = context.watch<AccessibilitaModel>();
+    final fontSizeFactor = access.fontSizeFactor;
+    final highContrast = access.highContrast;
+
     final double horizontalPadding = screenWidth * 0.04;
     final double verticalPadding = screenHeight * 0.015;
-    final double titleFontSize = screenWidth * 0.075;
-    final double subtitleFontSize = screenWidth * 0.045;
-    final double iconSize = screenWidth * 0.18;
-    final double descriptionFontSize = screenWidth * 0.042;
-    final double topicTitleFontSize = screenWidth * 0.048;
-    final double topicTextFontSize = screenWidth * 0.041;
+    final double titleFontSize = (screenWidth * 0.075 * fontSizeFactor).clamp(20.0, 36.0);
+    final double subtitleFontSize = (screenWidth * 0.045 * fontSizeFactor).clamp(14.0, 28.0);
+    final double iconSize = (screenWidth * 0.18 * fontSizeFactor).clamp(40.0, 90.0);
+    final double descriptionFontSize = (screenWidth * 0.042 * fontSizeFactor).clamp(13.0, 24.0);
+    final double topicTitleFontSize = (screenWidth * 0.048 * fontSizeFactor).clamp(14.0, 26.0);
+    final double topicTextFontSize = (screenWidth * 0.041 * fontSizeFactor).clamp(13.0, 22.0);
 
     return BaseLayout(
       onBackPressed: () => Navigator.of(context).pop(),
@@ -42,17 +49,20 @@ class ConsiglioDetailPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: screenHeight * 0.01),
             Text(
               title,
               style: TextStyle(
                 fontSize: titleFontSize,
                 fontWeight: FontWeight.bold,
+                color: highContrast ? Colors.black : Colors.green.shade900,
               ),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: screenHeight * 0.01),
-            const Divider(thickness: 1.5),
+            Divider(
+              thickness: 1,
+              color: Colors.grey,
+            ),
             SizedBox(height: screenHeight * 0.01),
             Expanded(
               child: SingleChildScrollView(
@@ -62,7 +72,7 @@ class ConsiglioDetailPage extends StatelessWidget {
                     Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white,
+                        color: highContrast ? Colors.yellow.shade100 : Colors.white,
                         boxShadow: [
                           BoxShadow(
                             color: Colors.green.withOpacity(0.15),
@@ -70,13 +80,19 @@ class ConsiglioDetailPage extends StatelessWidget {
                             offset: const Offset(0, 8),
                           ),
                         ],
+                        border: highContrast
+                            ? Border.all(color: Colors.black, width: 2)
+                            : null,
                       ),
                       padding: EdgeInsets.all(screenWidth * 0.06),
                       child: SvgPicture.asset(
                         svgAssetPath,
                         height: iconSize,
                         width: iconSize,
-                        colorFilter: ColorFilter.mode(Colors.green.shade700, BlendMode.srcIn),
+                        colorFilter: ColorFilter.mode(
+                          highContrast ? Colors.black : Colors.green.shade700,
+                          BlendMode.srcIn,
+                        ),
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.025),
@@ -85,7 +101,7 @@ class ConsiglioDetailPage extends StatelessWidget {
                       style: TextStyle(
                         fontSize: subtitleFontSize,
                         fontWeight: FontWeight.bold,
-                        color: Colors.green.shade900,
+                        color: highContrast ? Colors.black : Colors.green.shade900,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -94,7 +110,7 @@ class ConsiglioDetailPage extends StatelessWidget {
                       description,
                       style: TextStyle(
                         fontSize: descriptionFontSize,
-                        color: Colors.grey.shade800,
+                        color: highContrast ? Colors.black : Colors.grey.shade800,
                       ),
                       textAlign: TextAlign.justify,
                     ),
@@ -106,9 +122,12 @@ class ConsiglioDetailPage extends StatelessWidget {
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
-                          side: BorderSide(color: Colors.green.shade100, width: 1),
+                          side: BorderSide(
+                            color: highContrast ? Colors.black : Colors.green.shade100,
+                            width: 1.5,
+                          ),
                         ),
-                        color: Colors.white,
+                        color: highContrast ? Colors.yellow.shade100 : Colors.white,
                         child: Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: screenWidth * 0.04,
@@ -122,7 +141,7 @@ class ConsiglioDetailPage extends StatelessWidget {
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: topicTitleFontSize,
-                                  color: Colors.green.shade700,
+                                  color: highContrast ? Colors.black : Colors.green.shade700,
                                 ),
                               ),
                               SizedBox(height: 6),
@@ -133,13 +152,19 @@ class ConsiglioDetailPage extends StatelessWidget {
                                     (topic['text'] as List).map((item) => Row(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        const Text("• ", style: TextStyle(fontSize: 16)),
+                                        Text(
+                                          "• ",
+                                          style: TextStyle(
+                                            fontSize: topicTextFontSize,
+                                            color: highContrast ? Colors.black : Colors.green.shade700,
+                                          ),
+                                        ),
                                         Expanded(
                                           child: Text(
                                             item.toString(),
                                             style: TextStyle(
                                               fontSize: topicTextFontSize,
-                                              color: Colors.grey.shade800,
+                                              color: highContrast ? Colors.black : Colors.grey.shade800,
                                             ),
                                           ),
                                         ),
@@ -152,7 +177,7 @@ class ConsiglioDetailPage extends StatelessWidget {
                                   topic['text']?.toString() ?? '',
                                   style: TextStyle(
                                     fontSize: topicTextFontSize,
-                                    color: Colors.grey.shade800,
+                                    color: highContrast ? Colors.black : Colors.grey.shade800,
                                   ),
                                 ),
                             ],
@@ -161,13 +186,17 @@ class ConsiglioDetailPage extends StatelessWidget {
                       ),
                     )),
                     SizedBox(height: screenHeight * 0.01),
-                    Icon(Icons.info_outline, color: Colors.green.shade700, size: screenWidth * 0.09),
+                    Icon(
+                      Icons.info_outline,
+                      color: highContrast ? Colors.black : Colors.green.shade700,
+                      size: (screenWidth * 0.09 * fontSizeFactor).clamp(24.0, 40.0),
+                    ),
                     SizedBox(height: screenHeight * 0.01),
                     Text(
                       "Segui questo consiglio per migliorare il tuo benessere quotidiano!",
                       style: TextStyle(
-                        fontSize: screenWidth * 0.038,
-                        color: Colors.green.shade700,
+                        fontSize: (screenWidth * 0.038 * fontSizeFactor).clamp(12.0, 20.0),
+                        color: highContrast ? Colors.black : Colors.green.shade700,
                         fontStyle: FontStyle.italic,
                       ),
                       textAlign: TextAlign.center,

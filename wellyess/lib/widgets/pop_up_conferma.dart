@@ -18,17 +18,17 @@ class PopUpConferma extends StatelessWidget {
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
-    final Color bgColor = highContrast ? Colors.yellow.shade700 : Colors.white;
-    final Color borderColor = highContrast ? Colors.black : Colors.transparent;
-    final Color textColor = highContrast ? Colors.black : Colors.black87;
+    final Color bgColor = highContrast ? Colors.black : Colors.white;
+    final Color borderColor = highContrast ? Colors.yellow : Colors.transparent;
+    final Color textColor = highContrast ? Colors.yellow : Colors.black87;
     final Color buttonBg = highContrast ? Colors.black : Colors.redAccent;
-    final Color iconColor = highContrast ? Colors.yellow.shade700 : Colors.white;
+    final Color iconColor = highContrast ? Colors.yellow : Colors.white;
 
     return AlertDialog(
       backgroundColor: bgColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
-        side: BorderSide(color: borderColor, width: highContrast ? 2 : 0),
+        side: BorderSide(color: borderColor, width: highContrast ? 3 : 0),
       ),
       contentPadding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
       content: Text(
@@ -52,6 +52,9 @@ class PopUpConferma extends StatelessWidget {
             shape: const CircleBorder(),
             padding: const EdgeInsets.all(16),
             elevation: 6,
+            side: highContrast
+                ? const BorderSide(color: Colors.yellow, width: 2)
+                : BorderSide.none,
           ),
           child: Icon(Icons.close, color: iconColor, size: 28),
         ),

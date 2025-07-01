@@ -3,6 +3,8 @@ import '../widgets/base_layout.dart';
 import '../widgets/custom_main_button.dart';
 import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wellyess/models/user_model.dart';
 
 class AccessibilitaSection extends StatefulWidget {
   const AccessibilitaSection({super.key});
@@ -14,6 +16,8 @@ class AccessibilitaSection extends StatefulWidget {
 class _AccessibilitaSectionState extends State<AccessibilitaSection> {
   double _fontSize = 1.0;
   bool _highContrast = false;
+  UserType? _userType;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -26,6 +30,21 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
         _highContrast = access.highContrast;
       });
     });
+    _loadUserType();
+  }
+
+  Future<void> _loadUserType() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userTypeString = prefs.getString('userType');
+    if (mounted) {
+      setState(() {
+        if (userTypeString != null) {
+          _userType =
+              UserType.values.firstWhere((e) => e.toString() == userTypeString);
+        }
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -33,8 +52,13 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
+    if (_isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return BaseLayout(
       currentIndex: 2,
+      userType: _userType,
       onBackPressed: () => Navigator.of(context).pop(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -6,9 +6,10 @@ import 'package:wellyess/widgets/input_field.dart';
 import 'package:wellyess/widgets/custom_main_button.dart';
 import 'package:wellyess/widgets/pop_up_conferma.dart';
 import 'package:wellyess/widgets/time_picker_field.dart';
-import 'package:wellyess/widgets/date_picker_field.dart'; // aggiungi questo import
+import 'package:wellyess/widgets/date_picker_field.dart'; 
 import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
+import 'package:wellyess/widgets/confirm_popup.dart';
 
 class NewVisitaScreen extends StatefulWidget {
   const NewVisitaScreen({Key? key}) : super(key: key);
@@ -52,6 +53,20 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
     Navigator.of(context).pop();
   }
 
+  Future<bool> _showExitConfirmation() async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => ConfirmDialog(
+        titleText: 'Vuoi davvero annullare?\nTutti i dati inseriti andranno persi.',
+        cancelButtonText: 'No, riprendi',
+        confirmButtonText: 'Sì, esci',
+        onCancel: () => Navigator.of(context).pop(false),
+        onConfirm: () => Navigator.of(context).pop(true),
+      ),
+    );
+    return result == true;
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -62,113 +77,119 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
-    return BaseLayout(
-      onBackPressed: () => Navigator.of(context).pop(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // HEADER FISSO
-          SizedBox(height: screenHeight * 0.02),
-          Center(
-            child: Text(
-              'Aggiungi Visita',
-              style: TextStyle(
-                fontSize: (screenWidth * 0.08 * fontSizeFactor).clamp(22.0, 36.0),
-                fontWeight: FontWeight.bold,
-                color: highContrast ? Colors.black : Colors.black87,
+    return WillPopScope(
+      onWillPop: _showExitConfirmation,
+      child: BaseLayout(
+        onBackPressed: () async {
+          if (await _showExitConfirmation()) {
+            Navigator.of(context).pop();
+          }
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // HEADER FISSO
+            Center(
+              child: Text(
+                'Aggiungi Visita',
+                style: TextStyle(
+                  fontSize: (screenWidth * 0.08 * fontSizeFactor).clamp(22.0, 36.0),
+                  fontWeight: FontWeight.bold,
+                  color: highContrast ? Colors.black : Colors.black87,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
-          ),
-          Divider(
-            color: Colors.grey,
-            thickness: 1,
-          ),
-          // CONTENUTO SCORRIBILE
-          Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
-                  .copyWith(bottom: screenHeight * 0.01),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Testo informativo
-                  Row(
-                    children: [
-                      Icon(Icons.info_outline,
-                          color: Colors.blue.shade700,
-                          size: (screenWidth * 0.06 * fontSizeFactor).clamp(18.0, 28.0)),
-                      SizedBox(width: screenWidth * 0.02),
-                      Expanded(
-                        child: Text(
-                          "Compila tutti i campi per aggiungere una visita.",
-                          style: TextStyle(
-                            fontSize: (screenWidth * 0.038 * fontSizeFactor).clamp(15.0, 24.0),
-                            fontStyle: FontStyle.italic,
-                            color: highContrast ? Colors.black : Colors.grey.shade700,
+            Divider(
+              color: Colors.grey,
+              thickness: 1,
+            ),
+            // CONTENUTO SCORRIBILE
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
+                    .copyWith(bottom: screenHeight * 0.01),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Testo informativo
+                    Row(
+                      children: [
+                        Icon(Icons.info_outline,
+                            color: Colors.blue.shade700,
+                            size: (screenWidth * 0.06 * fontSizeFactor).clamp(18.0, 28.0)),
+                        SizedBox(width: screenWidth * 0.02),
+                        Expanded(
+                          child: Text(
+                            "Compila tutti i campi per aggiungere una visita.",
+                            style: TextStyle(
+                              fontSize: (screenWidth * 0.038 * fontSizeFactor).clamp(15.0, 24.0),
+                              fontStyle: FontStyle.italic,
+                              color: highContrast ? Colors.black : Colors.grey.shade700,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: screenHeight * 0.025),
-                  Text('Tipo di visita',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: (screenWidth * 0.05 * fontSizeFactor).clamp(15.0, 22.0),
-                          color: highContrast ? Colors.black : Colors.black)),
-                  InputField(controller: _tipoCtrl, placeholder: 'Tipo di visita'),
-                  SizedBox(height: screenHeight * 0.025),
-                  Text('Luogo',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: (screenWidth * 0.05 * fontSizeFactor).clamp(15.0, 22.0),
-                          color: highContrast ? Colors.black : Colors.black)),
-                  InputField(controller: _luogoCtrl, placeholder: 'Luogo'),
-                  SizedBox(height: screenHeight * 0.025),
-                  Text('Data',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: (screenWidth * 0.05 * fontSizeFactor).clamp(15.0, 22.0),
-                          color: highContrast ? Colors.black : Colors.black)),
-                  DatePickerField(
-                    value: _selectedDate,
-                    placeholder: 'Seleziona data',
-                    onChanged: (d) => setState(() => _selectedDate = d),
-                  ),
-                  SizedBox(height: screenHeight * 0.025),
-                  Text('Orario',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: (screenWidth * 0.05 * fontSizeFactor).clamp(15.0, 22.0),
-                          color: highContrast ? Colors.black : Colors.black)),
-                  TimePickerField(
-                    value: _selectedTime,
-                    placeholder: 'Seleziona orario',
-                    onChanged: (v) => setState(() => _selectedTime = v),
-                  ),
-                  SizedBox(height: screenHeight * 0.025),
-                  Text('Note',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: (screenWidth * 0.05 * fontSizeFactor).clamp(15.0, 22.0),
-                          color: highContrast ? Colors.black : Colors.black)),
-                  InputField(controller: _noteCtrl, placeholder: 'Note'),
-                  SizedBox(height: screenHeight * 0.02),
-                ],
+                      ],
+                    ),
+                    SizedBox(height: screenHeight * 0.025),
+                    Text('Tipo di visita',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: (screenWidth * 0.05 * fontSizeFactor).clamp(15.0, 22.0),
+                            color: highContrast ? Colors.black : Colors.black)),
+                    InputField(controller: _tipoCtrl, placeholder: 'Tipo di visita'),
+                    SizedBox(height: screenHeight * 0.025),
+                    Text('Luogo',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: (screenWidth * 0.05 * fontSizeFactor).clamp(15.0, 22.0),
+                            color: highContrast ? Colors.black : Colors.black)),
+                    InputField(controller: _luogoCtrl, placeholder: 'Luogo'),
+                    SizedBox(height: screenHeight * 0.025),
+                    Text('Data',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: (screenWidth * 0.05 * fontSizeFactor).clamp(15.0, 22.0),
+                            color: highContrast ? Colors.black : Colors.black)),
+                    DatePickerField(
+                      value: _selectedDate,
+                      placeholder: 'Seleziona data',
+                      onChanged: (d) => setState(() => _selectedDate = d),
+                    ),
+                    SizedBox(height: screenHeight * 0.025),
+                    Text('Orario',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: (screenWidth * 0.05 * fontSizeFactor).clamp(15.0, 22.0),
+                            color: highContrast ? Colors.black : Colors.black)),
+                    TimePickerField(
+                      value: _selectedTime,
+                      placeholder: 'Seleziona orario',
+                      onChanged: (v) => setState(() => _selectedTime = v),
+                    ),
+                    SizedBox(height: screenHeight * 0.025),
+                    Text('Note',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: (screenWidth * 0.05 * fontSizeFactor).clamp(15.0, 22.0),
+                            color: highContrast ? Colors.black : Colors.black)),
+                    InputField(controller: _noteCtrl, placeholder: 'Note'),
+                    SizedBox(height: screenHeight * 0.02),
+                  ],
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
-                .copyWith(bottom: screenHeight * 0.01, top: screenHeight * 0.01),
-            child: CustomMainButton(
-              text: 'Salva',
-              color: const Color(0xFF5DB47F),
-              onTap: _save,
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
+                  .copyWith(bottom: screenHeight * 0.01, top: screenHeight * 0.01),
+              child: CustomMainButton(
+                text: 'Salva',
+                color: const Color(0xFF5DB47F),
+                onTap: _save,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

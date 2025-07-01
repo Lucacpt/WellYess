@@ -22,7 +22,7 @@ class SosRequestCard extends StatelessWidget {
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
-    final Color cardColor = highContrast ? Colors.yellow.shade100 : Colors.white;
+    final Color cardColor = Colors.white;
     final Color borderColor = highContrast
         ? Colors.black
         : (isNew ? Colors.red.shade300 : Colors.transparent);
@@ -75,7 +75,7 @@ class SosRequestCard extends StatelessWidget {
                     Text(
                       personName,
                       style: TextStyle(
-                        fontSize: (screenWidth * 0.045 * fontSizeFactor).clamp(14.0, 20.0),
+                        fontSize: (screenWidth * 0.045 * fontSizeFactor).clamp(14.0, 25.0),
                         fontWeight: FontWeight.bold,
                         color: personTextColor,
                       ),
@@ -84,7 +84,7 @@ class SosRequestCard extends StatelessWidget {
                     Text(
                       timestamp,
                       style: TextStyle(
-                        fontSize: (screenWidth * 0.038 * fontSizeFactor).clamp(12.0, 16.0),
+                        fontSize: (screenWidth * 0.038 * fontSizeFactor).clamp(12.0, 20.0),
                         color: timestampColor,
                       ),
                     ),
@@ -103,7 +103,7 @@ class SosRequestCard extends StatelessWidget {
                   style: TextStyle(
                     color: gestitaColor,
                     fontWeight: FontWeight.bold,
-                    fontSize: (screenWidth * 0.038 * fontSizeFactor).clamp(12.0, 16.0),
+                    fontSize: (screenWidth * 0.038 * fontSizeFactor).clamp(12.0, 20.0),
                   ),
                 ),
             ],
