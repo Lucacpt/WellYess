@@ -62,6 +62,7 @@ class _BaseLayoutState extends State<BaseLayout> {
     final profilePage = const ProfiloUtente();
 
     return Scaffold(
+      resizeToAvoidBottomInset: false, 
       backgroundColor: highContrast ? Colors.white : const Color(0xFFF5F7FF),
       body: SafeArea(
         child: Stack(

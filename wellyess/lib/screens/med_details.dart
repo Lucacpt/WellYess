@@ -7,6 +7,8 @@ import 'package:wellyess/models/farmaco_model.dart';
 import 'package:wellyess/widgets/custom_main_button.dart';
 import 'package:wellyess/widgets/confirm_popup.dart';
 import 'package:wellyess/models/user_model.dart';
+import 'package:provider/provider.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
 
 class DettagliFarmacoPage extends StatefulWidget {
   final FarmacoModel farmaco;
@@ -51,6 +53,11 @@ class _DettagliFarmacoPageState extends State<DettagliFarmacoPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
+    // Accessibilità
+    final access = context.watch<AccessibilitaModel>();
+    final fontSizeFactor = access.fontSizeFactor;
+    final highContrast = access.highContrast;
+
     if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
@@ -75,21 +82,44 @@ class _DettagliFarmacoPageState extends State<DettagliFarmacoPage> {
                       child: Text(
                         'Dettagli farmaco',
                         style: TextStyle(
-                            fontSize: screenWidth * 0.08,
-                            fontWeight: FontWeight.bold),
+                          fontSize: (screenWidth * 0.08 * fontSizeFactor)
+                              .clamp(30.0, 35.0),
+                          fontWeight: FontWeight.bold,
+                          color: highContrast ? Colors.black : Colors.black87,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                    
-                    Divider(thickness: 1.2, height: screenHeight * 0.05),
-                    SizedBox(height: screenHeight * 0.02),                    
-                    
+                    Divider(
+                      color: Colors.grey,
+                      thickness: 1,
+                    ),
+                    SizedBox(height: screenHeight * 0.04),
+
+                    // DETTAGLI FARMACO
                     InfoRow(label: 'Nome', value: widget.farmaco.nome),
-                    const Divider(),
+                    Divider(
+                      color: Colors.grey,
+                      thickness: 1,
+                    ),                    
+                    SizedBox(height: screenHeight * 0.02),
                     InfoRow(label: 'Dose', value: widget.farmaco.dose),
-                    const Divider(),
+                    Divider(
+                      color: Colors.grey,
+                      thickness: 1,
+                    ),
+                    SizedBox(height: screenHeight * 0.02),
                     InfoRow(label: 'Forma', value: widget.farmaco.formaTerapeutica),
-                    const Divider(),
+                    Divider(
+                      color: Colors.grey,
+                      thickness: 1,
+                    ),
+                    SizedBox(height: screenHeight * 0.02),
                     InfoRow(label: 'Orario', value: widget.farmaco.orario),
+                    Divider(
+                      color: Colors.grey,
+                      thickness: 1,
+                    ),  
                   ],
                 ),
               ),

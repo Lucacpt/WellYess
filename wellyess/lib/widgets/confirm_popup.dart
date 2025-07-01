@@ -69,7 +69,7 @@ class ConfirmDialog extends StatelessWidget {
           child: Text(
             cancelButtonText,
             style: TextStyle(
-              fontSize: (w * 0.045 * fontSizeFactor).clamp(14.0, 22.0),
+              fontSize: (w * 0.045 * fontSizeFactor).clamp(14.0, 18.0),
               color: buttonTextColor,
               fontWeight: FontWeight.bold,
             ),
@@ -92,7 +92,7 @@ class ConfirmDialog extends StatelessWidget {
           child: Text(
             confirmButtonText,
             style: TextStyle(
-              fontSize: (w * 0.045 * fontSizeFactor).clamp(14.0, 22.0),
+              fontSize: (w * 0.045 * fontSizeFactor).clamp(14.0, 18.0),
               color: buttonTextColor,
               fontWeight: FontWeight.bold,
             ),

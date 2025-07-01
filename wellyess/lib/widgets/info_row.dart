@@ -26,14 +26,14 @@ class InfoRow extends StatelessWidget {
           label,
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: screenWidth * 0.045 * fontSizeFactor,
+            fontSize: screenWidth * 0.050 * fontSizeFactor,
             color: highContrast ? Colors.black : Colors.black,
           ),
         ),
         Text(
           value,
           style: TextStyle(
-            fontSize: screenWidth * 0.045 * fontSizeFactor,
+            fontSize: screenWidth * 0.050 * fontSizeFactor,
             color: highContrast ? Colors.black : Colors.black,
           ),
         ),

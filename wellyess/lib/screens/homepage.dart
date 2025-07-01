@@ -119,7 +119,7 @@ class _HomePageState extends State<HomePage> {
             Align(
               alignment: Alignment.center,
               child: Text(
-                isCaregiver ? "Bentornata,\nFederica!" : "Bentornato,\nMichele!",
+                isCaregiver ? "Bentornata,\nSvetlana!" : "Bentornato,\nMichele!",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: screenWidth * 0.092 * fontSizeFactor,

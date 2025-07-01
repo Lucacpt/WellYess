@@ -94,7 +94,7 @@ class ProfiloUtente extends StatelessWidget {
                 // MODIFICA: La logica if/else ora usa la nuova variabile
                 if (!showElderProfile) ...[
                   // Mostra i dati del caregiver solo se non stiamo forzando la vista anziano
-                  const InfoRow(label: 'Data nascita', value: '30/10/1991'),
+                  const InfoRow(label: 'Data Nascita', value: '13/11/\'91'),
                   const Divider(
                     color: Colors.grey,
                     thickness: 1,
@@ -114,20 +114,20 @@ class ProfiloUtente extends StatelessWidget {
                   ),
                   SizedBox(height: screenHeight * 0.018),
                   const InfoRow(
-                      label: 'Email', value: 'federica.rossi@email.com'),
+                      label: 'Email', value: 'nowak@ex.com'),
                   const Divider(
                     color: Colors.grey,
                     thickness: 1,
                   ),
                   SizedBox(height: screenHeight * 0.018),
-                  const InfoRow(label: 'Telefono', value: '333 1234567'),
+                  const InfoRow(label: 'Telefono', value: '3331234567'),
                   const Divider(
                     color: Colors.grey,
                     thickness: 1,
                   ),
                 ] else ...[
                   // Mostra i dati dell'anziano in tutti gli altri casi
-                  const InfoRow(label: 'Data nascita', value: '15/05/1948'),
+                  const InfoRow(label: 'Data nascita', value: '15/05/\'48'),
                   const Divider(
                     color: Colors.grey,
                     thickness: 1,
@@ -151,7 +151,7 @@ class ProfiloUtente extends StatelessWidget {
                     thickness: 1,
                   ),                  
                   SizedBox(height: screenHeight * 0.018),
-                  const InfoRow(label: 'Gruppo sanguigno', value: 'A+'),
+                  const InfoRow(label: 'Gruppo sanguigno', value: 'A'),
                   const Divider(
                     color: Colors.grey,
                     thickness: 1,

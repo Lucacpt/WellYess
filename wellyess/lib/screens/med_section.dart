@@ -12,6 +12,8 @@ import 'package:wellyess/widgets/confirm_popup.dart';
 import 'package:wellyess/widgets/med_legenda.dart';
 import 'package:wellyess/widgets/custom_main_button.dart';
 import 'package:wellyess/widgets/med_card.dart';
+import 'package:provider/provider.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
 
 class FarmaciPage extends StatefulWidget {
   final int? farmacoKeyToShow;
@@ -99,12 +101,16 @@ class _FarmaciPageState extends State<FarmaciPage> {
 
   @override
   Widget build(BuildContext context) {
+    final access = context.watch<AccessibilitaModel>();
+    final fontSizeFactor = access.fontSizeFactor;
+    final highContrast = access.highContrast;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+      return BaseLayout(
+        userType: _userType,
+        child: const Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -114,31 +120,43 @@ class _FarmaciPageState extends State<FarmaciPage> {
       userType: _userType,
       currentIndex: 1,
       onBackPressed: () => Navigator.of(context).pop(),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
-            .copyWith(bottom: screenHeight * 0.01),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // HEADER FISSO
+          SizedBox(height: screenHeight * 0.01),
+          Align(
+            alignment: Alignment.center,
+            child: Text(
+              'Farmaci',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: (screenWidth * 0.08 * fontSizeFactor),
+                fontWeight: FontWeight.bold,
+                color: highContrast ? Colors.black : Colors.black87,
+              ),
+            ),
+          ),
+          Divider(
+            color: Colors.grey,
+            thickness: 1,
+          ),
+          // CONTENUTO SCORRIBILE
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
+                    .copyWith(bottom: screenHeight * 0.01),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Center(
-                      child: Text(
-                        'Farmaci',
-                        style: TextStyle(
-                            fontSize: screenWidth * 0.08,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Divider(thickness: 1.5, height: screenHeight * 0.05),
                     Text(
                       'Farmaci di Oggi',
                       style: TextStyle(
-                          fontSize: screenWidth * 0.055,
-                          fontWeight: FontWeight.bold),
+                        fontSize: (screenWidth * 0.055 * fontSizeFactor),
+                        fontWeight: FontWeight.bold,
+                        color: highContrast ? Colors.black : Colors.black87,
+                      ),
                     ),
                     SizedBox(height: screenHeight * 0.025),
                     const Row(
@@ -150,25 +168,25 @@ class _FarmaciPageState extends State<FarmaciPage> {
                       ],
                     ),
                     SizedBox(height: screenHeight * 0.02),
-                    if (!isCaregiver)
-                      Row(
-                        children: [
-                          Icon(Icons.info_outline,
-                              color: Colors.blue.shade700,
-                              size: screenWidth * 0.06),
-                          SizedBox(width: screenWidth * 0.02),
-                          Expanded(
-                            child: Text(
-                              "Tocca un farmaco per segnarlo come 'Assunto' o 'Saltato'.",
-                              style: TextStyle(
-                                fontSize: screenWidth * 0.04,
-                                fontStyle: FontStyle.italic,
-                                color: Colors.grey.shade700,
-                              ),
+                    // TESTO INFORMATIVO
+                    Row(
+                      children: [
+                        Icon(Icons.info_outline,
+                            color: Colors.blue.shade700,
+                            size: (screenWidth * 0.06 * fontSizeFactor).clamp(18.0, 28.0)),
+                        SizedBox(width: screenWidth * 0.02),
+                        Expanded(
+                          child: Text(
+                            "Tocca un farmaco per cambiare lo stato di assunzione.",
+                            style: TextStyle(
+                              fontSize: (screenWidth * 0.038 * fontSizeFactor).clamp(15.0, 24.0),
+                              fontStyle: FontStyle.italic,
+                              color: highContrast ? Colors.black : Colors.grey.shade700,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
+                    ),
                     SizedBox(height: screenHeight * 0.025),
                     ValueListenableBuilder<Box<FarmacoModel>>(
                       valueListenable: _farmaciBox.listenable(),
@@ -194,8 +212,8 @@ class _FarmaciPageState extends State<FarmaciPage> {
                               child: Text(
                                 'Nessun farmaco aggiunto.',
                                 style: TextStyle(
-                                  fontSize: screenWidth * 0.045,
-                                  color: Colors.grey.shade600,
+                                  fontSize: (screenWidth * 0.045 * fontSizeFactor),
+                                  color: highContrast ? Colors.black : Colors.grey.shade600,
                                 ),
                               ),
                             ),
@@ -210,13 +228,6 @@ class _FarmaciPageState extends State<FarmaciPage> {
                             final key = keys[i];
                             final f = box.get(key)!;
 
-                            // invece di farmaco:
-                            // final orario24h = _parseTime(farmaco.orario);
-                            // final orarioDaMostrare = orario24h != null
-                            //     ? DateFormat('HH:mm').format(orario24h)
-                            //     : farmaco.orario;
-
-                            // usa f:
                             final orario24h = _parseTime(f.orario);
                             final orarioDaMostrare = orario24h != null
                                 ? DateFormat('HH:mm').format(orario24h)
@@ -240,23 +251,25 @@ class _FarmaciPageState extends State<FarmaciPage> {
                         );
                       },
                     ),
+                    SizedBox(height: screenHeight * 0.012),
                   ],
                 ),
               ),
             ),
-            SizedBox(height: screenHeight * 0.012),
-            CustomMainButton(
-              text: 'Vedi tutti i farmaci',
-              color: const Color(0xFF5DB47F),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const AllMedsPage()),
-                );
-              },
-            ),
-          ],
-        ),
+          ),
+          // FOOTER FISSO
+          SizedBox(height: screenHeight * 0.02),
+          CustomMainButton(
+            text: 'Vedi tutti i farmaci',
+            color: const Color(0xFF5DB47F),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AllMedsPage()),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

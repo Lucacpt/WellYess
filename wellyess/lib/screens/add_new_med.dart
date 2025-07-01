@@ -10,7 +10,8 @@ import '../widgets/dropdown_field.dart';
 import '../widgets/time_picker_field.dart';
 import 'package:wellyess/models/user_model.dart';
 import 'package:wellyess/services/notification_service.dart';
-
+import 'package:provider/provider.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
 
 class AggiungiFarmacoPage extends StatefulWidget {
   const AggiungiFarmacoPage({super.key});
@@ -66,6 +67,11 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
+    // Accessibilità
+    final access = context.watch<AccessibilitaModel>();
+    final fontSizeFactor = access.fontSizeFactor;
+    final highContrast = access.highContrast;
+
     if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
@@ -76,6 +82,24 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // HEADER FISSO
+          SizedBox(height: screenHeight * 0.02),
+          Center(
+            child: Text(
+              'Aggiungi Farmaco',
+              style: TextStyle(
+                fontSize: (screenWidth * 0.08 * fontSizeFactor).clamp(22.0, 36.0),
+                fontWeight: FontWeight.bold,
+                color: highContrast ? Colors.black : Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Divider(
+            color: Colors.grey,
+            thickness: 1,
+          ),
+          // CONTENUTO SCORRIBILE
           Expanded(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
@@ -83,28 +107,20 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: screenHeight * 0.02),
-                  Center(
-                      child: Text('Aggiungi Farmaco',
-                          style: TextStyle(
-                              fontSize: screenWidth * 0.08,
-                              fontWeight: FontWeight.bold))),
-                  Divider(
-                      height: screenHeight * 0.05, thickness: 1.5),
                   // Testo informativo per lo scorrimento
                   Row(
                     children: [
                       Icon(Icons.info_outline,
                           color: Colors.blue.shade700,
-                          size: screenWidth * 0.06),
+                          size: (screenWidth * 0.06 * fontSizeFactor).clamp(18.0, 28.0)),
                       SizedBox(width: screenWidth * 0.02),
                       Expanded(
                         child: Text(
                           "Scorri verso il basso per compilare tutti i campi.",
                           style: TextStyle(
-                            fontSize: screenWidth * 0.038,
+                            fontSize: (screenWidth * 0.038 * fontSizeFactor).clamp(15.0, 24.0),
                             fontStyle: FontStyle.italic,
-                            color: Colors.grey.shade700,
+                            color: highContrast ? Colors.black : Colors.grey.shade700,
                           ),
                         ),
                       ),
@@ -114,7 +130,8 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
                   Text('Nome',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: screenWidth * 0.04)),
+                          fontSize: (screenWidth * 0.05 * fontSizeFactor).clamp(15.0, 22.0),
+                          color: Colors.black)),
                   InputField(
                       controller: nomeController,
                       placeholder: 'Nome del farmaco'),
@@ -122,7 +139,8 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
                   Text('Dose',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: screenWidth * 0.04)),
+                          fontSize: (screenWidth * 0.05 * fontSizeFactor).clamp(15.0, 22.0),
+                          color: highContrast ? Colors.black : Colors.black)),
                   DropdownField(
                       options: doseOptions,
                       value: doseValue,
@@ -132,7 +150,8 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
                   Text('Forma Terapeutica',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: screenWidth * 0.04)),
+                          fontSize: (screenWidth * 0.05 * fontSizeFactor).clamp(15.0, 22.0),
+                          color: highContrast ? Colors.black : Colors.black)),
                   DropdownField(
                       options: formaOptions,
                       value: formaTerapeuticaValue,
@@ -143,7 +162,8 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
                   Text('Orario',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: screenWidth * 0.04)),
+                          fontSize: (screenWidth * 0.05 * fontSizeFactor).clamp(15.0, 22.0),
+                          color: highContrast ? Colors.black : Colors.black)),
                   TimePickerField(
                       value: orarioValue,
                       placeholder: 'Seleziona orario',
@@ -152,7 +172,8 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
                   Text('Frequenza',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: screenWidth * 0.04)),
+                          fontSize: (screenWidth * 0.05 * fontSizeFactor).clamp(15.0, 22.0),
+                          color: highContrast ? Colors.black : Colors.black)),
                   DropdownField(
                       options: frequenzaOptions,
                       value: frequenzaValue,
@@ -169,7 +190,6 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
             child: CustomMainButton(
               text: 'Salva',
               color: const Color(0xFF5DB47F),
-              // SOSTITUISCI TUTTO IL BLOCCO onTap CON QUESTO
               onTap: () async {
                 // 1. Controllo di validità per evitare crash
                 if (nomeController.text.trim().isEmpty ||
