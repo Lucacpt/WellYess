@@ -52,7 +52,7 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/icons/Logo.png"  # ← il tuo logo
+  image_path: "assets/icons/wellyess.png"  # ← il tuo logo
   android_min_sdk: 21                  # ← evita di leggere build.gradle
 
 flutter:
