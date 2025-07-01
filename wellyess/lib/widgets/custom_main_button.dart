@@ -25,7 +25,7 @@ class CustomMainButton extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    final double responsiveFontSize = screenWidth * 0.05 * fontSizeFactor;
+    final double responsiveFontSize = (screenWidth * 0.05 * fontSizeFactor).clamp(16.0, 24.0);
     final double responsiveIconSize = responsiveFontSize * 1.1;
 
     final buttonStyle = ElevatedButton.styleFrom(

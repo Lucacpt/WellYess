@@ -10,6 +10,9 @@ import '../widgets/appointment_list.dart';
 import '../widgets/appointment_horizontal_day_scroller.dart';
 import '../widgets/appointment_week_navigation.dart';
 import '../widgets/custom_main_button.dart';
+import 'package:provider/provider.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
+
 
 class MedDiaryPage extends StatefulWidget {
   const MedDiaryPage({Key? key}) : super(key: key);
@@ -60,6 +63,11 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
     final box = Hive.box<AppointmentModel>('appointments');
     final allAppointments = box.values.toList();
 
+    // Accessibilità
+    final access = context.watch<AccessibilitaModel>();
+    final fontSizeFactor = access.fontSizeFactor;
+    final highContrast = access.highContrast;
+
     // MODIFICA: Passa il tipo di utente corretto al BaseLayout
     return BaseLayout(
       userType: _userType,
@@ -71,8 +79,9 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
             child: Text(
               'Agenda Medica',
               style: TextStyle(
-                fontSize: MediaQuery.of(context).size.width * 0.08,
+                fontSize: (MediaQuery.of(context).size.width * 0.08 * fontSizeFactor).clamp(22.0, 36.0),
                 fontWeight: FontWeight.bold,
+                color: highContrast ? Colors.black : Colors.black87,
               ),
             ),
           ),
@@ -91,12 +100,11 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
             child: Text(
               'Visite ${DateFormat('d MMMM', 'it_IT').format(_selectedDate)}',
               style: TextStyle(
-                fontSize: MediaQuery.of(context).size.width * 0.05,
+                fontSize: (MediaQuery.of(context).size.width * 0.05 * fontSizeFactor).clamp(16.0, 27.0),
                 fontWeight: FontWeight.w500,
               ),
             ),
           ),
-          const SizedBox(height: 8),
           Expanded(
             child: AppointmentList(
               appointments: allAppointments
@@ -107,7 +115,6 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
                   .toList(),
             ),
           ),
-          const SizedBox(height: 12),
           CustomMainButton(
             text: '+ Aggiungi appuntamento',
             color: const Color(0xFF5DB47F),

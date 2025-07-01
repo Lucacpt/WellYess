@@ -19,23 +19,25 @@ class InfoRow extends StatelessWidget {
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: screenWidth * 0.050 * fontSizeFactor,
+            fontSize: screenWidth * 0.06 * fontSizeFactor,
             color: highContrast ? Colors.black : Colors.black,
           ),
+          textAlign: TextAlign.left,
         ),
         Text(
           value,
           style: TextStyle(
-            fontSize: screenWidth * 0.050 * fontSizeFactor,
+            fontSize: screenWidth * 0.06 * fontSizeFactor,
             color: highContrast ? Colors.black : Colors.black,
           ),
+          textAlign: TextAlign.left,
         ),
       ],
     );

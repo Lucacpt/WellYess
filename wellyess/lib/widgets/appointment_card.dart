@@ -24,22 +24,29 @@ class AppointmentCard extends StatelessWidget {
       label:
           'Visita: ${appointment.tipoVisita}, il $dateStr alle $timeStr. Premi dettagli per maggiori informazioni.',
       child: Card(
-        color: highContrast ? Colors.black : Colors.white,
+        color: Colors.white,
         elevation: 3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: BorderSide(
+            color: highContrast ? Colors.black : Colors.transparent, // bordo nero solo se contrasto attivo
+            width: highContrast ? 2 : 0,
+          ),
+        ),
         child: ListTile(
           title: Text(
             appointment.tipoVisita,
             style: TextStyle(
               fontSize: 18 * fontSize,
               fontWeight: FontWeight.bold,
-              color: highContrast ? Colors.yellow : Colors.black,
+              color: Colors.black,
             ),
           ),
           subtitle: Text(
             "$dateStr  •  $timeStr",
             style: TextStyle(
               fontSize: 15 * fontSize,
-              color: highContrast ? Colors.yellow : Colors.grey.shade700,
+              color: Colors.black,
             ),
           ),
           trailing: Semantics(

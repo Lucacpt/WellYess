@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wellyess/widgets/base_layout.dart';
 import 'package:wellyess/widgets/info_row.dart';
+import 'package:provider/provider.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
 
 class DettagliVisitaScreen extends StatelessWidget {
   final Map<String, String> appointment;
@@ -12,9 +13,13 @@ class DettagliVisitaScreen extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
+    // Accessibilità
+    final access = context.watch<AccessibilitaModel>();
+    final fontSizeFactor = access.fontSizeFactor;
+    final highContrast = access.highContrast;
+
     return BaseLayout(
       onBackPressed: () => Navigator.of(context).pop(),
-      // MODIFICA: La struttura ora è una Column per separare la parte fissa da quella scorrevole.
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
         child: Column(
@@ -26,46 +31,44 @@ class DettagliVisitaScreen extends StatelessWidget {
               child: Text(
                 'Dettagli Visita',
                 style: TextStyle(
-                  fontSize: screenWidth * 0.07,
+                  fontSize: (screenWidth * 0.07 * fontSizeFactor).clamp(20.0, 32.0),
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: highContrast ? Colors.black : Colors.black87,
                 ),
               ),
             ),
             SizedBox(height: screenHeight * 0.01),
             Divider(color: Colors.grey.shade300, thickness: 1),
             SizedBox(height: screenHeight * 0.02),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: screenWidth * 0.08,
-                  width: screenWidth * 0.08,
-                  child: SvgPicture.asset(
-                    'assets/icons/med.svg',
-                  ),
-                ),
-                SizedBox(width: screenWidth * 0.03),
-                Flexible(
-                  child: Text(
-                    appointment['tipoVisita'] ?? '',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: screenWidth * 0.075,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Montserrat',
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: screenHeight * 0.03),
 
             // --- SEZIONE INFERIORE SCORREVOLE ---
             Expanded(
               child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
+                    .copyWith(bottom: screenHeight * 0.01),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // Tipo visita ora scorre con il resto
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(width: screenWidth * 0.03),
+                        Flexible(
+                          child: Text(
+                            appointment['tipoVisita'] ?? '',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: (screenWidth * 0.075 * fontSizeFactor).clamp(18.0, 32.0),
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Montserrat',
+                              color: highContrast ? Colors.black : Colors.black87,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: screenHeight * 0.03),
                     InfoRow(
                       label: 'Luogo',
                       value: appointment['luogo'] ?? '',
@@ -85,8 +88,8 @@ class DettagliVisitaScreen extends StatelessWidget {
                     const Divider(),
                     SizedBox(height: screenHeight * 0.02),
                     InfoRow(
-                      label: 'Medico',
-                      value: appointment['note'] ?? '', // Corretta la chiave
+                      label: 'Note',
+                      value: appointment['note'] ?? '',
                     ),
                     const Divider(),
                     SizedBox(height: screenHeight * 0.03),
@@ -96,7 +99,8 @@ class DettagliVisitaScreen extends StatelessWidget {
                         'Posizione Luogo Della Visita',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: screenWidth * 0.045,
+                          fontSize: (screenWidth * 0.045 * fontSizeFactor).clamp(22.0, 28.0),
+                          color: highContrast ? Colors.black : Colors.black87,
                         ),
                       ),
                     ),
