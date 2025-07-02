@@ -39,72 +39,82 @@ class FarmacoCard extends StatelessWidget {
             ? const BorderSide(color: Colors.blue, width: 3)
             : BorderSide.none);
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Card(
-        color: cardColor,
-        elevation: 4,
-        margin: EdgeInsets.symmetric(
-            vertical: screenWidth * 0.015),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
-          side: borderSide,
-        ),
-        child: IntrinsicHeight(
-          child: Row(
-            children: [
-              // Barra colorata
-              Container(
-                width: screenWidth * 0.06,
-                decoration: BoxDecoration(
-                  color: statoColore,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(15),
-                    bottomLeft: Radius.circular(15),
+    return Semantics(
+      button: onTap != null,
+      label: '$nome, orario $orario, ' +
+          (statoColore == Colors.green
+              ? 'assunto'
+              : statoColore == Colors.red
+                  ? 'saltato'
+                  : 'in attesa'),
+      hint: onTap != null ? 'Tocca per cambiare stato' : null,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Card(
+          color: cardColor,
+          elevation: 4,
+          margin: EdgeInsets.symmetric(
+              vertical: screenWidth * 0.015),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+            side: borderSide,
+          ),
+          child: IntrinsicHeight(
+            child: Row(
+              children: [
+                // Barra colorata
+                Container(
+                  width: screenWidth * 0.06,
+                  decoration: BoxDecoration(
+                    color: statoColore,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(15),
+                      bottomLeft: Radius.circular(15),
+                    ),
                   ),
                 ),
-              ),
-              // Contenuto
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.04,
-                      vertical: screenWidth * 0.03),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        orario,
-                        style: TextStyle(
-                          fontSize: (screenWidth * 0.06 * fontSizeFactor).clamp(14.0, 22.0),
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
-                        ),
-                      ),
-                      SizedBox(width: screenWidth * 0.03),
-                      Expanded(
-                        child: Text(
-                          dose != null
-                              ? '$nome $dose'
-                              : nome, // Mostra solo il nome se la dose è nulla
+                // Contenuto
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.04,
+                        vertical: screenWidth * 0.03),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          orario,
                           style: TextStyle(
                             fontSize: (screenWidth * 0.06 * fontSizeFactor).clamp(14.0, 22.0),
+                            fontWeight: FontWeight.bold,
                             color: textColor,
                           ),
-                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                      if (onTap != null)
-                        Icon(
-                          Icons.chevron_right,
-                          color: iconColor,
-                          size: (screenWidth * 0.06 * fontSizeFactor).clamp(18.0, 28.0),
+                        SizedBox(width: screenWidth * 0.03),
+                        Expanded(
+                          child: Text(
+                            dose != null
+                                ? '$nome $dose'
+                                : nome, // Mostra solo il nome se la dose è nulla
+                            style: TextStyle(
+                              fontSize: (screenWidth * 0.06 * fontSizeFactor).clamp(14.0, 22.0),
+                              color: textColor,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                    ],
+                        if (onTap != null)
+                          Icon(
+                            Icons.chevron_right,
+                            color: iconColor,
+                            size: (screenWidth * 0.06 * fontSizeFactor).clamp(18.0, 28.0),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

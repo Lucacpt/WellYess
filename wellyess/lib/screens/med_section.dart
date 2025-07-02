@@ -109,6 +109,7 @@ class _FarmaciPageState extends State<FarmaciPage> {
 
     if (_isLoading) {
       return BaseLayout(
+        pageTitle: 'Farmaci',
         userType: _userType,
         child: const Center(child: CircularProgressIndicator()),
       );
@@ -117,6 +118,7 @@ class _FarmaciPageState extends State<FarmaciPage> {
     final isCaregiver = _userType == UserType.caregiver;
 
     return BaseLayout(
+      pageTitle: 'Farmaci',
       userType: _userType,
       currentIndex: 1,
       onBackPressed: () => Navigator.of(context).pop(),

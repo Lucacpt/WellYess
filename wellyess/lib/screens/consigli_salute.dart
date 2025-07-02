@@ -40,6 +40,7 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
     final tips = _currentTabIndex == 0 ? attivitaFisicaTips : alimentazioneTips;
 
     return BaseLayout(
+      pageTitle: 'Consigli Di Salute',   // ← qui il titolo da annunciare
       onBackPressed: () => Navigator.of(context).pop(),
       child: Padding(
         padding: EdgeInsets.symmetric(

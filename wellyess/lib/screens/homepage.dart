@@ -101,6 +101,7 @@ class _HomePageState extends State<HomePage> {
 
     if (_isLoading) {
       return BaseLayout(
+        pageTitle: 'Home', // ← aggiunto
         userType: _userType,
         child: const Center(child: CircularProgressIndicator()),
       );
@@ -109,6 +110,7 @@ class _HomePageState extends State<HomePage> {
     final isCaregiver = _userType == UserType.caregiver;
 
     return BaseLayout(
+      pageTitle: 'Home', // ← aggiunto
       currentIndex: 1,
       userType: _userType,
       child: SingleChildScrollView(

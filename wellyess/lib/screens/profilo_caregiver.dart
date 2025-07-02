@@ -14,6 +14,7 @@ class CaregiverProfilePage extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return BaseLayout(
+      pageTitle: 'Profilo Caregiver', // ← aggiunto
       currentIndex: 1,
       onBackPressed: () => Navigator.of(context).pop(),
       child: Padding(

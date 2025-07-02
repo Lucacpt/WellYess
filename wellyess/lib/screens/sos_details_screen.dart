@@ -19,7 +19,8 @@ class SosDetailsScreen extends StatelessWidget {
     final highContrast = access.highContrast;
 
     return BaseLayout(
-      userType: UserType.caregiver, // Questa è una vista per il caregiver
+      pageTitle: 'Emergenza', // ← aggiunto
+      userType: UserType.caregiver,
       onBackPressed: () => Navigator.of(context).pop(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,

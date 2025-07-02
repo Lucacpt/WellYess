@@ -18,6 +18,7 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
 
 // Funzione di callback per Android Alarm Manager
 @pragma('vm:entry-point')
@@ -142,38 +143,40 @@ Future<void> main() async {
   );
 }
 
+/// Global route observer
+final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
+
 class MyApp extends StatelessWidget {
   final Widget startPage;
   const MyApp({Key? key, required this.startPage}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AccessibilitaModel>(
-      builder: (context, access, _) {
-        return MaterialApp(
-          title: 'WellYess',
-          debugShowCheckedModeBanner: false,
-          navigatorKey: navigatorKey,
-          theme: ThemeData(
-            brightness: Brightness.light,
-            colorScheme: access.highContrast
-                ? ColorScheme.light(
-                    primary: Colors.black,
-                    secondary: Colors.yellow.shade700,
-                    background: Colors.white,
-                    onPrimary: Colors.yellow.shade700,
-                  )
-                : ColorScheme.light(
-                    primary: const Color(0xFF5DB47F),
-                    secondary: Colors.teal,
-                  ),
-            textTheme: Theme.of(context).textTheme.apply(
-                  fontSizeFactor: access.fontSizeFactor,
-                ),
-          ),
-          home: startPage,
-        );
-      },
+    // Recupera le impostazioni di accessibilità
+    final access = context.watch<AccessibilitaModel>();
+    return MaterialApp(
+      title: 'WellYess',
+      debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey,
+      navigatorObservers: [routeObserver],
+      theme: ThemeData(
+        brightness: Brightness.light,
+        colorScheme: access.highContrast
+            ? ColorScheme.light(
+                primary: Colors.black,
+                secondary: Colors.yellow.shade700,
+                background: Colors.white,
+                onPrimary: Colors.yellow.shade700,
+              )
+            : ColorScheme.light(
+                primary: const Color(0xFF5DB47F),
+                secondary: Colors.teal,
+              ),
+        textTheme: Theme.of(context).textTheme.apply(
+              fontSizeFactor: access.fontSizeFactor,
+            ),
+      ),
+      home: startPage,
     );
   }
 }

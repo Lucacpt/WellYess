@@ -71,6 +71,7 @@ class _AllMedsPageState extends State<AllMedsPage> {
     final highContrast = access.highContrast;
 
     return BaseLayout(
+      pageTitle: 'Tutta la Terapia',   // ← titolo da annunciare
       userType: _userType,
       currentIndex: 1,
       onBackPressed: () => Navigator.pop(context),
