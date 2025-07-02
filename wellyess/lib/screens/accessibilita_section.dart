@@ -1,10 +1,13 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import '../widgets/base_layout.dart';
+import 'package:flutter/services.dart'; // per MethodChannel
+import 'package:flutter_tts/flutter_tts.dart';
 import '../widgets/custom_main_button.dart';
+import '../widgets/base_layout.dart';
 import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wellyess/models/user_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AccessibilitaSection extends StatefulWidget {
   const AccessibilitaSection({super.key});
@@ -14,14 +17,21 @@ class AccessibilitaSection extends StatefulWidget {
 }
 
 class _AccessibilitaSectionState extends State<AccessibilitaSection> {
+  static const _channel = MethodChannel('wellyess/accessibility');
+
+  late final FlutterTts _tts;
   double _fontSize = 1.0;
   bool _highContrast = false;
   UserType? _userType;
   bool _isLoading = true;
+  bool _isReading = false;
 
   @override
   void initState() {
     super.initState();
+    _tts = FlutterTts();
+    _tts.setLanguage('it-IT');
+    _tts.setSpeechRate(0.5);
     // Sincronizza i valori locali con quelli globali del provider
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final access = context.read<AccessibilitaModel>();
@@ -47,16 +57,58 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
     }
   }
 
+  /// 1) Controlla se un servizio di Accessibilità (p.es. TalkBack) è abilitato
+  Future<bool> _isAccessibilityEnabled() async {
+    if (!Platform.isAndroid) return false;
+    try {
+      return await _channel.invokeMethod<bool>('isAccessibilityEnabled') ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  void _openAccessibilitySettings() {
+    if (Platform.isAndroid) {
+      _channel.invokeMethod('openAccessibilitySettings');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content:
+            Text('Apri Impostazioni → Accessibilità per attivare VoiceOver.'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _toggleTalkBack() async {
+    if (_isReading) {
+      await _tts.stop();
+      setState(() => _isReading = false);
+    } else {
+      final summary = StringBuffer()
+        ..write('Pagina Accessibilità. ')
+        ..write('Dimensione testo ${_fontSize == 1.0 ? 'normale' : _fontSize == 1.2 ? 'grande' : 'molto grande'}. ')
+        ..write('Contrasto elevato ${_highContrast ? 'attivo' : 'disattivo'}.')
+        ..write('Puoi modificare queste impostazioni direttamente nell\'app.');
+      await _tts.speak(summary.toString());
+      setState(() => _isReading = true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final access = context.watch<AccessibilitaModel>();
+    final fontSizeFactor = access.fontSizeFactor;
+    final highContrast = access.highContrast;
 
     if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return BaseLayout(
+      pageTitle: 'Accessibilità',
       currentIndex: 2,
       userType: _userType,
       onBackPressed: () => Navigator.of(context).pop(),
@@ -210,6 +262,15 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.04),
+
+                    // bottone TalkBack in-app
+                    CustomMainButton(
+                      text: _isReading ? 'Ferma TalkBack' : 'Attiva TalkBack',
+                      color: const Color(0xFF5DB47F),
+                      onTap: _toggleTalkBack,
+                    ),
+
+                    SizedBox(height: 24),
 
                     // Salva
                     CustomMainButton(

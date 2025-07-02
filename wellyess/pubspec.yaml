@@ -33,7 +33,7 @@ dependencies:
   fl_chart: ^1.0.0  
 
   # Date and Time dependencies
-  intl: ^0.18.1  # Per la formattazione delle date
+  intl: ^0.20.2  # Per la formattazione delle date
 
   # Notifications dependencies
   flutter_local_notifications: ^17.0.0 
@@ -43,6 +43,9 @@ dependencies:
 
   # Timezone dependencies
   timezone: ^0.9.2  # Per gestire i fusi orari
+
+  # Text-to-Speech dependencies
+  flutter_tts: ^3.5.0
 
 dev_dependencies:
   flutter_test:

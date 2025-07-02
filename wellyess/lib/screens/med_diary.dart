@@ -70,6 +70,7 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
 
     // MODIFICA: Passa il tipo di utente corretto al BaseLayout
     return BaseLayout(
+      pageTitle: 'Agenda Medica',      // ← titolo da annunciare
       userType: _userType,
       onBackPressed: () => Navigator.of(context).pop(),
       child: Column(

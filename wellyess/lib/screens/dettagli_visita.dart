@@ -19,6 +19,7 @@ class DettagliVisitaScreen extends StatelessWidget {
     final highContrast = access.highContrast;
 
     return BaseLayout(
+      pageTitle: 'Dettagli Visita',
       onBackPressed: () => Navigator.of(context).pop(),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),

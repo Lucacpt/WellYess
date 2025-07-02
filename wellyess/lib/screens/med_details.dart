@@ -63,6 +63,7 @@ class _DettagliFarmacoPageState extends State<DettagliFarmacoPage> {
     }
 
     return BaseLayout(
+      pageTitle: 'Dettagli Farmaco',
       userType: _userType,
       onBackPressed: () => Navigator.pop(context),
       child: Padding(

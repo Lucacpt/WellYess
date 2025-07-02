@@ -173,6 +173,7 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
     return WillPopScope(
       onWillPop: _showExitConfirmation,
       child: BaseLayout(
+        pageTitle: 'Aggiungi Monitoraggio',
         userType: _userType,
         onBackPressed: () async {
           if (await _showExitConfirmation()) {

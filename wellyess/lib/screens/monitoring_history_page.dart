@@ -65,6 +65,7 @@ class _MonitoringHistoryPageState extends State<MonitoringHistoryPage> {
     }
 
     return BaseLayout(
+      pageTitle: 'Storico Monitoraggi', // ← aggiunto
       userType: _userType,
       onBackPressed: () => Navigator.pop(context),
       child: Padding(

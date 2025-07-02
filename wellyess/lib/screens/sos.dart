@@ -101,6 +101,7 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
     }
 
     return BaseLayout(
+      pageTitle: 'Emergenza',              // ← aggiunto
       userType: _userType,
       onBackPressed: () => Navigator.of(context).pop(),
       child: _userType == UserType.caregiver

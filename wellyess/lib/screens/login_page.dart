@@ -159,15 +159,20 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ],
                   ),
-                  child: TextField(
-                    controller: _emailCtrl,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      hintText: 'Email',
-                      prefixIcon: Icon(Icons.email_outlined,
-                          color: Colors.grey.shade600),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.all(16),
+                  child: Semantics(
+                    label: 'Email utente',
+                    hint: 'Inserisci l’email',
+                    textField: true,
+                    child: TextField(
+                      controller: _emailCtrl,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        hintText: 'Email',
+                        prefixIcon: Icon(Icons.email_outlined,
+                            color: Colors.grey.shade600),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.all(16),
+                      ),
                     ),
                   ),
                 ),

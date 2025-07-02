@@ -8,6 +8,7 @@ class AggiungiCaregiverPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseLayout(
+      pageTitle: 'Caregiver', // ← aggiunto
       currentIndex: 0,
       onBackPressed: () => Navigator.of(context).pop(),
       child: Padding(

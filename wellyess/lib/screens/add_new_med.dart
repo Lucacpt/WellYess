@@ -94,6 +94,7 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
     return WillPopScope(
       onWillPop: _showExitConfirmation,
       child: BaseLayout(
+        pageTitle: 'Aggiungi Farmaco',
         userType: _userType,
         onBackPressed: () async {
           if (await _showExitConfirmation()) {

@@ -40,6 +40,7 @@ class ConsiglioDetailPage extends StatelessWidget {
     final double topicTextFontSize = (screenWidth * 0.041 * fontSizeFactor).clamp(13.0, 22.0);
 
     return BaseLayout(
+      pageTitle: title,                // ← aggiunto
       onBackPressed: () => Navigator.of(context).pop(),
       child: Padding(
         padding: EdgeInsets.symmetric(

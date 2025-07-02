@@ -83,6 +83,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final isCaregiver = _userType == UserType.caregiver;
 
     return BaseLayout(
+      pageTitle: 'Impostazioni', // ← aggiunto
       userType: _userType,
       currentIndex: 2,
       onBackPressed: () => Navigator.of(context).pop(),

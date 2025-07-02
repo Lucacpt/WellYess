@@ -62,6 +62,7 @@ class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
     final highContrast = access.highContrast;
 
     return BaseLayout(
+      pageTitle: 'Monitoraggio Parametri',  // ← titolo da annunciare
       userType: _userType,
       currentIndex: 3,
       onBackPressed: () => Navigator.pop(context),

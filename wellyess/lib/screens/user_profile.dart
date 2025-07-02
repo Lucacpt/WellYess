@@ -56,6 +56,7 @@ class ProfiloUtente extends StatelessWidget {
             showElderProfile ? 'Michele Verdi' : 'Svetlana Nowak';
 
         return BaseLayout(
+          pageTitle: forceElderView ? 'Profilo Assistito' : 'Profilo', // ← aggiunto
           currentIndex: 2,
           // L'header mostra sempre il profilo dell'utente loggato
           userType: userTypeForLayout,

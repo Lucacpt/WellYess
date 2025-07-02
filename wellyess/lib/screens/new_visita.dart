@@ -80,6 +80,7 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
     return WillPopScope(
       onWillPop: _showExitConfirmation,
       child: BaseLayout(
+        pageTitle: 'Aggiungi Visita',          // ← aggiunto
         onBackPressed: () async {
           if (await _showExitConfirmation()) {
             Navigator.of(context).pop();

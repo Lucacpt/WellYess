@@ -87,6 +87,7 @@ class _DetailedChartScreenState extends State<DetailedChartScreen> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     return BaseLayout(
+      pageTitle: widget.title,          // ← aggiunto
       userType: _userType,
       currentIndex: -1,
       onBackPressed: () => Navigator.pop(context),
