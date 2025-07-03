@@ -47,16 +47,17 @@ class _BaseLayoutState extends State<BaseLayout> with RouteAware {
   }
 
   @override
-  void didPush()    => _announceTitle();
+  void didPush()    => _announcePageIfEnabled();
   @override
-  void didPopNext() => _announceTitle();
+  void didPopNext() => _announcePageIfEnabled();
 
-  void _announceTitle() {
-    if (widget.pageTitle != _lastAnnounced) {
-      TalkbackService.announce(widget.pageTitle);
-      _lastAnnounced = widget.pageTitle;
-    }
-  }
+  Future<void> _announcePageIfEnabled() async {
+    // leggi lo stato dal provider
+    final enabled = context.read<AccessibilitaModel>().talkbackEnabled;
+    if (!enabled) return;
+     // qui sotto il codice che annunciava titolo + contenuti…
+     await TalkbackService.announce(widget.pageTitle);
+   }
 
   void _toggleMenuPopup(BuildContext context) async {
     if (_menuOpen) {

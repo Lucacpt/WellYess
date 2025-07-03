@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
 import 'package:wellyess/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wellyess/services/flutter_tts.dart';       // ← aggiunto
 
 class AccessibilitaSection extends StatefulWidget {
   const AccessibilitaSection({super.key});
@@ -24,7 +25,7 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
   bool _highContrast = false;
   UserType? _userType;
   bool _isLoading = true;
-  bool _isReading = false;
+  bool _isReading = false;          // ← dichiarazione mancante
 
   @override
   void initState() {
@@ -138,22 +139,30 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
-                      "Personalizza l'app per renderla più accessibile alle tue esigenze.",
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.045,
-                        color: Colors.grey.shade800,
+                    // Descrizione generale
+                    Semantics(
+                      label: "Personalizza l'app per renderla più accessibile alle tue esigenze.",
+                      child: Text(
+                        "Personalizza l'app per renderla più accessibile alle tue esigenze.",
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.045,
+                          color: Colors.grey.shade800,
+                        ),
+                        textAlign: TextAlign.justify,
                       ),
-                      textAlign: TextAlign.justify,
                     ),
                     SizedBox(height: screenHeight * 0.03),
 
                     // Dimensione testo
-                    Text(
-                      'Dimensione testo',
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.05 * _fontSize,
-                        fontWeight: FontWeight.w600,
+                    Semantics(
+                      header: true,
+                      label: "Dimensione testo",
+                      child: Text(
+                        'Dimensione testo',
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.05 * _fontSize,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.01),
@@ -194,94 +203,94 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
                     ),
                     SizedBox(height: screenHeight * 0.02),
 
-                    // Contrasto elevato
-                    Text(
-                      'Contrasto elevato',
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.05 * _fontSize,
-                        fontWeight: FontWeight.w600,
+                    // Contrasto elevato (ora toggle sul provider)
+                    Semantics(
+                      container: true,
+                      label: access.highContrast
+                        ? 'Contrasto elevato attivo'
+                        : 'Contrasto elevato disattivo',
+                      child: SwitchListTile(
+                        title: Text(
+                          'Contrasto elevato',
+                          style: TextStyle(fontSize: screenWidth * 0.05 * fontSizeFactor),
+                        ),
+                        value: access.highContrast,
+                        onChanged: (v) {
+                          context.read<AccessibilitaModel>().setHighContrast(v);
+                        },
                       ),
                     ),
-                    SizedBox(height: screenHeight * 0.01),
-                    Row(
-                      children: [
-                        Icon(Icons.info_outline,
-                            color: Colors.blue.shade700,
-                            size: screenWidth * 0.055),
-                        SizedBox(width: screenWidth * 0.02),
-                        Expanded(
-                          child: Text(
-                            "Attiva il contrasto elevato per migliorare la visibilità dei testi.",
-                            style: TextStyle(
-                              fontSize: screenWidth * 0.037,
-                              fontStyle: FontStyle.italic,
-                              color: Colors.grey.shade700,
-                            ),
-                          ),
+                    SizedBox(height: screenHeight * 0.02),
+
+                    // TalkBack: unico switch, stato persistente su provider
+                    Semantics(
+                      container: true,
+                      label: access.talkbackEnabled
+                        ? 'TalkBack attivo'
+                        : 'TalkBack disattivo',
+                      child: SwitchListTile(
+                        title: Text(
+                          'TalkBack',
+                          style: TextStyle(fontSize: screenWidth * 0.05 * fontSizeFactor),
                         ),
-                      ],
-                    ),
-                    SwitchListTile(
-                      value: _highContrast,
-                      title: Text(
-                        _highContrast ? "Attivo" : "Disattivo",
-                        style: TextStyle(
-                          fontSize: screenWidth * 0.045 * _fontSize,
-                          color: _highContrast ? Colors.black : Colors.grey.shade700,
-                        ),
+                        value: access.talkbackEnabled,
+                        onChanged: (v) async {
+                          access.setTalkbackEnabled(v);
+                          if (!v) {
+                            await TalkbackService.stop();
+                          } else {
+                            final summary = StringBuffer()
+                              ..write('Pagina Accessibilità. ')
+                              ..write('Dimensione testo ${fontSizeFactor == 1.0 ? 'normale' : fontSizeFactor == 1.2 ? 'grande' : 'molto grande'}. ')
+                              ..write('Contrasto elevato ${access.highContrast ? 'attivo' : 'disattivo'}.');
+                            await TalkbackService.announce(summary.toString());
+                          }
+                        },
                       ),
-                      activeColor: Colors.black,
-                      onChanged: (value) {
-                        setState(() {
-                          _highContrast = value;
-                        });
-                        context.read<AccessibilitaModel>().setHighContrast(value);
-                      },
                     ),
                     SizedBox(height: screenHeight * 0.03),
 
-                    // Anteprima
-                    Container(
-                      padding: EdgeInsets.all(screenWidth * 0.04),
-                      decoration: BoxDecoration(
-                        color: _highContrast ? Colors.black : Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: _highContrast ? Colors.yellow : Colors.grey.shade300,
-                          width: 1.2,
+                    // Anteprima testo
+                    Semantics(
+                      label: 'Anteprima testo di esempio',
+                      readOnly: true,
+                      child: Container(
+                        padding: EdgeInsets.all(screenWidth * 0.04),
+                        decoration: BoxDecoration(
+                          color: _highContrast ? Colors.black : Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: _highContrast ? Colors.yellow : Colors.grey.shade300,
+                            width: 1.2,
+                          ),
                         ),
-                      ),
-                      child: Text(
-                        'Anteprima testo di esempio',
-                        style: TextStyle(
-                          fontSize: screenWidth * 0.05 * _fontSize,
-                          color: _highContrast ? Colors.yellow : Colors.black,
-                          fontWeight: FontWeight.w500,
+                        child: Text(
+                          'Anteprima testo di esempio',
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.05 * _fontSize,
+                            color: _highContrast ? Colors.yellow : Colors.black,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.04),
 
-                    // bottone TalkBack in-app
-                    CustomMainButton(
-                      text: _isReading ? 'Ferma TalkBack' : 'Attiva TalkBack',
-                      color: const Color(0xFF5DB47F),
-                      onTap: _toggleTalkBack,
-                    ),
-
-                    SizedBox(height: 24),
-
                     // Salva
-                    CustomMainButton(
-                      text: 'Salva impostazioni',
-                      color: const Color(0xFF5DB47F),
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Impostazioni salvate!')),
-                        );
-                        Navigator.of(context).pop();
-                      },
+                    Semantics(
+                      button: true,
+                      label: 'Salva impostazioni accessibilità',
+                      child: CustomMainButton(
+                        text: 'Salva impostazioni',
+                        color: const Color(0xFF5DB47F),
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Impostazioni salvate!')),
+                          );
+                          Navigator.of(context).pop();
+                        },
+                      ),
                     ),
                   ],
                 ),

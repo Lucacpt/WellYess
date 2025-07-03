@@ -1,18 +1,30 @@
 import 'package:flutter/material.dart';
 
 class AccessibilitaModel extends ChangeNotifier {
-  double fontSizeFactor;
-  bool highContrast;
+  double _fontSizeFactor = 1.0;
+  bool _highContrast = false;
+  bool _talkbackEnabled = false;
 
-  AccessibilitaModel({this.fontSizeFactor = 1.0, this.highContrast = false});
+  double get fontSizeFactor => _fontSizeFactor;
+  bool get highContrast => _highContrast;
+  bool get talkbackEnabled => _talkbackEnabled;
+
+  AccessibilitaModel({double fontSizeFactor = 1.0, bool highContrast = false})
+      : _fontSizeFactor = fontSizeFactor,
+        _highContrast = highContrast;
 
   void setFontSize(double factor) {
-    fontSizeFactor = factor;
+    _fontSizeFactor = factor;
     notifyListeners();
   }
 
   void setHighContrast(bool value) {
-    highContrast = value;
+    _highContrast = value;
+    notifyListeners();
+  }
+
+  void setTalkbackEnabled(bool v) {
+    _talkbackEnabled = v;
     notifyListeners();
   }
 }
