@@ -10,6 +10,7 @@ import 'accessibilita_section.dart';
 import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
 import 'package:wellyess/widgets/tappable_reader.dart';
+import 'tutorial_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -146,16 +147,13 @@ class _SettingsPageState extends State<SettingsPage> {
                     TappableReader(
                       label: 'Voce Impostazioni Guida rapida',
                       child: _SettingsRow(
-                        iconWidget: SvgPicture.asset(
-                          _getIconAsset('help', highContrast),
-                          width: iconSize,
-                          height: iconSize,
-                        ),
+                        iconData: Icons.help_outline,
                         label: 'Guida rapida',
                         fontSizeFactor: fontSizeFactor,
-                        onTap: () {
-                            // Collegare alla pagina guida_rapida_section.dart
-                        },
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const TutorialPage()),
+                        ),
                       ),
                     ),
                     const Divider(

@@ -13,6 +13,7 @@ import 'med_diary.dart';
 import 'user_profile.dart';
 import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
+import 'tutorial_page.dart';    // ← importa la Guida Rapida
 
 class HomePage extends StatefulWidget {
   final int? farmacoKeyToShow;
@@ -31,6 +32,18 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _loadUserType();
+
+    // Mostra la Guida Rapida al primo avvio
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final prefs = await SharedPreferences.getInstance();
+      final shown = prefs.getBool('tutorial_shown') ?? false;
+      if (!shown) {
+        await prefs.setBool('tutorial_shown', true);
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const TutorialPage()),
+        );
+      }
+    });
 
     // Se c'è una chiave da evidenziare, apri subito la FarmaciPage
     if (widget.farmacoKeyToShow != null) {
