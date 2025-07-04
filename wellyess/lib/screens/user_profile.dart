@@ -5,6 +5,7 @@ import 'package:wellyess/widgets/base_layout.dart';
 import 'package:wellyess/widgets/info_row.dart';
 import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
+import 'package:wellyess/widgets/tappable_reader.dart';
 
 class ProfiloUtente extends StatelessWidget {
   // MODIFICA: Aggiunto un parametro per forzare la vista dell'anziano
@@ -69,13 +70,18 @@ class ProfiloUtente extends StatelessWidget {
               // HEADER FISSO
               SizedBox(height: screenHeight * 0.025),
               Center(
-                child: Text(
-                  // MODIFICA: Il titolo cambia in base al contesto
-                  forceElderView ? 'Profilo Assistito' : 'Profilo',
-                  style: TextStyle(
-                    fontSize: (screenWidth * 0.08 * fontSizeFactor).clamp(22.0, 40.0),
-                    fontWeight: FontWeight.bold,
-                    color: highContrast ? Colors.black : Colors.black87,
+                child: TappableReader(
+                  label: forceElderView
+                      ? 'Titolo pagina Profilo Assistito'
+                      : 'Titolo pagina Profilo',
+                  child: Text(
+                    forceElderView ? 'Profilo Assistito' : 'Profilo',
+                    style: TextStyle(
+                      fontSize: (screenWidth * 0.08 * fontSizeFactor)
+                          .clamp(22.0, 40.0),
+                      fontWeight: FontWeight.bold,
+                      color: highContrast ? Colors.black : Colors.black87,
+                    ),
                   ),
                 ),
               ),
@@ -93,26 +99,39 @@ class ProfiloUtente extends StatelessWidget {
                       Center(
                         child: Column(
                           children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: highContrast ? Colors.black : Colors.transparent,
-                                  width: highContrast ? 3 : 0,
+                            TappableReader(
+                              label: showElderProfile
+                                  ? 'Immagine profilo assistito'
+                                  : 'Immagine profilo caregiver',
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: highContrast
+                                        ? Colors.black
+                                        : Colors.transparent,
+                                    width: highContrast ? 3 : 0,
+                                  ),
                                 ),
-                              ),
-                              child: CircleAvatar(
-                                radius: screenWidth * 0.125,
-                                backgroundImage: AssetImage(profileImageAsset),
+                                child: CircleAvatar(
+                                  radius: screenWidth * 0.125,
+                                  backgroundImage: AssetImage(profileImageAsset),
+                                ),
                               ),
                             ),
                             SizedBox(height: screenHeight * 0.02),
-                            Text(
-                              name,
-                              style: TextStyle(
-                                fontSize: (screenWidth * 0.07 * fontSizeFactor).clamp(18.0, 35.0),
-                                fontWeight: FontWeight.bold,
-                                color: highContrast ? Colors.black : Colors.black87,
+                            TappableReader(
+                              label: showElderProfile
+                                  ? 'Nome assistito: $name'
+                                  : 'Nome caregiver: $name',
+                              child: Text(
+                                name,
+                                style: TextStyle(
+                                  fontSize: (screenWidth * 0.07 * fontSizeFactor)
+                                      .clamp(18.0, 35.0),
+                                  fontWeight: FontWeight.bold,
+                                  color: highContrast ? Colors.black : Colors.black87,
+                                ),
                               ),
                             ),
                           ],
@@ -122,68 +141,97 @@ class ProfiloUtente extends StatelessWidget {
                       // MODIFICA: La logica if/else ora usa la nuova variabile
                       if (!showElderProfile) ...[
                         // Mostra i dati del caregiver solo se non stiamo forzando la vista anziano
-                        const InfoRow(label: 'Data Nascita', value: '13/11/\'91'),
+                        TappableReader(
+                          label: 'Data nascita assistente: 13 novembre 1991',
+                          child: const InfoRow(label: 'Data Nascita', value: '13/11/\'91'),
+                        ),
                         const Divider(
                           color: Colors.grey,
                           thickness: 1,
                         ),
                         SizedBox(height: screenHeight * 0.018),
-                        const InfoRow(label: 'Sesso', value: 'Femmina'),
-                        const Divider(
-                          color: Colors.grey,
-                          thickness: 1,
-                        ),                  
-                        SizedBox(height: screenHeight * 0.018),
-                        const InfoRow(
-                            label: 'Assistito', value: 'Michele Verdi'),
+                        TappableReader(
+                          label: 'Sesso assistente: Femmina',
+                          child: const InfoRow(label: 'Sesso', value: 'Femmina'),
+                        ),
                         const Divider(
                           color: Colors.grey,
                           thickness: 1,
                         ),
                         SizedBox(height: screenHeight * 0.018),
-                        const InfoRow(
-                            label: 'Email', value: 'nowak@ex.com'),
+                        TappableReader(
+                          label: 'Assistito: Michele Verdi',
+                          child: const InfoRow(
+                              label: 'Assistito', value: 'Michele Verdi'),
+                        ),
                         const Divider(
                           color: Colors.grey,
                           thickness: 1,
                         ),
                         SizedBox(height: screenHeight * 0.018),
-                        const InfoRow(label: 'Telefono', value: '3331234567'),
+                        TappableReader(
+                          label: 'Email assistente: nowak@ex.com',
+                          child: const InfoRow(label: 'Email', value: 'nowak@ex.com'),
+                        ),
+                        const Divider(
+                          color: Colors.grey,
+                          thickness: 1,
+                        ),
+                        SizedBox(height: screenHeight * 0.018),
+                        TappableReader(
+                          label: 'Telefono assistente: 3331234567',
+                          child: const InfoRow(label: 'Telefono', value: '3331234567'),
+                        ),
                         const Divider(
                           color: Colors.grey,
                           thickness: 1,
                         ),
                       ] else ...[
                         // Mostra i dati dell'anziano in tutti gli altri casi
-                        const InfoRow(label: 'Data nascita', value: '15/05/\'48'),
+                        TappableReader(
+                          label: 'Data nascita assistito: 15 maggio 1948',
+                          child: const InfoRow(label: 'Data nascita', value: '15/05/\'48'),
+                        ),
                         const Divider(
                           color: Colors.grey,
                           thickness: 1,
-                        ),                  
+                        ),
                         SizedBox(height: screenHeight * 0.018),
-                        const InfoRow(label: 'Sesso', value: 'Maschile'),
+                        TappableReader(
+                          label: 'Sesso assistito: Maschile',
+                          child: const InfoRow(label: 'Sesso', value: 'Maschile'),
+                        ),
                         const Divider(
                           color: Colors.grey,
                           thickness: 1,
-                        ),                  
+                        ),
                         SizedBox(height: screenHeight * 0.018),
-                        const InfoRow(label: 'Allergie', value: 'Polline'),
+                        TappableReader(
+                          label: 'Allergie assistito: Polline',
+                          child: const InfoRow(label: 'Allergie', value: 'Polline'),
+                        ),
                         const Divider(
                           color: Colors.grey,
                           thickness: 1,
-                        ),                  
+                        ),
                         SizedBox(height: screenHeight * 0.018),
-                        const InfoRow(label: 'Intolleranze', value: 'Lattosio'),
+                        TappableReader(
+                          label: 'Intolleranze assistito: Lattosio',
+                          child: const InfoRow(label: 'Intolleranze', value: 'Lattosio'),
+                        ),
                         const Divider(
                           color: Colors.grey,
                           thickness: 1,
-                        ),                  
+                        ),
                         SizedBox(height: screenHeight * 0.018),
-                        const InfoRow(label: 'Gruppo sanguigno', value: 'A'),
+                        TappableReader(
+                          label: 'Gruppo sanguigno assistito: A',
+                          child: const InfoRow(label: 'Gruppo sanguigno', value: 'A'),
+                        ),
                         const Divider(
                           color: Colors.grey,
                           thickness: 1,
-                        ),                
+                        ),
                       ]
                     ],
                   ),

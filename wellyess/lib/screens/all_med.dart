@@ -10,6 +10,7 @@ import 'package:wellyess/widgets/base_layout.dart';
 import 'package:wellyess/widgets/custom_main_button.dart';
 import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
+import 'package:wellyess/widgets/tappable_reader.dart';
 
 // Helper per interpretare qualsiasi stringa di orario
 DateTime? _parseTime(String timeString) {
@@ -81,14 +82,17 @@ class _AllMedsPageState extends State<AllMedsPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Intestazione fissa
-            Text(
-              'Tutta la Terapia',
-              style: TextStyle(
-                fontSize: (screenWidth * 0.08 * fontSizeFactor).clamp(30.0, 38.0),
-                fontWeight: FontWeight.bold,
-                color: highContrast ? Colors.black : Colors.black87,
+            TappableReader(
+              label: 'Titolo pagina Tutta la Terapia',
+              child: Text(
+                'Tutta la Terapia',
+                style: TextStyle(
+                  fontSize: (screenWidth * 0.08 * fontSizeFactor).clamp(30.0, 38.0),
+                  fontWeight: FontWeight.bold,
+                  color: highContrast ? Colors.black : Colors.black87,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
             Divider(
               color: Colors.grey,
@@ -133,17 +137,23 @@ class _AllMedsPageState extends State<AllMedsPage> {
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.info_outline,
-                                  color: Colors.blue.shade700,
-                                  size: (screenWidth * 0.06 * fontSizeFactor).clamp(18.0, 28.0)),
+                              TappableReader(
+                                label: 'Icona informativa lista farmaci',
+                                child: Icon(Icons.info_outline,
+                                    color: Colors.blue.shade700,
+                                    size: (screenWidth * 0.06 * fontSizeFactor).clamp(18.0, 28.0)),
+                              ),
                               SizedBox(width: screenWidth * 0.02),
                               Expanded(
-                                child: Text(
-                                  "Tocca un farmaco per visualizzare i dettagli.",
-                                  style: TextStyle(
-                                    fontSize: (screenWidth * 0.038 * fontSizeFactor).clamp(15.0, 24.0),
-                                    fontStyle: FontStyle.italic,
-                                    color: highContrast ? Colors.black : Colors.grey.shade700,
+                                child: TappableReader(
+                                  label: 'Testo informativo lista farmaci',
+                                  child: Text(
+                                    "Tocca un farmaco per visualizzare i dettagli.",
+                                    style: TextStyle(
+                                      fontSize: (screenWidth * 0.038 * fontSizeFactor).clamp(15.0, 24.0),
+                                      fontStyle: FontStyle.italic,
+                                      color: highContrast ? Colors.black : Colors.grey.shade700,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -220,16 +230,19 @@ class _AllMedsPageState extends State<AllMedsPage> {
 
             // Footer fisso
             SizedBox(height: screenHeight * 0.02),
-            CustomMainButton(
-              text: '+ Aggiungi farmaco',
-              color: const Color(0xFF5DB47F),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => const AggiungiFarmacoPage()),
-                );
-              },
+            TappableReader(
+              label: 'Bottone Aggiungi farmaco',
+              child: CustomMainButton(
+                text: '+ Aggiungi farmaco',
+                color: const Color(0xFF5DB47F),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const AggiungiFarmacoPage()),
+                  );
+                },
+              ),
             ),
           ],
         ),

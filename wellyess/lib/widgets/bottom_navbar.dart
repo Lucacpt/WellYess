@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:wellyess/widgets/tappable_reader.dart';
+import 'package:wellyess/services/flutter_tts.dart';
 import 'dart:math' as math;
 
 class CustomBottomNavBar extends StatelessWidget {
@@ -59,39 +61,51 @@ class CustomBottomNavBar extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Menu
-                  Container(
-                    decoration: isMenuOpen
-                        ? BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: borderColor, width: 2),
-                          )
-                        : null,
-                    child: IconButton(
-                      iconSize: iconButtonSize,
-                      icon: Icon(
-                        Icons.menu,
-                        color: isMenuOpen ? iconActiveColor : iconInactiveColor,
+                  TappableReader(
+                    label: 'Apri menu',
+                    child: Container(
+                      decoration: isMenuOpen
+                          ? BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: borderColor, width: 2),
+                            )
+                          : null,
+                      child: IconButton(
+                        iconSize: iconButtonSize,
+                        icon: Icon(
+                          Icons.menu,
+                          color: isMenuOpen ? iconActiveColor : iconInactiveColor,
+                        ),
+                        onPressed: () {
+                          TalkbackService.announce('Apri menu');
+                          onTap?.call(0);
+                        },
+                        tooltip: 'Menu',
                       ),
-                      onPressed: () => onTap?.call(0),
-                      tooltip: 'Menu',
                     ),
                   ),
                   // Impostazioni
-                  Container(
-                    decoration: currentIndex == 2
-                        ? BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: borderColor, width: 2),
-                          )
-                        : null,
-                    child: IconButton(
-                      iconSize: iconButtonSize,
-                      icon: Icon(
-                        Icons.settings,
-                        color: currentIndex == 2 ? iconActiveColor : iconInactiveColor,
+                  TappableReader(
+                    label: 'Apri impostazioni',
+                    child: Container(
+                      decoration: currentIndex == 2
+                          ? BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: borderColor, width: 2),
+                            )
+                          : null,
+                      child: IconButton(
+                        iconSize: iconButtonSize,
+                        icon: Icon(
+                          Icons.settings,
+                          color: currentIndex == 2 ? iconActiveColor : iconInactiveColor,
+                        ),
+                        onPressed: () {
+                          TalkbackService.announce('Apri impostazioni');
+                          onTap?.call(2);
+                        },
+                        tooltip: 'Impostazioni',
                       ),
-                      onPressed: () => onTap?.call(2),
-                      tooltip: 'Impostazioni',
                     ),
                   ),
                 ],
@@ -99,33 +113,40 @@ class CustomBottomNavBar extends StatelessWidget {
             ),
           ),
 
-          // Home centrale (sempre evidenziata)
+          // Home centrale
           Positioned(
             bottom: 5,
-            child: GestureDetector(
-              onTap: () => onTap?.call(1),
-              child: Container(
-                width: homeSize,
-                height: homeSize,
-                decoration: BoxDecoration(
-                  color: homeBgColor,
-                  shape: BoxShape.circle,
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 8,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                  border: currentIndex == 1
-                      ? Border.all(color: borderColor, width: 3)
-                      : null,
-                ),
-                child: Icon(
-                  Icons.home,
-                  size: homeIconSize,
-                  color: homeIconColor,
-                  semanticLabel: 'Home',
+            child: TappableReader(
+              label: 'Home',
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  TalkbackService.announce('Home');
+                  onTap?.call(1);
+                },
+                child: Container(
+                  width: homeSize,
+                  height: homeSize,
+                  decoration: BoxDecoration(
+                    color: homeBgColor,
+                    shape: BoxShape.circle,
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 8,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                    border: currentIndex == 1
+                        ? Border.all(color: borderColor, width: 3)
+                        : null,
+                  ),
+                  child: Icon(
+                    Icons.home,
+                    size: homeIconSize,
+                    color: homeIconColor,
+                    semanticLabel: 'Home',
+                  ),
                 ),
               ),
             ),

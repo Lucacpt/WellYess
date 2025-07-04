@@ -12,6 +12,8 @@ import '../widgets/appointment_week_navigation.dart';
 import '../widgets/custom_main_button.dart';
 import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
+import 'package:wellyess/widgets/tappable_reader.dart';
+import 'package:wellyess/services/flutter_tts.dart';
 
 
 class MedDiaryPage extends StatefulWidget {
@@ -76,33 +78,51 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
       child: Column(
         children: [
           const SizedBox(height: 12),
-          Center(
-            child: Text(
-              'Agenda Medica',
-              style: TextStyle(
-                fontSize: (MediaQuery.of(context).size.width * 0.08 * fontSizeFactor).clamp(22.0, 36.0),
-                fontWeight: FontWeight.bold,
-                color: highContrast ? Colors.black : Colors.black87,
+          TappableReader(
+            label: 'Titolo pagina Agenda Medica',
+            child: Center(
+              child: Text(
+                'Agenda Medica',
+                style: TextStyle(
+                  fontSize: (MediaQuery.of(context).size.width * 0.08 * fontSizeFactor).clamp(22.0, 36.0),
+                  fontWeight: FontWeight.bold,
+                  color: highContrast ? Colors.black : Colors.black87,
+                ),
               ),
             ),
           ),
-          WeekNavigator(
-            selectedDate: _selectedDate,
-            onWeekChanged: _onWeekChanged,
+          TappableReader(
+            label: 'Navigatore settimanale',
+            child: WeekNavigator(
+              selectedDate: _selectedDate,
+              onWeekChanged: _onWeekChanged,
+            ),
           ),
-          HorizontalDayScroller(
-            selectedDate: _selectedDate,
-            allAppointments: allAppointments,
-            onDaySelected: _onDaySelected,
+          TappableReader(
+            label: 'Selettore giorno',
+            child: HorizontalDayScroller(
+              selectedDate: _selectedDate,
+              allAppointments: allAppointments,
+              onDaySelected: (d) {
+                setState(() => _selectedDate = d);
+                if (access.talkbackEnabled) {
+                  final spoken = DateFormat('EEEE d MMMM', 'it_IT').format(d);
+                  TalkbackService.announce(spoken);
+                }
+              },
+            ),
           ),
           const Divider(),
           const SizedBox(height: 8),
-          Center(
-            child: Text(
-              'Visite ${DateFormat('d MMMM', 'it_IT').format(_selectedDate)}',
-              style: TextStyle(
-                fontSize: (MediaQuery.of(context).size.width * 0.05 * fontSizeFactor).clamp(16.0, 27.0),
-                fontWeight: FontWeight.w500,
+          TappableReader(
+            label: 'Titolo sezione Visite del giorno',
+            child: Center(
+              child: Text(
+                'Visite ${DateFormat('d MMMM', 'it_IT').format(_selectedDate)}',
+                style: TextStyle(
+                  fontSize: (MediaQuery.of(context).size.width * 0.05 * fontSizeFactor).clamp(16.0, 27.0),
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ),
@@ -116,15 +136,18 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
                   .toList(),
             ),
           ),
-          CustomMainButton(
-            text: '+ Aggiungi appuntamento',
-            color: const Color(0xFF5DB47F),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const NewVisitaScreen()),
-              );
-            },
+          TappableReader(
+            label: 'Bottone Aggiungi appuntamento',
+            child: CustomMainButton(
+              text: '+ Aggiungi appuntamento',
+              color: const Color(0xFF5DB47F),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const NewVisitaScreen()),
+                );
+              },
+            ),
           ),
         ],
       ),

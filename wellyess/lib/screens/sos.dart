@@ -7,6 +7,8 @@ import '../widgets/sos_request_card.dart';
 import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
 import '../widgets/pop_up_conferma.dart';
+import 'package:wellyess/widgets/tappable_reader.dart';
+import 'package:wellyess/services/flutter_tts.dart';
 
 
 class EmergenzaScreen extends StatefulWidget {
@@ -119,14 +121,17 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
       children: [
         // HEADER FISSO
         Center(
-          child: Text(
-            'Richieste di Soccorso',
-            style: TextStyle(
-              fontSize: (screenWidth * 0.07 * fontSizeFactor).clamp(22.0, 38.0),
-              fontWeight: FontWeight.bold,
-              color: highContrast ? Colors.black : Colors.black87,
+          child: TappableReader(
+            label: 'Titolo sezione Richieste di soccorso',
+            child: Text(
+              'Richieste di Soccorso',
+              style: TextStyle(
+                fontSize: (screenWidth * 0.07 * fontSizeFactor).clamp(22.0, 38.0),
+                fontWeight: FontWeight.bold,
+                color: highContrast ? Colors.black : Colors.black87,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
           ),
         ),
         Divider(
@@ -141,12 +146,15 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  'Nuove Richieste',
-                  style: TextStyle(
-                    fontSize: (screenWidth * 0.05 * fontSizeFactor).clamp(15.0, 28.0),
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red.shade700,
+                TappableReader(
+                  label: 'Sottotitolo Nuove richieste',
+                  child: Text(
+                    'Nuove Richieste',
+                    style: TextStyle(
+                      fontSize: (screenWidth * 0.05 * fontSizeFactor).clamp(15.0, 28.0),
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red.shade700,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -156,12 +164,15 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
                   isNew: true,
                 ),
                 const SizedBox(height: 30),
-                Text(
-                  'Storico',
-                  style: TextStyle(
-                    fontSize: (screenWidth * 0.05 * fontSizeFactor).clamp(15.0, 28.0),
-                    fontWeight: FontWeight.bold,
-                    color: highContrast ? Colors.black : Colors.grey.shade700,
+                TappableReader(
+                  label: 'Sottotitolo Storico richieste',
+                  child: Text(
+                    'Storico',
+                    style: TextStyle(
+                      fontSize: (screenWidth * 0.05 * fontSizeFactor).clamp(15.0, 28.0),
+                      fontWeight: FontWeight.bold,
+                      color: highContrast ? Colors.black : Colors.grey.shade700,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -189,14 +200,17 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
         // HEADER FISSO
         SizedBox(height: sh * 0.01),
         Center(
-          child: Text(
-            'Emergenza',
-            style: TextStyle(
-              fontSize: (sw * 0.07 * fontSizeFactor).clamp(22.0, 40.0),
-              fontWeight: FontWeight.bold,
-              color: highContrast ? Colors.black : Colors.black87,
+          child: TappableReader(
+            label: 'Titolo pagina Emergenza',
+            child: Text(
+              'Emergenza',
+              style: TextStyle(
+                fontSize: (sw * 0.07 * fontSizeFactor).clamp(22.0, 40.0),
+                fontWeight: FontWeight.bold,
+                color: highContrast ? Colors.black : Colors.black87,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
           ),
         ),
         SizedBox(height: sh * 0.01),
@@ -215,17 +229,23 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.info_outline,
-                          color: Colors.blue.shade700,
-                          size: (sw * 0.06 * fontSizeFactor).clamp(18.0, 28.0)),
+                      TappableReader(
+                        label: 'Icona informativa',
+                        child: Icon(Icons.info_outline,
+                            color: Colors.blue.shade700,
+                            size: (sw * 0.06 * fontSizeFactor).clamp(18.0, 28.0)),
+                      ),
                       SizedBox(width: sw * 0.02),
                       Expanded(
-                        child: Text(
-                          "Per inviare una richiesta di emergenza, premi il pulsante due volte.",
-                          style: TextStyle(
-                            fontSize: (sw * 0.038 * fontSizeFactor).clamp(15.0, 20.0),
-                            fontStyle: FontStyle.italic,
-                            color: highContrast ? Colors.black : Colors.grey.shade700,
+                        child: TappableReader(
+                          label: 'Istruzioni emergenza: premi due volte per inviare',
+                          child: Text(
+                            "Per inviare una richiesta di emergenza, premi il pulsante due volte.",
+                            style: TextStyle(
+                              fontSize: (sw * 0.038 * fontSizeFactor).clamp(15.0, 20.0),
+                              fontStyle: FontStyle.italic,
+                              color: highContrast ? Colors.black : Colors.grey.shade700,
+                            ),
                           ),
                         ),
                       ),
@@ -234,77 +254,84 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
                   SizedBox(height: sh * 0.04),
                   ScaleTransition(
                     scale: _scaleAnimation,
-                    child: GestureDetector(
-                      onTap: () {
-                        if (!_isFirstTap) {
-                          setState(() {
-                            _isFirstTap = true;
-                            _buttonText = 'Tocca di nuovo\nper confermare';
-                            _animationController.stop();
-                          });
-                          _resetTapTimer?.cancel();
-                          _resetTapTimer = Timer(
-                              const Duration(seconds: 3), _resetButtonState);
-                        } else {
-                          _resetTapTimer?.cancel();
-                          _showCaregiverNotifiedDialog(
-                                  context, sw, sh)
-                              .then((_) {
-                            _resetButtonState();
-                          });
-                        }
-                      },
-                      child: Container(
-                        width: sw * 0.55,
-                        height: sw * 0.55,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: highContrast
-                              ? null
-                              : RadialGradient(
-                                  colors: [
-                                    Colors.red.shade400,
-                                    Colors.red.shade800
-                                  ],
-                                  center: Alignment.center,
-                                  radius: 0.8,
-                                ),
-                          color: highContrast ? Colors.black : null,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.red.withOpacity(0.4),
-                              spreadRadius: 4,
-                              blurRadius: 15,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
-                          border: highContrast
-                              ? Border.all(color: Colors.yellow, width: 4)
-                              : null,
-                        ),
-                        child: Center(
-                          child: Text(
-                            _buttonText,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: highContrast ? Colors.yellow : Colors.white,
-                              fontSize: _isFirstTap
-                                  ? (sw * 0.07 * fontSizeFactor).clamp(22.0, 32.0)
-                                  : (sw * 0.18 * fontSizeFactor).clamp(40.0, 80.0),
-                              fontWeight: FontWeight.bold,
-                              shadows: [
-                                const Shadow(
-                                  blurRadius: 10.0,
-                                  color: Colors.black38,
-                                  offset: Offset(2.0, 2.0),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                    child: TappableReader(
+                      label: _isFirstTap
+                          ? 'Conferma invio SOS'
+                          : 'Pulsante SOS',
+                      child: GestureDetector(
+                        onTap: () {
+                          if (!_isFirstTap) {
+                            setState(() {
+                              _isFirstTap = true;
+                              _buttonText = 'Tocca di nuovo\nper confermare';
+                              _animationController.stop();
+                            });
+                            TalkbackService.announce('Tocca di nuovo per confermare');
+                            _resetTapTimer?.cancel();
+                            _resetTapTimer = Timer(
+                                const Duration(seconds: 3), _resetButtonState);
+                          } else {
+                            _resetTapTimer?.cancel();
+                            _showCaregiverNotifiedDialog(context, sw, sh)
+                                .then((_) {
+                              TalkbackService.announce(
+                                  'Richiesta inviata. Il caregiver è stato avvisato');
+                              _resetButtonState();
+                            });
+                          }
+                        },
+                        child: Container(
+                           width: sw * 0.55,
+                           height: sw * 0.55,
+                           decoration: BoxDecoration(
+                             shape: BoxShape.circle,
+                             gradient: highContrast
+                                 ? null
+                                 : RadialGradient(
+                                     colors: [
+                                       Colors.red.shade400,
+                                       Colors.red.shade800
+                                     ],
+                                     center: Alignment.center,
+                                     radius: 0.8,
+                                   ),
+                             color: highContrast ? Colors.black : null,
+                             boxShadow: [
+                               BoxShadow(
+                                 color: Colors.red.withOpacity(0.4),
+                                 spreadRadius: 4,
+                                 blurRadius: 15,
+                                 offset: const Offset(0, 5),
+                               ),
+                             ],
+                             border: highContrast
+                                 ? Border.all(color: Colors.yellow, width: 4)
+                                 : null,
+                           ),
+                           child: Center(
+                             child: Text(
+                               _buttonText,
+                               textAlign: TextAlign.center,
+                               style: TextStyle(
+                                 color: highContrast ? Colors.yellow : Colors.white,
+                                 fontSize: _isFirstTap
+                                     ? (sw * 0.07 * fontSizeFactor).clamp(22.0, 32.0)
+                                     : (sw * 0.18 * fontSizeFactor).clamp(40.0, 80.0),
+                                 fontWeight: FontWeight.bold,
+                                 shadows: [
+                                   const Shadow(
+                                     blurRadius: 10.0,
+                                     color: Colors.black38,
+                                     offset: Offset(2.0, 2.0),
+                                   ),
+                                 ],
+                               ),
+                             ),
+                           ),
+                         ),
+                       ),
+                     ),
+                   ),
                   SizedBox(height: sh * 0.04),
                   SizedBox(
                     width: double.infinity,

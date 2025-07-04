@@ -5,6 +5,8 @@ import 'consiglio_detail.dart';
 import '../utils/consigli_salute_data.dart';
 import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
+import 'package:wellyess/widgets/tappable_reader.dart';
+import 'package:wellyess/services/flutter_tts.dart';
 
 class ConsigliSalutePage extends StatefulWidget {
   const ConsigliSalutePage({super.key});
@@ -51,13 +53,16 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
-              child: Text(
-                'Consigli Di Salute',
-                style: TextStyle(
-                  fontSize: titleFontSize,
-                  fontWeight: FontWeight.bold,
+              child: TappableReader(
+                label: 'Titolo pagina Consigli Di Salute',
+                child: Text(
+                  'Consigli Di Salute',
+                  style: TextStyle(
+                    fontSize: titleFontSize,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
             ),
             const Divider(),
@@ -69,40 +74,46 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
               child: Row(
                 children: [
                   Expanded(
-                    child: InkWell(
-                      onTap: () {
-                        if (_currentTabIndex == 1) {
-                          setState(() {
-                            _slideBeginOffset = const Offset(-1.0, 0.0);
-                            _currentTabIndex = 0;
-                          });
-                        }
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
-                        decoration: _currentTabIndex == 0
-                            ? BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: highContrast
-                                        ? Colors.black
-                                        : Colors.green.shade700,
-                                    width: 3,
+                    child: TappableReader(
+                      label: 'Tab Attività Fisica',
+                      child: InkWell(
+                        onTap: () {
+                          if (access.talkbackEnabled) {
+                            TalkbackService.announce('Attività Fisica');
+                          }
+                          if (_currentTabIndex == 1) {
+                            setState(() {
+                              _slideBeginOffset = const Offset(-1.0, 0.0);
+                              _currentTabIndex = 0;
+                            });
+                          }
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
+                          decoration: _currentTabIndex == 0
+                              ? BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: highContrast
+                                          ? Colors.black
+                                          : Colors.green.shade700,
+                                      width: 3,
+                                    ),
                                   ),
-                                ),
-                              )
-                            : null,
-                        child: Center(
-                          child: Text(
-                            'Attività Fisica',
-                            style: TextStyle(
-                              fontSize: (tabFontSize * fontSizeFactor).clamp(12, 19),
-                              color: highContrast
-                                  ? Colors.black
-                                  : (_currentTabIndex == 0
-                                      ? Colors.green.shade700
-                                      : Colors.grey.shade600),
-                              fontWeight: FontWeight.bold,
+                                )
+                              : null,
+                          child: Center(
+                            child: Text(
+                              'Attività Fisica',
+                              style: TextStyle(
+                                fontSize: (tabFontSize * fontSizeFactor).clamp(12, 19),
+                                color: highContrast
+                                    ? Colors.black
+                                    : (_currentTabIndex == 0
+                                        ? Colors.green.shade700
+                                        : Colors.grey.shade600),
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
@@ -110,40 +121,46 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
                     ),
                   ),
                   Expanded(
-                    child: InkWell(
-                      onTap: () {
-                        if (_currentTabIndex == 0) {
-                          setState(() {
-                            _slideBeginOffset = const Offset(1.0, 0.0);
-                            _currentTabIndex = 1;
-                          });
-                        }
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
-                        decoration: _currentTabIndex == 1
-                            ? BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: highContrast
-                                        ? Colors.black
-                                        : Colors.green.shade700,
-                                    width: 3,
+                    child: TappableReader(
+                      label: 'Tab Alimentazione',
+                      child: InkWell(
+                        onTap: () {
+                          if (access.talkbackEnabled) {
+                            TalkbackService.announce('Alimentazione');
+                          }
+                          if (_currentTabIndex == 0) {
+                            setState(() {
+                              _slideBeginOffset = const Offset(1.0, 0.0);
+                              _currentTabIndex = 1;
+                            });
+                          }
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
+                          decoration: _currentTabIndex == 1
+                              ? BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: highContrast
+                                          ? Colors.black
+                                          : Colors.green.shade700,
+                                      width: 3,
+                                    ),
                                   ),
-                                ),
-                              )
-                            : null,
-                        child: Center(
-                          child: Text(
-                            'Alimentazione',
-                            style: TextStyle(
-                              fontSize: (tabFontSize * fontSizeFactor).clamp(12, 19),
-                              fontWeight: FontWeight.bold,
-                              color: highContrast
-                                  ? Colors.black
-                                  : (_currentTabIndex == 1
-                                      ? Colors.green.shade700
-                                      : Colors.grey.shade600),
+                                )
+                              : null,
+                          child: Center(
+                            child: Text(
+                              'Alimentazione',
+                              style: TextStyle(
+                                fontSize: (tabFontSize * fontSizeFactor).clamp(12, 19),
+                                fontWeight: FontWeight.bold,
+                                color: highContrast
+                                    ? Colors.black
+                                    : (_currentTabIndex == 1
+                                        ? Colors.green.shade700
+                                        : Colors.grey.shade600),
+                              ),
                             ),
                           ),
                         ),
@@ -173,67 +190,70 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
                       final double gridCardAspectRatio = isLargeScreen ? 3.5 : 2.8;
 
                       Widget buildCard(Map<String, dynamic> tip) {
-                        return Card(
-                          color: Colors.white,
-                          elevation: 3,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            side: highContrast
-                                ? const BorderSide(color: Colors.black, width: 2)
-                                : BorderSide.none,
-                          ),
-                          margin: EdgeInsets.symmetric(
-                            vertical: screenHeight * 0.01,
-                            horizontal: screenWidth * 0.01,
-                          ),
-                          child: ListTile(
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical: screenHeight * 0.015,
-                              horizontal: screenWidth * 0.04,
+                        return TappableReader(
+                          label: tip['title'] as String,
+                          child: Card(
+                            color: Colors.white,
+                            elevation: 3,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              side: highContrast
+                                  ? const BorderSide(color: Colors.black, width: 2)
+                                  : BorderSide.none,
                             ),
-                            leading: SvgPicture.asset(
-                              tip['svgAssetPath']!,
-                              height: iconSize * fontSizeFactor,
-                              width: iconSize * fontSizeFactor,
-                              colorFilter: ColorFilter.mode(
-                                highContrast ? Colors.black : Colors.green.shade700,
-                                BlendMode.srcIn,
+                            margin: EdgeInsets.symmetric(
+                              vertical: screenHeight * 0.01,
+                              horizontal: screenWidth * 0.01,
+                            ),
+                            child: ListTile(
+                              contentPadding: EdgeInsets.symmetric(
+                                vertical: screenHeight * 0.015,
+                                horizontal: screenWidth * 0.04,
                               ),
-                            ),
-                            title: Text(
-                              tip['title']!,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: cardTitleFontSize * fontSizeFactor,
-                                color: Colors.black,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            subtitle: Text(
-                              tip['subtitle']!,
-                              style: TextStyle(
-                                fontSize: cardSubtitleFontSize * fontSizeFactor,
-                                fontWeight: FontWeight.bold,
-                                color: highContrast
-                                    ? Colors.grey[800]
-                                    : const Color.fromARGB(255, 167, 167, 167),
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => ConsiglioDetailPage(
-                                    title: tip['title']!,
-                                    subtitle: tip['subtitle']!,
-                                    svgAssetPath: tip['svgAssetPath']!,
-                                    description: tip['description'] ?? '',
-                                    topics: (tip['topics'] as List).map((e) => Map<String, dynamic>.from(e)).toList(),
-                                  ),
+                              leading: SvgPicture.asset(
+                                tip['svgAssetPath']!,
+                                height: iconSize * fontSizeFactor,
+                                width: iconSize * fontSizeFactor,
+                                colorFilter: ColorFilter.mode(
+                                  highContrast ? Colors.black : Colors.green.shade700,
+                                  BlendMode.srcIn,
                                 ),
-                              );
-                            },
+                              ),
+                              title: Text(
+                                tip['title']!,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: cardTitleFontSize * fontSizeFactor,
+                                  color: Colors.black,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              subtitle: Text(
+                                tip['subtitle']!,
+                                style: TextStyle(
+                                  fontSize: cardSubtitleFontSize * fontSizeFactor,
+                                  fontWeight: FontWeight.bold,
+                                  color: highContrast
+                                      ? Colors.grey[800]
+                                      : const Color.fromARGB(255, 167, 167, 167),
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => ConsiglioDetailPage(
+                                      title: tip['title']!,
+                                      subtitle: tip['subtitle']!,
+                                      svgAssetPath: tip['svgAssetPath']!,
+                                      description: tip['description'] ?? '',
+                                      topics: (tip['topics'] as List).map((e) => Map<String, dynamic>.from(e)).toList(),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                         );
                       }

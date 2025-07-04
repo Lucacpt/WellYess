@@ -9,6 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wellyess/models/user_model.dart';
 import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
+import 'package:wellyess/widgets/tappable_reader.dart';
+import 'package:wellyess/services/flutter_tts.dart';
 
 class AggiungiMonitoraggioPage extends StatefulWidget {
   const AggiungiMonitoraggioPage({super.key});
@@ -77,49 +79,74 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: fontSize,
-          color: highContrast ? Colors.black : Colors.black,
-        )),
+        TappableReader(
+          label: label,
+          child: Text(label, style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: fontSize,
+            color: highContrast ? Colors.black : Colors.black,
+          )),
+        ),
         const SizedBox(height: 10),
         Row(
           children: [
             Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: highContrast ? Colors.yellow.shade700 : Colors.white,
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.3),
-                      spreadRadius: 2,
-                      blurRadius: 7,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                  border: highContrast
-                      ? Border.all(color: Colors.black, width: 2)
-                      : null,
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: TextField(
-                  controller: controllers[key],
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
+              child: TappableReader(
+                label: '$label campo input',
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: highContrast ? Colors.yellow.shade700 : Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.3),
+                        spreadRadius: 2,
+                        blurRadius: 7,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                    border: highContrast
+                        ? Border.all(color: Colors.black, width: 2)
+                        : null,
                   ),
-                  style: TextStyle(
-                    fontSize: fontSize,
-                    color: highContrast ? Colors.black : Colors.black,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: TextField(
+                    controller: controllers[key],
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                    ),
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      color: highContrast ? Colors.black : Colors.black,
+                    ),
+                    onChanged: (val) {
+                      if (context.read<AccessibilitaModel>().talkbackEnabled) {
+                        TalkbackService.announce('$label: $val');
+                      }
+                    },
                   ),
                 ),
               ),
             ),
             const SizedBox(width: 10),
-            _IncrementDecrementButton(icon: Icons.remove, onTap: () => decrement(key), highContrast: highContrast),
+            TappableReader(
+              label: 'Diminuisci $label',
+              child: _IncrementDecrementButton(
+                icon: Icons.remove,
+                onTap: () => decrement(key),
+                highContrast: highContrast,
+              ),
+            ),
             const SizedBox(width: 6),
-            _IncrementDecrementButton(icon: Icons.add, onTap: () => increment(key), highContrast: highContrast),
+            TappableReader(
+              label: 'Incrementa $label',
+              child: _IncrementDecrementButton(
+                icon: Icons.add,
+                onTap: () => increment(key),
+                highContrast: highContrast,
+              ),
+            ),
           ],
         ),
       ],
@@ -185,14 +212,17 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
           children: [
             // HEADER FISSO
             Center(
-              child: Text(
-                'Aggiungi Monitoraggio',
-                style: TextStyle(
-                  fontSize: titleFontSize,
-                  fontWeight: FontWeight.bold,
-                  color: highContrast ? Colors.black : Colors.black87,
+              child: TappableReader(
+                label: 'Titolo pagina Aggiungi Monitoraggio',
+                child: Text(
+                  'Aggiungi Monitoraggio',
+                  style: TextStyle(
+                    fontSize: titleFontSize,
+                    fontWeight: FontWeight.bold,
+                    color: highContrast ? Colors.black : Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
             ),
             Divider(
@@ -209,34 +239,55 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
                     // Testo informativo per lo scorrimento
                     Row(
                       children: [
-                        Icon(
-                          Icons.info_outline,
-                          color: Colors.blue.shade700,
-                          size: (screenWidth * 0.06 * fontSizeFactor).clamp(18.0, 28.0),
+                        TappableReader(
+                          label: 'Icona informativa',
+                          child: Icon(
+                            Icons.info_outline,
+                            color: Colors.blue.shade700,
+                            size: (screenWidth * 0.06 * fontSizeFactor).clamp(18.0, 28.0),
+                          ),
                         ),
                         SizedBox(width: screenWidth * 0.02),
                         Expanded(
-                          child: Text(
-                            "Scorri verso il basso per compilare tutti i campi.",
-                            style: TextStyle(
-                              fontSize: (screenWidth * 0.038 * fontSizeFactor).clamp(15.0, 24.0),
-                              fontStyle: FontStyle.italic,
-                              color: highContrast ? Colors.black : Colors.grey.shade700,
+                          child: TappableReader(
+                            label: 'Testo informativo scorrimento',
+                            child: Text(
+                              "Scorri verso il basso per compilare tutti i campi.",
+                              style: TextStyle(
+                                fontSize: (screenWidth * 0.038 * fontSizeFactor).clamp(15.0, 24.0),
+                                fontStyle: FontStyle.italic,
+                                color: highContrast ? Colors.black : Colors.grey.shade700,
+                              ),
                             ),
                           ),
                         ),
                       ],
                     ),
                     SizedBox(height: screenHeight * 0.025),
-                    buildValueInput('Minima (SYS)', 'SYS', fieldFontSize, highContrast),
+                    TappableReader(
+                      label: 'Sezione Minima (SYS)',
+                      child: buildValueInput('Minima (SYS)', 'SYS', fieldFontSize, highContrast),
+                    ),
                     const SizedBox(height: 20),
-                    buildValueInput('Massima (DIA)', 'DIA', fieldFontSize, highContrast),
+                    TappableReader(
+                      label: 'Sezione Massima (DIA)',
+                      child: buildValueInput('Massima (DIA)', 'DIA', fieldFontSize, highContrast),
+                    ),
                     const SizedBox(height: 20),
-                    buildValueInput('Frequenza Cardiaca (BPM)', 'BPM', fieldFontSize, highContrast),
+                    TappableReader(
+                      label: 'Sezione Frequenza Cardiaca (BPM)',
+                      child: buildValueInput('Frequenza Cardiaca (BPM)', 'BPM', fieldFontSize, highContrast),
+                    ),
                     const SizedBox(height: 20),
-                    buildValueInput('Glicemia (HGT)', 'HGT', fieldFontSize, highContrast),
+                    TappableReader(
+                      label: 'Sezione Glicemia (HGT)',
+                      child: buildValueInput('Glicemia (HGT)', 'HGT', fieldFontSize, highContrast),
+                    ),
                     const SizedBox(height: 20),
-                    buildValueInput('Saturazione (%SpO2)', 'SpO2', fieldFontSize, highContrast),
+                    TappableReader(
+                      label: 'Sezione Saturazione (%SpO2)',
+                      child: buildValueInput('Saturazione (%SpO2)', 'SpO2', fieldFontSize, highContrast),
+                    ),
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -246,10 +297,13 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
                   .copyWith(bottom: screenHeight * 0.01, top: screenHeight * 0.01),
-              child: CustomMainButton(
-                text: 'Salva',
-                color: const Color(0xFF5DB47F),
-                onTap: _save,
+              child: TappableReader(
+                label: 'Bottone Salva monitoraggio',
+                child: CustomMainButton(
+                  text: 'Salva',
+                  color: const Color(0xFF5DB47F),
+                  onTap: _save,
+                ),
               ),
             ),
           ],

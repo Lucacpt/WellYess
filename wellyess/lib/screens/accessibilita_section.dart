@@ -8,7 +8,8 @@ import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
 import 'package:wellyess/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wellyess/services/flutter_tts.dart';       // ← aggiunto
+import 'package:wellyess/services/flutter_tts.dart';
+import 'package:wellyess/widgets/tappable_reader.dart';
 
 class AccessibilitaSection extends StatefulWidget {
   const AccessibilitaSection({super.key});
@@ -119,11 +120,14 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
           SizedBox(height: screenHeight * 0.01),
           Align(
             alignment: Alignment.center,
-            child: Text(
-              'Accessibilità',
-              style: TextStyle(
-                fontSize: screenWidth * 0.07,
-                fontWeight: FontWeight.bold,
+            child: TappableReader(
+              label: 'Titolo pagina Accessibilità',
+              child: Text(
+                'Accessibilità',
+                style: TextStyle(
+                  fontSize: screenWidth * 0.07,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -140,8 +144,8 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Descrizione generale
-                    Semantics(
-                      label: "Personalizza l'app per renderla più accessibile alle tue esigenze.",
+                    TappableReader(
+                      label: 'Testo introduttivo personalizzazione',
                       child: Text(
                         "Personalizza l'app per renderla più accessibile alle tue esigenze.",
                         style: TextStyle(
@@ -154,9 +158,8 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
                     SizedBox(height: screenHeight * 0.03),
 
                     // Dimensione testo
-                    Semantics(
-                      header: true,
-                      label: "Dimensione testo",
+                    TappableReader(
+                      label: 'Dimensione testo',
                       child: Text(
                         'Dimensione testo',
                         style: TextStyle(
@@ -168,84 +171,118 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
                     SizedBox(height: screenHeight * 0.01),
                     Row(
                       children: [
-                        Icon(Icons.info_outline,
-                            color: Colors.blue.shade700,
-                            size: screenWidth * 0.055),
+                        TappableReader(
+                          label: "Icona info",
+                          child: Icon(Icons.info_outline,
+                              color: Colors.blue.shade700,
+                              size: screenWidth * 0.055),
+                        ),
                         SizedBox(width: screenWidth * 0.02),
                         Expanded(
-                          child: Text(
-                            "Aumenta la dimensione dei testi per una lettura più facile.",
-                            style: TextStyle(
-                              fontSize: screenWidth * 0.037,
-                              fontStyle: FontStyle.italic,
-                              color: Colors.grey.shade700,
+                          child: TappableReader(
+                            label: "Aumenta la dimensione dei testi per una lettura più facile.",
+                            child: Text(
+                              "Aumenta la dimensione dei testi per una lettura più facile.",
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.037,
+                                fontStyle: FontStyle.italic,
+                                color: Colors.grey.shade700,
+                              ),
                             ),
                           ),
                         ),
                       ],
                     ),
-                    Slider(
-                      value: _fontSize,
-                      min: 1.0,
-                      max: 1.4,
-                      divisions: 2,
-                      label: _fontSize == 1.0
-                          ? "Normale"
-                          : _fontSize == 1.2
-                              ? "Grande"
-                              : "Molto grande",
-                      onChanged: (value) {
-                        setState(() {
-                          _fontSize = value;
-                        });
-                        context.read<AccessibilitaModel>().setFontSize(value);
-                      },
-                    ),
-                    SizedBox(height: screenHeight * 0.02),
-
-                    // Contrasto elevato (ora toggle sul provider)
-                    Semantics(
-                      container: true,
-                      label: access.highContrast
-                        ? 'Contrasto elevato attivo'
-                        : 'Contrasto elevato disattivo',
-                      child: SwitchListTile(
-                        title: Text(
-                          'Contrasto elevato',
-                          style: TextStyle(fontSize: screenWidth * 0.05 * fontSizeFactor),
-                        ),
-                        value: access.highContrast,
-                        onChanged: (v) {
-                          context.read<AccessibilitaModel>().setHighContrast(v);
+                    TappableReader(
+                      label: 'Slider Dimensione testo valore ${_fontSize == 1.0 ? 'Normale' : _fontSize == 1.2 ? 'Grande' : 'Molto grande'}',
+                      child: Slider(
+                        value: _fontSize,
+                        min: 1.0,
+                        max: 1.4,
+                        divisions: 2,
+                        label: _fontSize == 1.0
+                            ? "Normale"
+                            : _fontSize == 1.2
+                                ? "Grande"
+                                : "Molto grande",
+                        onChanged: (value) {
+                          setState(() {
+                            _fontSize = value;
+                          });
+                          context.read<AccessibilitaModel>().setFontSize(value);
                         },
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.02),
 
-                    // TalkBack: unico switch, stato persistente su provider
-                    Semantics(
-                      container: true,
-                      label: access.talkbackEnabled
-                        ? 'TalkBack attivo'
-                        : 'TalkBack disattivo',
-                      child: SwitchListTile(
-                        title: Text(
-                          'TalkBack',
-                          style: TextStyle(fontSize: screenWidth * 0.05 * fontSizeFactor),
-                        ),
-                        value: access.talkbackEnabled,
-                        onChanged: (v) async {
-                          access.setTalkbackEnabled(v);
-                          if (!v) {
-                            await TalkbackService.stop();
-                          } else {
-                            final summary = StringBuffer()
-                              ..write('Pagina Accessibilità. ')
-                              ..write('Dimensione testo ${fontSizeFactor == 1.0 ? 'normale' : fontSizeFactor == 1.2 ? 'grande' : 'molto grande'}. ')
-                              ..write('Contrasto elevato ${access.highContrast ? 'attivo' : 'disattivo'}.');
-                            await TalkbackService.announce(summary.toString());
+                    // Contrasto elevato (ora richiede doppio tap per cambiare lo stato se talkback è attivo)
+                    TappableReader(
+                      label: access.highContrast
+                        ? 'Interruttore Contrasto elevato attivo'
+                        : 'Interruttore Contrasto elevato disattivo',
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onDoubleTap: () {
+                          final newValue = !access.highContrast;
+                          context.read<AccessibilitaModel>().setHighContrast(newValue);
+                          if (access.talkbackEnabled) {
+                            TalkbackService.announce(
+                              newValue
+                                ? 'Contrasto elevato attivato'
+                                : 'Contrasto elevato disattivato',
+                            );
                           }
                         },
+                        child: SwitchListTile(
+                          title: Text(
+                            'Contrasto elevato',
+                            style: TextStyle(fontSize: screenWidth * 0.05 * fontSizeFactor),
+                          ),
+                          value: access.highContrast,
+                          // disabilito il toggle al singolo tap quando talkback è attivo
+                          onChanged: access.talkbackEnabled
+                            ? null
+                            : (v) => context.read<AccessibilitaModel>().setHighContrast(v),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: screenHeight * 0.02),
+
+                    // TalkBack: unico switch, stato persistente su provider
+                    TappableReader(
+                      label: access.talkbackEnabled
+                        ? 'Interruttore TalkBack attivo'
+                        : 'Interruttore TalkBack disattivo',
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onDoubleTap: () async {
+                          final newValue = !access.talkbackEnabled;
+                          access.setTalkbackEnabled(newValue);
+                          if (!newValue) {
+                            await TalkbackService.stop();
+                          } else {
+                            await TalkbackService.announce(
+                              'TalkBack attivato. Ora doppio tap su ogni area per leggerla.',
+                            );
+                          }
+                        },
+                        child: SwitchListTile(
+                          title: Text(
+                            'TalkBack',
+                            style: TextStyle(fontSize: screenWidth * 0.05 * fontSizeFactor),
+                          ),
+                          value: access.talkbackEnabled,
+                          onChanged: access.talkbackEnabled
+                            ? null
+                            : (v) async {
+                                access.setTalkbackEnabled(v);
+                                if (v) {
+                                  await TalkbackService.announce(
+                                    'TalkBack attivato. Ora doppio tap su ogni area per leggerla.',
+                                  );
+                                }
+                              },
+                        ),
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.03),
@@ -278,9 +315,8 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
                     SizedBox(height: screenHeight * 0.04),
 
                     // Salva
-                    Semantics(
-                      button: true,
-                      label: 'Salva impostazioni accessibilità',
+                    TappableReader(
+                      label: 'Bottone Salva impostazioni accessibilità',
                       child: CustomMainButton(
                         text: 'Salva impostazioni',
                         color: const Color(0xFF5DB47F),

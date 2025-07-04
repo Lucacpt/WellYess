@@ -7,8 +7,9 @@ import 'package:wellyess/screens/user_profile.dart';
 import 'package:wellyess/widgets/menu.dart';
 import 'package:wellyess/widgets/go_back_button.dart';
 import 'package:wellyess/widgets/bottom_navbar.dart';
-import 'package:wellyess/services/flutter_tts.dart';    // ← import corretto
+import 'package:wellyess/services/flutter_tts.dart';    // ← già presente
 import 'package:wellyess/main.dart';                   // per routeObserver
+import 'package:wellyess/widgets/tappable_reader.dart'; // ← aggiunto per usare TappableReader
 
 class BaseLayout extends StatefulWidget {
   final String pageTitle;       // ← titolo da annunciare
@@ -52,12 +53,15 @@ class _BaseLayoutState extends State<BaseLayout> with RouteAware {
   void didPopNext() => _announcePageIfEnabled();
 
   Future<void> _announcePageIfEnabled() async {
-    // leggi lo stato dal provider
     final enabled = context.read<AccessibilitaModel>().talkbackEnabled;
     if (!enabled) return;
-     // qui sotto il codice che annunciava titolo + contenuti…
-     await TalkbackService.announce(widget.pageTitle);
-   }
+
+    // leggo solo il titolo della pagina
+    if (_lastAnnounced != widget.pageTitle) {
+      _lastAnnounced = widget.pageTitle;
+      await TalkbackService.announce(widget.pageTitle);
+    }
+  }
 
   void _toggleMenuPopup(BuildContext context) async {
     if (_menuOpen) {
@@ -104,13 +108,9 @@ class _BaseLayoutState extends State<BaseLayout> with RouteAware {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Semantics(
+                      TappableReader(
                         label: 'Logo Wellyess',
-                        button: true,
-                        child: GestureDetector(
-                          onTap: () => Navigator.popUntil(context, (r) => r.isFirst),
-                          child: Image.asset('assets/logo/wellyess.png', height: sh*0.06),
-                        ),
+                        child: Image.asset('assets/logo/wellyess.png', height: sh*0.06),
                       ),
                       Semantics(
                         label: 'Foto profilo utente',

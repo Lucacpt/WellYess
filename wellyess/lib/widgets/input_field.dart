@@ -6,12 +6,14 @@ class InputField extends StatelessWidget {
   final TextEditingController controller;
   final String placeholder;
   final int maxLines;
+  final ValueChanged<String>? onChanged;
 
   const InputField({
     super.key,
     required this.controller,
     required this.placeholder,
     this.maxLines = 1,
+    this.onChanged,
   });
 
   @override
@@ -48,6 +50,7 @@ class InputField extends StatelessWidget {
         child: TextField(
           controller: controller,
           maxLines: maxLines,
+          onChanged: onChanged,
           decoration: InputDecoration(
             hintText: placeholder,
             hintStyle: TextStyle(

@@ -9,6 +9,7 @@ import '../widgets/base_layout.dart';
 import 'accessibilita_section.dart';
 import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
+import 'package:wellyess/widgets/tappable_reader.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -90,13 +91,16 @@ class _SettingsPageState extends State<SettingsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Align(
-            alignment: Alignment.center,
-            child: Text(
-              'Impostazioni',
-              style: TextStyle(
-                fontSize: screenWidth * 0.08 * fontSizeFactor,
-                fontWeight: FontWeight.bold,
+          TappableReader(
+            label: 'Titolo pagina Impostazioni',
+            child: Align(
+              alignment: Alignment.center,
+              child: Text(
+                'Impostazioni',
+                style: TextStyle(
+                  fontSize: screenWidth * 0.08 * fontSizeFactor,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -115,60 +119,69 @@ class _SettingsPageState extends State<SettingsPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     SizedBox(height: screenHeight * 0.01),
-                    _SettingsRow(
-                      iconWidget: SvgPicture.asset(
-                        _getIconAsset('account', highContrast),
-                        width: iconSize,
-                        height: iconSize,
+                    TappableReader(
+                      label: 'Voce Impostazioni Profilo',
+                      child: _SettingsRow(
+                        iconWidget: SvgPicture.asset(
+                          _getIconAsset('account', highContrast),
+                          width: iconSize,
+                          height: iconSize,
+                        ),
+                        label: 'Profilo',
+                        fontSizeFactor: fontSizeFactor,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const ProfiloUtente()),
+                          );
+                        },
                       ),
-                      label: 'Profilo',
-                      fontSizeFactor: fontSizeFactor,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const ProfiloUtente()),
-                        );
-                      },
                     ),
                     const Divider(
                       color: Colors.grey,
                       thickness: 1,
                     ),
                     SizedBox(height: screenHeight * 0.025),
-                    _SettingsRow(
-                      iconWidget: SvgPicture.asset(
-                        _getIconAsset('help', highContrast),
-                        width: iconSize,
-                        height: iconSize,
+                    TappableReader(
+                      label: 'Voce Impostazioni Guida rapida',
+                      child: _SettingsRow(
+                        iconWidget: SvgPicture.asset(
+                          _getIconAsset('help', highContrast),
+                          width: iconSize,
+                          height: iconSize,
+                        ),
+                        label: 'Guida rapida',
+                        fontSizeFactor: fontSizeFactor,
+                        onTap: () {
+                            // Collegare alla pagina guida_rapida_section.dart
+                        },
                       ),
-                      label: 'Guida rapida',
-                      fontSizeFactor: fontSizeFactor,
-                      onTap: () {
-                          // Collegare alla pagina guida_rapida_section.dart
-                      },
                     ),
                     const Divider(
                       color: Colors.grey,
                       thickness: 1,
                     ),
                     SizedBox(height: screenHeight * 0.025),
-                    _SettingsRow(
-                      iconWidget: SvgPicture.asset(
-                        _getIconAsset('accessibility', highContrast),
-                        width: iconSize,
-                        height: iconSize,
+                    TappableReader(
+                      label: 'Voce Impostazioni Accessibilità',
+                      child: _SettingsRow(
+                        iconWidget: SvgPicture.asset(
+                          _getIconAsset('accessibility', highContrast),
+                          width: iconSize,
+                          height: iconSize,
+                        ),
+                        label: 'Accessibilità',
+                        fontSizeFactor: fontSizeFactor,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const AccessibilitaSection(),
+                            ),
+                          );
+                        },
                       ),
-                      label: 'Accessibilità',
-                      fontSizeFactor: fontSizeFactor,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const AccessibilitaSection(),
-                          ),
-                        );
-                      },
                     ),
                     const Divider(
                       color: Colors.grey,
