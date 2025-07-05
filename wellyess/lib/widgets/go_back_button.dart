@@ -36,7 +36,9 @@ class BackCircleButton extends StatelessWidget {
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () {
-            TalkbackService.announce('Torna indietro');
+            if (access.talkbackEnabled) {
+              TalkbackService.announce('Torna indietro');
+            }
             onPressed?.call();
           },
           child: Container(

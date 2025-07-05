@@ -252,7 +252,7 @@ class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
                           child: FarmacoCard(
                             statoColore: _getColor(last.sys, 90, 140),
                             orario: "Pressione",
-                            nome: "${last.sys} / ${last.dia}",
+                            nome: "${last.sys}/${last.dia}",
                             dose: "mmHg",
                             isHighlighted: false,
                           ),

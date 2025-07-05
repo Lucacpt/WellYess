@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:wellyess/widgets/tappable_reader.dart';
 import 'package:wellyess/services/flutter_tts.dart';
 import 'dart:math' as math;
+import 'package:provider/provider.dart';
+import 'package:wellyess/models/accessibilita_model.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   /// Chiamato con 0=Menu, 1=Home, 2=Settings
@@ -77,7 +79,10 @@ class CustomBottomNavBar extends StatelessWidget {
                           color: isMenuOpen ? iconActiveColor : iconInactiveColor,
                         ),
                         onPressed: () {
-                          TalkbackService.announce('Apri menu');
+                          final access = Provider.of<AccessibilitaModel>(context, listen: false);
+                          if (access.talkbackEnabled) {
+                            TalkbackService.announce('Apri menu');
+                          }
                           onTap?.call(0);
                         },
                         tooltip: 'Menu',
@@ -101,7 +106,10 @@ class CustomBottomNavBar extends StatelessWidget {
                           color: currentIndex == 2 ? iconActiveColor : iconInactiveColor,
                         ),
                         onPressed: () {
-                          TalkbackService.announce('Apri impostazioni');
+                          final access = Provider.of<AccessibilitaModel>(context, listen: false);
+                          if (access.talkbackEnabled) {
+                            TalkbackService.announce('Apri impostazioni');
+                          }
                           onTap?.call(2);
                         },
                         tooltip: 'Impostazioni',
@@ -121,7 +129,10 @@ class CustomBottomNavBar extends StatelessWidget {
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () {
-                  TalkbackService.announce('Home');
+                  final access = Provider.of<AccessibilitaModel>(context, listen: false);
+                  if (access.talkbackEnabled) {
+                    TalkbackService.announce('Home');
+                  }
                   onTap?.call(1);
                 },
                 child: Container(

@@ -83,7 +83,7 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
     return WillPopScope(
       onWillPop: _showExitConfirmation,
       child: BaseLayout(
-        pageTitle: 'Aggiungi Visita',          // ← aggiunto
+        pageTitle: 'Aggiungi Visita',          
         onBackPressed: () async {
           if (await _showExitConfirmation()) {
             Navigator.of(context).pop();
@@ -123,7 +123,7 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
                     Row(
                       children: [
                         TappableReader(
-                          label: 'Icona informativa scorrimento',
+                          label: 'Icona informativa',
                           child: Icon(Icons.info_outline,
                               color: Colors.blue.shade700,
                               size: (screenWidth * 0.06 * fontSizeFactor).clamp(18.0, 28.0)),
@@ -131,7 +131,7 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
                         SizedBox(width: screenWidth * 0.02),
                         Expanded(
                           child: TappableReader(
-                            label: 'Testo informativo scorrimento',
+                            label: 'Testo informativo: Compila tutti i campi per aggiungere una visita.',
                             child: Text(
                               "Compila tutti i campi per aggiungere una visita.",
                               style: TextStyle(

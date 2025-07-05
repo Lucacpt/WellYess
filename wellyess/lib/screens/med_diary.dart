@@ -92,7 +92,7 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
             ),
           ),
           TappableReader(
-            label: 'Navigatore settimanale',
+            label: 'Navigatore settimanale. Settimana del ${DateFormat('d MMMM', 'it_IT').format(_selectedDate)}',
             child: WeekNavigator(
               selectedDate: _selectedDate,
               onWeekChanged: _onWeekChanged,
@@ -115,7 +115,7 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
           const Divider(),
           const SizedBox(height: 8),
           TappableReader(
-            label: 'Titolo sezione Visite del giorno',
+            label: 'Visite del giorno ${DateFormat('EEEE d MMMM', 'it_IT').format(_selectedDate)}',
             child: Center(
               child: Text(
                 'Visite ${DateFormat('d MMMM', 'it_IT').format(_selectedDate)}',
@@ -137,7 +137,7 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
             ),
           ),
           TappableReader(
-            label: 'Bottone Aggiungi appuntamento',
+            label: 'Aggiungi appuntamento',
             child: CustomMainButton(
               text: '+ Aggiungi appuntamento',
               color: const Color(0xFF5DB47F),

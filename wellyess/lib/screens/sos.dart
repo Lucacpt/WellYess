@@ -266,7 +266,10 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
                               _buttonText = 'Tocca di nuovo\nper confermare';
                               _animationController.stop();
                             });
-                            TalkbackService.announce('Tocca di nuovo per confermare');
+                            final access = Provider.of<AccessibilitaModel>(context, listen: false);
+                            if (access.talkbackEnabled) {
+                              TalkbackService.announce('Tocca di nuovo per confermare');
+                            }
                             _resetTapTimer?.cancel();
                             _resetTapTimer = Timer(
                                 const Duration(seconds: 3), _resetButtonState);
@@ -274,8 +277,11 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
                             _resetTapTimer?.cancel();
                             _showCaregiverNotifiedDialog(context, sw, sh)
                                 .then((_) {
-                              TalkbackService.announce(
-                                  'Richiesta inviata. Il caregiver è stato avvisato');
+                              final access = Provider.of<AccessibilitaModel>(context, listen: false);
+                              if (access.talkbackEnabled) {
+                                TalkbackService.announce(
+                                    'Richiesta inviata. Il caregiver è stato avvisato');
+                              }
                               _resetButtonState();
                             });
                           }
