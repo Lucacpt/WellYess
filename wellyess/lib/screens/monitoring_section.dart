@@ -125,7 +125,7 @@ class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
                     children: [
                       // Card stato generale
                       if (last != null)
-                        Semantics(
+                        TappableReader(
                           label:
                               'Stato generale: $generalStatusText. Ultima misurazione alle ${TimeOfDay.fromDateTime(last.timestamp).format(context)}. ${_getStatusMessage(last)}',
                           child: Container(
