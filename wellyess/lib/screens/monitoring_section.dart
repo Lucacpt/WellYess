@@ -8,6 +8,8 @@ import 'package:wellyess/models/accessibilita_model.dart';
 import 'package:wellyess/widgets/base_layout.dart';
 import 'package:wellyess/widgets/custom_main_button.dart';
 import 'package:wellyess/widgets/med_card.dart';
+import 'package:wellyess/widgets/tappable_reader.dart';
+import 'package:wellyess/services/flutter_tts.dart';
 import 'add_new_parameters.dart';
 import 'monitoring_history_page.dart';
 
@@ -70,15 +72,18 @@ class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // HEADER FISSO
-          Center(
-            child: Text(
-              'Monitoraggio Parametri',
-              style: TextStyle(
-                fontSize: (screenWidth * 0.07 * fontSizeFactor).clamp(22.0, 40.0),
-                fontWeight: FontWeight.bold,
-                color: highContrast ? Colors.black : Colors.black87,
+          TappableReader(
+            label: 'Titolo pagina Monitoraggio Parametri',
+            child: Center(
+              child: Text(
+                'Monitoraggio Parametri',
+                style: TextStyle(
+                  fontSize: (screenWidth * 0.07 * fontSizeFactor).clamp(22.0, 40.0),
+                  fontWeight: FontWeight.bold,
+                  color: highContrast ? Colors.black : Colors.black87,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
           ),
           Divider(
@@ -215,21 +220,24 @@ class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
                           ),
                         )
                       else
-                        Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18)),
-                          elevation: 6,
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: screenWidth * 0.04,
-                              vertical: screenHeight * 0.025,
-                            ),
-                            child: Center(
-                              child: Text(
-                                "Nessun dato disponibile",
-                                style: TextStyle(
-                                  fontSize: (screenWidth * 0.045 * fontSizeFactor).clamp(12.0, 18.0),
-                                  color: Colors.grey.shade600,
+                        Semantics(
+                          label: 'Nessun dato disponibile',
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18)),
+                            elevation: 6,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: screenWidth * 0.04,
+                                vertical: screenHeight * 0.025,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "Nessun dato disponibile",
+                                  style: TextStyle(
+                                    fontSize: (screenWidth * 0.045 * fontSizeFactor).clamp(12.0, 18.0),
+                                    color: Colors.grey.shade600,
+                                  ),
                                 ),
                               ),
                             ),
@@ -239,67 +247,85 @@ class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
 
                       // Card parametri
                       if (last != null) ...[
-                        FarmacoCard(
-                          statoColore: _getColor(last.sys, 90, 140),
-                          orario: "Pressione",
-                          nome: "${last.sys} / ${last.dia}",
-                          dose: "mmHg",
-                          isHighlighted: false,
+                        TappableReader(
+                          label: 'Pressione ${last.sys}/${last.dia} millimetri di mercurio',
+                          child: FarmacoCard(
+                            statoColore: _getColor(last.sys, 90, 140),
+                            orario: "Pressione",
+                            nome: "${last.sys} / ${last.dia}",
+                            dose: "mmHg",
+                            isHighlighted: false,
+                          ),
                         ),
-                        FarmacoCard(
-                          statoColore: _getColor(last.bpm, 60, 100),
-                          orario: "Battito",
-                          nome: "${last.bpm}",
-                          dose: "MBP",
-                          isHighlighted: false,
+                        TappableReader(
+                          label: 'Battito cardiaco ${last.bpm} battiti per minuto',
+                          child: FarmacoCard(
+                            statoColore: _getColor(last.bpm, 60, 100),
+                            orario: "Battito",
+                            nome: "${last.bpm}",
+                            dose: "MBP",
+                            isHighlighted: false,
+                          ),
                         ),
-                        FarmacoCard(
-                          statoColore: _getColor(last.hgt, 70, 110),
-                          orario: "Glicemia",
-                          nome: "${last.hgt}",
-                          dose: "MG/DL",
-                          isHighlighted: false,
+                        TappableReader(
+                          label: 'Glicemia ${last.hgt} milligrammi per decilitro',
+                          child: FarmacoCard(
+                            statoColore: _getColor(last.hgt, 70, 110),
+                            orario: "Glicemia",
+                            nome: "${last.hgt}",
+                            dose: "MG/DL",
+                            isHighlighted: false,
+                          ),
                         ),
-                        FarmacoCard(
-                          statoColore: _getColor(last.spo2, 95, 100),
-                          orario: "Saturazione",
-                          nome: "${last.spo2}",
-                          dose: "%",
-                          isHighlighted: false,
+                        TappableReader(
+                          label: 'Saturazione ossigeno ${last.spo2} percento',
+                          child: FarmacoCard(
+                            statoColore: _getColor(last.spo2, 95, 100),
+                            orario: "Saturazione",
+                            nome: "${last.spo2}",
+                            dose: "%",
+                            isHighlighted: false,
+                          ),
                         ),
                       ],
                       SizedBox(height: screenHeight * 0.01),
 
                       // Vedi storico
                       if (last != null)
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const MonitoringHistoryPage()),
-                            );
-                          },
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: screenHeight * 0.012),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Vedi Storico",
-                                  style: TextStyle(
-                                    fontSize: (screenWidth * 0.045 * fontSizeFactor).clamp(13.0, 20.0),
-                                    fontWeight: FontWeight.bold,
-                                    decoration: TextDecoration.underline,
-                                    color: highContrast ? Colors.black : Colors.black,
+                        // Ripristino link a Storico monitoraggi e reso leggibile
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: screenHeight * 0.012),
+                          child: TappableReader(
+                            label: 'Vedi storico monitoraggi',
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const MonitoringHistoryPage(),
                                   ),
-                                ),
-                                SizedBox(width: screenWidth * 0.015),
-                                Icon(Icons.bar_chart,
+                                );
+                              },
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Vedi Storico",
+                                    style: TextStyle(
+                                      fontSize: (screenWidth * 0.045 * fontSizeFactor).clamp(13.0, 20.0),
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                      color: highContrast ? Colors.black : Colors.black,
+                                    ),
+                                  ),
+                                  SizedBox(width: screenWidth * 0.015),
+                                  Icon(
+                                    Icons.bar_chart,
                                     color: highContrast ? Colors.black : Colors.black,
-                                    size: (screenWidth * 0.06 * fontSizeFactor).clamp(18.0, 28.0)),
-                              ],
+                                    size: (screenWidth * 0.06 * fontSizeFactor).clamp(18.0, 28.0),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -315,16 +341,19 @@ class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
                 .copyWith(bottom: screenHeight * 0.01, top: screenHeight * 0.01),
-            child: CustomMainButton(
-              text: '+ Aggiungi parametri',
-              color: const Color(0xFF5DB47F),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => const AggiungiMonitoraggioPage()),
-                );
-              },
+            child: TappableReader(
+              label: 'Bottone Aggiungi parametri',
+              child: CustomMainButton(
+                text: '+ Aggiungi parametri',
+                color: const Color(0xFF5DB47F),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const AggiungiMonitoraggioPage()),
+                  );
+                },
+              ),
             ),
           ),
         ],

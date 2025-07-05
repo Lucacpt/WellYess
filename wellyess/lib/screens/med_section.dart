@@ -14,6 +14,7 @@ import 'package:wellyess/widgets/custom_main_button.dart';
 import 'package:wellyess/widgets/med_card.dart';
 import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
+import 'package:wellyess/widgets/tappable_reader.dart';
 
 class FarmaciPage extends StatefulWidget {
   final int? farmacoKeyToShow;
@@ -127,15 +128,18 @@ class _FarmaciPageState extends State<FarmaciPage> {
         children: [
           // HEADER FISSO
           SizedBox(height: screenHeight * 0.01),
-          Align(
-            alignment: Alignment.center,
-            child: Text(
-              'Farmaci',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: (screenWidth * 0.08 * fontSizeFactor),
-                fontWeight: FontWeight.bold,
-                color: highContrast ? Colors.black : Colors.black87,
+          TappableReader(
+            label: 'Titolo pagina Farmaci',
+            child: Align(
+              alignment: Alignment.center,
+              child: Text(
+                'Farmaci',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: (screenWidth * 0.08 * fontSizeFactor),
+                  fontWeight: FontWeight.bold,
+                  color: highContrast ? Colors.black : Colors.black87,
+                ),
               ),
             ),
           ),
@@ -152,12 +156,15 @@ class _FarmaciPageState extends State<FarmaciPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
-                      'Farmaci di Oggi',
-                      style: TextStyle(
-                        fontSize: (screenWidth * 0.055 * fontSizeFactor),
-                        fontWeight: FontWeight.bold,
-                        color: highContrast ? Colors.black : Colors.black87,
+                    TappableReader(
+                      label: 'Sezione Farmaci di Oggi',
+                      child: Text(
+                        'Farmaci di Oggi',
+                        style: TextStyle(
+                          fontSize: (screenWidth * 0.055 * fontSizeFactor),
+                          fontWeight: FontWeight.bold,
+                          color: highContrast ? Colors.black : Colors.black87,
+                        ),
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.025),
@@ -173,17 +180,23 @@ class _FarmaciPageState extends State<FarmaciPage> {
                     // TESTO INFORMATIVO
                     Row(
                       children: [
-                        Icon(Icons.info_outline,
-                            color: Colors.blue.shade700,
-                            size: (screenWidth * 0.06 * fontSizeFactor).clamp(18.0, 28.0)),
+                        TappableReader(
+                          label: 'Icona informativa cambio stato',
+                          child: Icon(Icons.info_outline,
+                              color: Colors.blue.shade700,
+                              size: (screenWidth * 0.06 * fontSizeFactor).clamp(18.0, 28.0)),
+                        ),
                         SizedBox(width: screenWidth * 0.02),
                         Expanded(
-                          child: Text(
-                            "Tocca un farmaco per cambiare lo stato di assunzione.",
-                            style: TextStyle(
-                              fontSize: (screenWidth * 0.038 * fontSizeFactor).clamp(15.0, 24.0),
-                              fontStyle: FontStyle.italic,
-                              color: highContrast ? Colors.black : Colors.grey.shade700,
+                          child: TappableReader(
+                            label: 'Testo informativo cambio stato farmaco',
+                            child: Text(
+                              "Tocca un farmaco per cambiare lo stato di assunzione.",
+                              style: TextStyle(
+                                fontSize: (screenWidth * 0.038 * fontSizeFactor).clamp(15.0, 24.0),
+                                fontStyle: FontStyle.italic,
+                                color: highContrast ? Colors.black : Colors.grey.shade700,
+                              ),
                             ),
                           ),
                         ),
@@ -239,12 +252,15 @@ class _FarmaciPageState extends State<FarmaciPage> {
                               key: ValueKey(key),
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                FarmacoCard(
-                                  statoColore: _statiFarmaci[key] ?? Colors.orange,
-                                  orario: orarioDaMostrare,
-                                  nome: f.nome,
-                                  dose: f.dose,
-                                  onTap: () => _showConfirmationDialog(key),
+                                TappableReader(
+                                  label: 'Farmaco ${f.nome}, dose ${f.dose}, orario ${orarioDaMostrare}',
+                                  child: FarmacoCard(
+                                    statoColore: _statiFarmaci[key] ?? Colors.orange,
+                                    orario: orarioDaMostrare,
+                                    nome: f.nome,
+                                    dose: f.dose,
+                                    onTap: () => _showConfirmationDialog(key),
+                                  ),
                                 ),
                                 const SizedBox(height: 8),
                               ],
@@ -261,15 +277,18 @@ class _FarmaciPageState extends State<FarmaciPage> {
           ),
           // FOOTER FISSO
           SizedBox(height: screenHeight * 0.02),
-          CustomMainButton(
-            text: 'Vedi tutti i farmaci',
-            color: const Color(0xFF5DB47F),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const AllMedsPage()),
-              );
-            },
+          TappableReader(
+            label: 'Bottone Vedi tutti i farmaci',
+            child: CustomMainButton(
+              text: 'Vedi tutti i farmaci',
+              color: const Color(0xFF5DB47F),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AllMedsPage()),
+                );
+              },
+            ),
           ),
         ],
       ),

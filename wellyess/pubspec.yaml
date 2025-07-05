@@ -52,13 +52,12 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^6.0.0
   build_runner: ^2.4.0
-  flutter_launcher_icons: ^0.13.0    # ← aggiungi il package
+  flutter_launcher_icons: ^0.13.0
 
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/icons/wellyess.png"  # ← il tuo logo
-  android_min_sdk: 21                  # ← evita di leggere build.gradle
+  image_path: "assets/logo/wellyess.png"
 
 flutter:
   uses-material-design: true

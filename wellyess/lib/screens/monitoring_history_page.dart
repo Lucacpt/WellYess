@@ -5,6 +5,7 @@ import 'package:wellyess/widgets/base_layout.dart';
 import 'package:wellyess/widgets/med_card.dart';
 import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
+import 'package:wellyess/widgets/tappable_reader.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wellyess/models/user_model.dart';
 
@@ -76,14 +77,17 @@ class _MonitoringHistoryPageState extends State<MonitoringHistoryPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              'Storico Monitoraggi',
-              style: TextStyle(
-                fontSize: (screenWidth * 0.07 * fontSizeFactor).clamp(22.0, 32.0),
-                fontWeight: FontWeight.bold,
-                color: highContrast ? Colors.black : Colors.black87,
+            TappableReader(
+              label: 'Titolo pagina Storico Monitoraggi',
+              child: Text(
+                'Storico Monitoraggi',
+                style: TextStyle(
+                  fontSize: (screenWidth * 0.07 * fontSizeFactor).clamp(22.0, 32.0),
+                  fontWeight: FontWeight.bold,
+                  color: highContrast ? Colors.black : Colors.black87,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
             Divider(
               color: highContrast ? Colors.black : Colors.grey,
@@ -97,11 +101,14 @@ class _MonitoringHistoryPageState extends State<MonitoringHistoryPage> {
                     ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
                   if (entries.isEmpty) {
                     return Center(
-                      child: Text(
-                        'Nessun dato salvato',
-                        style: TextStyle(
-                          fontSize: (screenWidth * 0.045 * fontSizeFactor).clamp(14.0, 20.0),
-                          color: highContrast ? Colors.black : Colors.grey.shade600,
+                      child: TappableReader(
+                        label: 'Nessun dato salvato',
+                        child: Text(
+                          'Nessun dato salvato',
+                          style: TextStyle(
+                            fontSize: (screenWidth * 0.045 * fontSizeFactor).clamp(14.0, 20.0),
+                            color: highContrast ? Colors.black : Colors.grey.shade600,
+                          ),
                         ),
                       ),
                     );
@@ -121,39 +128,56 @@ class _MonitoringHistoryPageState extends State<MonitoringHistoryPage> {
                     itemBuilder: (context, index) {
                       final e = entries[index];
                       final time = TimeOfDay.fromDateTime(e.timestamp);
+                      final dateStr = "${e.timestamp.day}/${e.timestamp.month}/${e.timestamp.year} - ${time.format(context)}";
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "${e.timestamp.day}/${e.timestamp.month}/${e.timestamp.year} - ${time.format(context)}",
-                            style: TextStyle(
-                              fontSize: (screenWidth * 0.04 * fontSizeFactor).clamp(13.0, 18.0),
-                              color: highContrast ? Colors.black : Colors.grey.shade600,
+                          TappableReader(
+                            label: 'Data monitoraggio $dateStr',
+                            child: Text(
+                              dateStr,
+                              style: TextStyle(
+                                fontSize: (screenWidth * 0.04 * fontSizeFactor).clamp(13.0, 18.0),
+                                color: highContrast ? Colors.black : Colors.grey.shade600,
+                              ),
                             ),
                           ),
-                          FarmacoCard(
-                            statoColore: _getColor(e.sys, 90, 140),
-                            orario: "Pressione",
-                            nome: "${e.sys} / ${e.dia}",
-                            dose: "mmHg",
+                          const SizedBox(height: 4),
+                          TappableReader(
+                            label: 'Pressione ${e.sys}/${e.dia} mmHg',
+                            child: FarmacoCard(
+                              statoColore: _getColor(e.sys, 90, 140),
+                              orario: "Pressione",
+                              nome: "${e.sys} / ${e.dia}",
+                              dose: "mmHg",
+                            ),
                           ),
-                          FarmacoCard(
-                            statoColore: _getColor(e.bpm, 60, 100),
-                            orario: "Battito",
-                            nome: "${e.bpm}",
-                            dose: "MBP",
+                          TappableReader(
+                            label: 'Battito ${e.bpm} BPM',
+                            child: FarmacoCard(
+                              statoColore: _getColor(e.bpm, 60, 100),
+                              orario: "Battito",
+                              nome: "${e.bpm}",
+                              dose: "MBP",
+                            ),
                           ),
-                          FarmacoCard(
-                            statoColore: _getColor(e.hgt, 70, 110),
-                            orario: "Glicemia",
-                            nome: "${e.hgt}",
-                            dose: "MG/DL",
+                          TappableReader(
+                            label: 'Glicemia ${e.hgt} MG/DL',
+                            child: FarmacoCard(
+                              statoColore: _getColor(e.hgt, 70, 110),
+                              orario: "Glicemia",
+                              nome: "${e.hgt}",
+                              dose: "MG/DL",
+                            ),
                           ),
-                          FarmacoCard(
-                            statoColore: _getColor(e.spo2, 95, 100),
-                            orario: "Saturazione",
-                            nome: "${e.spo2}",
-                            dose: "%",
+                          TappableReader(
+                            label: 'Saturazione ${e.spo2} percento',
+                            child: FarmacoCard(
+                              statoColore: _getColor(e.spo2, 95, 100),
+                              orario: "Saturazione",
+                              nome: "${e.spo2}",
+                              dose: "%",
+                            ),
                           ),
                         ],
                       );

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
+import 'package:wellyess/widgets/tappable_reader.dart';
+import 'package:wellyess/services/flutter_tts.dart';
 
 /*
   BackCircleButton è un widget riutilizzabile per un bottone circolare che torna indietro
@@ -29,22 +31,29 @@ class BackCircleButton extends StatelessWidget {
       button: true,
       label: 'Torna indietro',
       hint: 'Torna alla schermata precedente',
-      child: GestureDetector(
-        onTap: onPressed,
-        child: Container(
-          width: buttonSize,
-          height: buttonSize,
-          decoration: BoxDecoration(
-            color: highContrast ? Colors.yellow.shade700 : const Color(0xFF5DB47F),
-            shape: BoxShape.circle,
-            border: highContrast
-                ? Border.all(color: Colors.black, width: 2)
-                : null,
-          ),
-          child: Icon(
-            Icons.arrow_back,
-            color: highContrast ? Colors.black : Colors.white,
-            size: iconSize,
+      child: TappableReader(
+        label: 'Torna indietro',
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            TalkbackService.announce('Torna indietro');
+            onPressed?.call();
+          },
+          child: Container(
+            width: buttonSize,
+            height: buttonSize,
+            decoration: BoxDecoration(
+              color: highContrast ? Colors.yellow.shade700 : const Color(0xFF5DB47F),
+              shape: BoxShape.circle,
+              border: highContrast
+                  ? Border.all(color: Colors.black, width: 2)
+                  : null,
+            ),
+            child: Icon(
+              Icons.arrow_back,
+              color: highContrast ? Colors.black : Colors.white,
+              size: iconSize,
+            ),
           ),
         ),
       ),

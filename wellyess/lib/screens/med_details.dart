@@ -9,6 +9,7 @@ import 'package:wellyess/widgets/confirm_popup.dart';
 import 'package:wellyess/models/user_model.dart';
 import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
+import 'package:wellyess/widgets/tappable_reader.dart';
 
 class DettagliFarmacoPage extends StatefulWidget {
   final FarmacoModel farmaco;
@@ -80,15 +81,18 @@ class _DettagliFarmacoPageState extends State<DettagliFarmacoPage> {
                   children: [
                     SizedBox(height: screenHeight * 0.02),
                     Center(
-                      child: Text(
-                        'Dettagli farmaco',
-                        style: TextStyle(
-                          fontSize: (screenWidth * 0.08 * fontSizeFactor)
-                              .clamp(30.0, 35.0),
-                          fontWeight: FontWeight.bold,
-                          color: highContrast ? Colors.black : Colors.black87,
+                      child: TappableReader(
+                        label: 'Titolo pagina Dettagli Farmaco',
+                        child: Text(
+                          'Dettagli farmaco',
+                          style: TextStyle(
+                            fontSize: (screenWidth * 0.08 * fontSizeFactor)
+                                .clamp(30.0, 35.0),
+                            fontWeight: FontWeight.bold,
+                            color: highContrast ? Colors.black : Colors.black87,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
                       ),
                     ),
                     Divider(
@@ -98,29 +102,43 @@ class _DettagliFarmacoPageState extends State<DettagliFarmacoPage> {
                     SizedBox(height: screenHeight * 0.04),
 
                     // DETTAGLI FARMACO
-                    InfoRow(label: 'Nome', value: widget.farmaco.nome),
-                    Divider(
-                      color: Colors.grey,
-                      thickness: 1,
-                    ),                    
-                    SizedBox(height: screenHeight * 0.02),
-                    InfoRow(label: 'Dose', value: widget.farmaco.dose),
+                    TappableReader(
+                      label: 'Nome farmaco: ${widget.farmaco.nome}',
+                      child: InfoRow(label: 'Nome', value: widget.farmaco.nome),
+                    ),
                     Divider(
                       color: Colors.grey,
                       thickness: 1,
                     ),
                     SizedBox(height: screenHeight * 0.02),
-                    InfoRow(label: 'Forma', value: widget.farmaco.formaTerapeutica),
+                    TappableReader(
+                      label: 'Dose farmaco: ${widget.farmaco.dose}',
+                      child: InfoRow(label: 'Dose', value: widget.farmaco.dose),
+                    ),
                     Divider(
                       color: Colors.grey,
                       thickness: 1,
                     ),
                     SizedBox(height: screenHeight * 0.02),
-                    InfoRow(label: 'Orario', value: widget.farmaco.orario),
+                    TappableReader(
+                      label:
+                          'Forma Terapeutica: ${widget.farmaco.formaTerapeutica}',
+                      child: InfoRow(
+                          label: 'Forma', value: widget.farmaco.formaTerapeutica),
+                    ),
                     Divider(
                       color: Colors.grey,
                       thickness: 1,
-                    ),  
+                    ),
+                    SizedBox(height: screenHeight * 0.02),
+                    TappableReader(
+                      label: 'Orario somministrazione: ${widget.farmaco.orario}',
+                      child: InfoRow(label: 'Orario', value: widget.farmaco.orario),
+                    ),
+                    Divider(
+                      color: Colors.grey,
+                      thickness: 1,
+                    ),
                   ],
                 ),
               ),
@@ -128,33 +146,36 @@ class _DettagliFarmacoPageState extends State<DettagliFarmacoPage> {
 
             // Pulsante fisso in basso
             SizedBox(height: screenHeight * 0.02),
-            CustomMainButton(
-              text: 'Elimina',
-              color: Colors.red.shade700,
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext dialogContext) {
-                    return ConfirmDialog(
-                      titleText:
-                          'Vuoi davvero Eliminare?\nL’azione è irreversibile',
-                      cancelButtonText: 'No, Esci',
-                      confirmButtonText: 'Sì, Elimina',
-                      onCancel: () {
-                        Navigator.of(dialogContext).pop();
-                      },
-                      onConfirm: () {
-                        // Logica di eliminazione dal database Hive
-                        final box = Hive.box<FarmacoModel>('farmaci');
-                        box.delete(widget.farmacoKey);
+            TappableReader(
+              label: 'Bottone Elimina Farmaco',
+              child: CustomMainButton(
+                text: 'Elimina',
+                color: Colors.red.shade700,
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext dialogContext) {
+                      return ConfirmDialog(
+                        titleText:
+                            'Vuoi davvero Eliminare?\nL’azione è irreversibile',
+                        cancelButtonText: 'No, Esci',
+                        confirmButtonText: 'Sì, Elimina',
+                        onCancel: () {
+                          Navigator.of(dialogContext).pop();
+                        },
+                        onConfirm: () {
+                          // Logica di eliminazione dal database Hive
+                          final box = Hive.box<FarmacoModel>('farmaci');
+                          box.delete(widget.farmacoKey);
 
-                        Navigator.of(dialogContext).pop(); // Chiude il popup
-                        Navigator.of(context).pop(); // Torna alla pagina precedente
-                      },
-                    );
-                  },
-                );
-              },
+                          Navigator.of(dialogContext).pop(); // Chiude il popup
+                          Navigator.of(context).pop(); // Torna alla pagina precedente
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),
