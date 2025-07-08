@@ -4,6 +4,7 @@ import 'package:wellyess/widgets/tappable_reader.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wellyess/services/flutter_tts.dart';
 
+// Pagina che mostra il tutorial passo-passo per l'utente
 class TutorialPage extends StatefulWidget {
   const TutorialPage({super.key});
 
@@ -12,7 +13,9 @@ class TutorialPage extends StatefulWidget {
 }
 
 class _TutorialPageState extends State<TutorialPage> {
-  int _currentStep = 0;
+  int _currentStep = 0; // Indice del passo attuale del tutorial
+
+  // Lista dei passi del tutorial, ognuno con titolo e contenuto
   final List<Step> _steps = [
     Step(
       title: TappableReader(
@@ -63,7 +66,7 @@ class _TutorialPageState extends State<TutorialPage> {
   @override
   void initState() {
     super.initState();
-    // Segna il tutorial come già mostrato
+    // Segna il tutorial come già mostrato nelle preferenze
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('tutorial_shown', true);
@@ -73,14 +76,16 @@ class _TutorialPageState extends State<TutorialPage> {
   @override
   Widget build(BuildContext context) {
     return BaseLayout(
-      pageTitle: 'Guida passo-passo',
+      pageTitle: 'Guida passo-passo', // Titolo della pagina nella barra superiore
       onBackPressed: () {
+        // Annuncia la chiusura del tutorial e torna indietro
         TalkbackService.announce('Tutorial chiuso');
         Navigator.pop(context);
       },
       child: Stepper(
-        currentStep: _currentStep,
+        currentStep: _currentStep, // Passo attuale
         onStepContinue: () {
+          // Avanza al passo successivo o chiude il tutorial se è l'ultimo
           if (_currentStep < _steps.length - 1) {
             setState(() => _currentStep++);
             final titleWidget = _steps[_currentStep].title.child;
@@ -93,6 +98,7 @@ class _TutorialPageState extends State<TutorialPage> {
         },
         onStepCancel: _currentStep > 0
             ? () {
+                // Torna al passo precedente
                 setState(() => _currentStep--);
                 final titleWidget = _steps[_currentStep].title.child;
                 final label = titleWidget is Text ? titleWidget.data! : 'Passo ${_currentStep + 1}';
@@ -100,6 +106,7 @@ class _TutorialPageState extends State<TutorialPage> {
               }
             : null,
         controlsBuilder: (ctx, details) {
+          // Costruisce i pulsanti di controllo (Avanti, Indietro, Fine)
           return Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -124,12 +131,13 @@ class _TutorialPageState extends State<TutorialPage> {
             ],
           );
         },
-        steps: _steps,
+        steps: _steps, // Lista dei passi del tutorial
       ),
     );
   }
 }
 
+// Estensione per accedere al child di un widget (usata per estrarre il testo dal titolo Step)
 extension on Widget {
    get child => null;
 }

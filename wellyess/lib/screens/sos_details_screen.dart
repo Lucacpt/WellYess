@@ -6,27 +6,29 @@ import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
 import 'package:wellyess/widgets/tappable_reader.dart';
 
+// Schermata che mostra i dettagli di una richiesta SOS ricevuta dal caregiver
 class SosDetailsScreen extends StatelessWidget {
   const SosDetailsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Ottieni dimensioni schermo per layout responsivo
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // Accessibilità
+    // Accessibilità: recupera i valori dal provider
     final access = context.watch<AccessibilitaModel>();
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
     return BaseLayout(
-      pageTitle: 'Emergenza', // ← aggiunto
-      userType: UserType.caregiver,
-      onBackPressed: () => Navigator.of(context).pop(),
+      pageTitle: 'Emergenza', // Titolo della pagina nella barra superiore
+      userType: UserType.caregiver, // Imposta il tipo utente come caregiver
+      onBackPressed: () => Navigator.of(context).pop(), // Azione per il tasto indietro
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // HEADER FISSO
+          // HEADER FISSO: Titolo pagina
           SizedBox(height: screenHeight * 0.01),
           TappableReader(
             label: 'Titolo pagina Emergenza',
@@ -44,7 +46,7 @@ class SosDetailsScreen extends StatelessWidget {
             color: highContrast ? Colors.black : Colors.grey,
             thickness: 1.2,
           ),
-          // CONTENUTO SCORRIBILE
+          // CONTENUTO SCORRIBILE: Dettagli della richiesta SOS
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
@@ -52,6 +54,7 @@ class SosDetailsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    // Titolo della richiesta ricevuta
                     TappableReader(
                       label: 'Richiesta di soccorso ricevuto',
                       child: Text(
@@ -65,6 +68,7 @@ class SosDetailsScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.03),
+                    // Testo posizione attuale dell'anziano
                     TappableReader(
                       label: 'Posizione attuale di Michele Verdi',
                       child: Text(
@@ -76,6 +80,7 @@ class SosDetailsScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.02),
+                    // Mappa che mostra la posizione della persona in emergenza
                     TappableReader(
                       label: 'Mappa posizione della persona in emergenza',
                       child: Container(
@@ -106,7 +111,7 @@ class SosDetailsScreen extends StatelessWidget {
               ),
             ),
           ),
-          // FOOTER FISSO
+          // FOOTER FISSO: Bottone per chiamare i soccorsi
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
             child: TappableReader(
@@ -116,7 +121,7 @@ class SosDetailsScreen extends StatelessWidget {
                 icon: Icons.call,
                 color: const Color(0xFFC63E3E),
                 onTap: () {
-                  // Logica per chiamare i soccorsi
+                  // Logica per chiamare i soccorsi (da implementare)
                 },
               ),
             ),

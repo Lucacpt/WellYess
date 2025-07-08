@@ -10,7 +10,7 @@ import '../widgets/pop_up_conferma.dart';
 import 'package:wellyess/widgets/tappable_reader.dart';
 import 'package:wellyess/services/flutter_tts.dart';
 
-
+// Schermata principale per la gestione delle emergenze (SOS)
 class EmergenzaScreen extends StatefulWidget {
   const EmergenzaScreen({super.key});
 
@@ -20,21 +20,21 @@ class EmergenzaScreen extends StatefulWidget {
 
 class _EmergenzaScreenState extends State<EmergenzaScreen>
     with SingleTickerProviderStateMixin {
-  // --- State per la vista Anziano ---
-  late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;
-  bool _isFirstTap = false;
-  Timer? _resetTapTimer;
-  String _buttonText = 'SOS';
+  // --- Stato per la vista Anziano (animazione e tap) ---
+  late AnimationController _animationController; // Controller per l'animazione del pulsante SOS
+  late Animation<double> _scaleAnimation;        // Animazione di scala per il pulsante
+  bool _isFirstTap = false;                      // Indica se è stato fatto il primo tap sul pulsante SOS
+  Timer? _resetTapTimer;                         // Timer per resettare lo stato del pulsante
+  String _buttonText = 'SOS';                    // Testo visualizzato sul pulsante SOS
 
-  // --- State per la gestione del tipo utente ---
-  UserType? _userType;
-  bool _isLoading = true;
+  // --- Stato per la gestione del tipo utente ---
+  UserType? _userType;                           // Tipo utente (caregiver, anziano, ecc.)
+  bool _isLoading = true;                        // Stato di caricamento
 
   @override
   void initState() {
     super.initState();
-    _loadUserType();
+    _loadUserType(); // Carica il tipo di utente dalle preferenze
 
     // Inizializza le animazioni per la vista Anziano
     _animationController = AnimationController(
@@ -47,6 +47,7 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
     _animationController.repeat(reverse: true);
   }
 
+  // Carica il tipo di utente dalle SharedPreferences
   Future<void> _loadUserType() async {
     final prefs = await SharedPreferences.getInstance();
     final userTypeString = prefs.getString('userType');
@@ -68,6 +69,7 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
     super.dispose();
   }
 
+  // Resetta lo stato del pulsante SOS dopo un timeout o dopo l'invio
   void _resetButtonState() {
     if (!mounted) return;
     setState(() {
@@ -77,6 +79,7 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
     });
   }
 
+  // Mostra un popup di conferma dopo l'invio della richiesta SOS
   Future<void> _showCaregiverNotifiedDialog(
       BuildContext context, double screenWidth, double screenHeight) {
     return showDialog<void>(
@@ -93,17 +96,18 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Accessibilità
+    // Accessibilità: recupera i valori dal provider
     final access = context.watch<AccessibilitaModel>();
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
     if (_isLoading) {
+      // Mostra loader se i dati sono in caricamento
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return BaseLayout(
-      pageTitle: 'Emergenza',              // ← aggiunto
+      pageTitle: 'Emergenza',              // Titolo della pagina nella barra superiore
       userType: _userType,
       onBackPressed: () => Navigator.of(context).pop(),
       child: _userType == UserType.caregiver
@@ -112,14 +116,14 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
     );
   }
 
-  // --- NUOVA VISTA PER IL CAREGIVER ---
+  // --- VISTA PER IL CAREGIVER: mostra richieste SOS ricevute e storico ---
   Widget _buildCaregiverView(BuildContext context, double fontSizeFactor, bool highContrast) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // HEADER FISSO
+        // HEADER FISSO: Titolo sezione
         Center(
           child: TappableReader(
             label: 'Titolo sezione Richieste di soccorso',
@@ -139,13 +143,14 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
           color: highContrast ? Colors.black : Colors.grey,
           thickness: 1.2,
         ),
-        // CONTENUTO SCORRIBILE
+        // CONTENUTO SCORRIBILE: nuove richieste e storico
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // Sottotitolo nuove richieste
                 TappableReader(
                   label: 'Sottotitolo Nuove richieste',
                   child: Text(
@@ -158,12 +163,14 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
                   ),
                 ),
                 const SizedBox(height: 10),
+                // Card richiesta SOS nuova
                 const SosRequestCard(
                   personName: 'Michele Verdi',
                   timestamp: 'Oggi, 14:32',
                   isNew: true,
                 ),
                 const SizedBox(height: 30),
+                // Sottotitolo storico richieste
                 TappableReader(
                   label: 'Sottotitolo Storico richieste',
                   child: Text(
@@ -176,6 +183,7 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
                   ),
                 ),
                 const SizedBox(height: 10),
+                // Card richiesta SOS storica
                 const SosRequestCard(
                   personName: 'Michele Verdi',
                   timestamp: '12/10/2023',
@@ -189,7 +197,7 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
     );
   }
 
-  // --- VISTA ESISTENTE PER L'ANZIANO ---
+  // --- VISTA PER L'ANZIANO: pulsante SOS con doppio tap ---
   Widget _buildElderView(BuildContext context, double fontSizeFactor, bool highContrast) {
     final sw = MediaQuery.of(context).size.width;
     final sh = MediaQuery.of(context).size.height;
@@ -197,7 +205,7 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // HEADER FISSO
+        // HEADER FISSO: Titolo pagina
         SizedBox(height: sh * 0.01),
         Center(
           child: TappableReader(
@@ -219,7 +227,7 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
           thickness: 1.2,
         ),
         SizedBox(height: sh * 0.01),
-        // CONTENUTO SCORRIBILE
+        // CONTENUTO SCORRIBILE: istruzioni e pulsante SOS
         Expanded(
           child: SingleChildScrollView(
             child: Padding(
@@ -227,6 +235,7 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Riga informativa su come inviare la richiesta
                   Row(
                     children: [
                       TappableReader(
@@ -252,6 +261,7 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
                     ],
                   ),
                   SizedBox(height: sh * 0.04),
+                  // Pulsante SOS animato con doppio tap per confermare
                   ScaleTransition(
                     scale: _scaleAnimation,
                     child: TappableReader(
@@ -261,6 +271,7 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
                       child: GestureDetector(
                         onTap: () {
                           if (!_isFirstTap) {
+                            // Primo tap: chiede conferma
                             setState(() {
                               _isFirstTap = true;
                               _buttonText = 'Tocca di nuovo\nper confermare';
@@ -274,6 +285,7 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
                             _resetTapTimer = Timer(
                                 const Duration(seconds: 3), _resetButtonState);
                           } else {
+                            // Secondo tap: invia la richiesta
                             _resetTapTimer?.cancel();
                             _showCaregiverNotifiedDialog(context, sw, sh)
                                 .then((_) {
@@ -339,6 +351,7 @@ class _EmergenzaScreenState extends State<EmergenzaScreen>
                      ),
                    ),
                   SizedBox(height: sh * 0.04),
+                  // Bottone per aggiungere la funzione alla schermata home (placeholder)
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(

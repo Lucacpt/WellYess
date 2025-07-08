@@ -5,30 +5,32 @@ import '../widgets/confirm_popup.dart';
 import '../widgets/custom_main_button.dart';
 import 'package:wellyess/widgets/tappable_reader.dart';
 
+// Pagina che mostra il profilo del caregiver
 class CaregiverProfilePage extends StatelessWidget {
   const CaregiverProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // 1. Otteniamo le dimensioni dello schermo
+    // Ottieni le dimensioni dello schermo per layout responsivo
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
     return BaseLayout(
-      pageTitle: 'Profilo Caregiver', // ← aggiunto
+      pageTitle: 'Profilo Caregiver', // Titolo della pagina nella barra superiore
       currentIndex: 1,
-      onBackPressed: () => Navigator.of(context).pop(),
+      onBackPressed: () => Navigator.of(context).pop(), // Azione per il tasto indietro
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
             .copyWith(bottom: screenHeight * 0.01),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // 3. Questa sezione si espande e diventa scorrevole SOLO SE necessario
+            // Sezione principale che si espande e diventa scorrevole se necessario
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   children: [
+                    // Ruolo visualizzato in alto
                     Align(
                       alignment: Alignment.topCenter,
                       child: TappableReader(
@@ -36,7 +38,6 @@ class CaregiverProfilePage extends StatelessWidget {
                         child: Text(
                           'Assistente',
                           style: TextStyle(
-                            // 2. Ogni dimensione è relativa allo schermo
                             fontSize: screenWidth * 0.08,
                             fontWeight: FontWeight.bold,
                           ),
@@ -45,6 +46,7 @@ class CaregiverProfilePage extends StatelessWidget {
                     ),
                     const Divider(),
                     SizedBox(height: screenHeight * 0.035),
+                    // Immagine del caregiver
                     Center(
                       child: TappableReader(
                         label: 'Immagine del caregiver',
@@ -57,6 +59,7 @@ class CaregiverProfilePage extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.025),
+                    // Nome del caregiver
                     Center(
                       child: TappableReader(
                         label: 'Nome caregiver: Svetlana Nowak',
@@ -70,6 +73,7 @@ class CaregiverProfilePage extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.07),
+                    // Riga telefono
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -97,6 +101,7 @@ class CaregiverProfilePage extends StatelessWidget {
                     ),
                     const Divider(height: 1, thickness: 1),
                     SizedBox(height: screenHeight * 0.035),
+                    // Riga email
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -127,7 +132,7 @@ class CaregiverProfilePage extends StatelessWidget {
                 ),
               ),
             ),
-            // 4. Il pulsante rimane sempre visibile in fondo
+            // Pulsante fisso in fondo per eliminare il caregiver
             SizedBox(height: screenHeight * 0.02),
             TappableReader(
               label: 'Bottone Elimina caregiver',
@@ -135,6 +140,7 @@ class CaregiverProfilePage extends StatelessWidget {
                 text: 'Elimina',
                 color: Colors.red,
                 onTap: () {
+                  // Mostra un popup di conferma prima di eliminare il caregiver
                   showDialog(
                     context: context,
                     builder: (BuildContext ctx) {
@@ -148,6 +154,7 @@ class CaregiverProfilePage extends StatelessWidget {
                         },
                         onConfirm: () {
                           Navigator.of(ctx).pop();
+                          // Dopo l'eliminazione, reindirizza alla pagina di aggiunta caregiver
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
                               builder: (context) => const AggiungiCaregiverPage(),

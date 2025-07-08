@@ -7,8 +7,9 @@ import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
 import 'package:wellyess/widgets/tappable_reader.dart';
 
+// Schermata che mostra il profilo dell'utente (anziano o caregiver)
 class ProfiloUtente extends StatelessWidget {
-  // MODIFICA: Aggiunto un parametro per forzare la vista dell'anziano
+  // Parametro per forzare la vista dell'anziano anche se l'utente loggato è un caregiver
   final bool forceElderView;
 
   const ProfiloUtente({
@@ -16,6 +17,7 @@ class ProfiloUtente extends StatelessWidget {
     this.forceElderView = false, // Di default è falso
   });
 
+  // Recupera il tipo di utente salvato nelle preferenze
   Future<String?> _getUserType() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('userType');
@@ -26,15 +28,17 @@ class ProfiloUtente extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // Accessibilità
+    // Accessibilità: recupera i valori dal provider
     final access = context.watch<AccessibilitaModel>();
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
+    // Usa FutureBuilder per attendere il recupero del tipo utente
     return FutureBuilder<String?>(
       future: _getUserType(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
+          // Mostra loader durante il caricamento
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
@@ -44,12 +48,14 @@ class ProfiloUtente extends StatelessWidget {
         final loggedInUserIsCaregiver =
             snapshot.data == UserType.caregiver.toString();
 
-        // MODIFICA: La decisione su cosa mostrare ora dipende da forceElderView
+        // Se forzato o se l'utente NON è caregiver, mostra il profilo dell'anziano
         final bool showElderProfile = forceElderView || !loggedInUserIsCaregiver;
 
+        // Imposta il tipo utente per il layout (serve per la barra in alto)
         final userTypeForLayout =
             loggedInUserIsCaregiver ? UserType.caregiver : UserType.elder;
 
+        // Scegli l'immagine e il nome in base al profilo da mostrare
         final String profileImageAsset = showElderProfile
             ? 'assets/images/elder_profile_pic.png'
             : 'assets/images/svetlana.jpg';
@@ -57,9 +63,8 @@ class ProfiloUtente extends StatelessWidget {
             showElderProfile ? 'Michele Verdi' : 'Svetlana Nowak';
 
         return BaseLayout(
-          pageTitle: forceElderView ? 'Profilo Assistito' : 'Profilo', // ← aggiunto
+          pageTitle: forceElderView ? 'Profilo Assistito' : 'Profilo', // Titolo della pagina
           currentIndex: 2,
-          // L'header mostra sempre il profilo dell'utente loggato
           userType: userTypeForLayout,
           onBackPressed: () {
             Navigator.pop(context);
@@ -67,7 +72,7 @@ class ProfiloUtente extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // HEADER FISSO
+              // HEADER FISSO: Titolo pagina
               SizedBox(height: screenHeight * 0.025),
               Center(
                 child: TappableReader(
@@ -89,7 +94,7 @@ class ProfiloUtente extends StatelessWidget {
                 color: highContrast ? Colors.black : Colors.grey,
                 thickness: 1,
               ),
-              // CONTENUTO SCORRIBILE
+              // CONTENUTO SCORRIBILE: Dati profilo
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
@@ -99,6 +104,7 @@ class ProfiloUtente extends StatelessWidget {
                       Center(
                         child: Column(
                           children: [
+                            // Immagine profilo
                             TappableReader(
                               label: showElderProfile
                                   ? 'Immagine profilo assistito'
@@ -120,6 +126,7 @@ class ProfiloUtente extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: screenHeight * 0.02),
+                            // Nome profilo
                             TappableReader(
                               label: showElderProfile
                                   ? 'Nome assistito: $name'
@@ -138,9 +145,8 @@ class ProfiloUtente extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: screenHeight * 0.03),
-                      // MODIFICA: La logica if/else ora usa la nuova variabile
+                      // Se il profilo è del caregiver, mostra i dati del caregiver
                       if (!showElderProfile) ...[
-                        // Mostra i dati del caregiver solo se non stiamo forzando la vista anziano
                         TappableReader(
                           label: 'Data nascita assistente: 13 novembre 1991',
                           child: const InfoRow(label: 'Data Nascita', value: '13/11/\'91'),
@@ -187,7 +193,7 @@ class ProfiloUtente extends StatelessWidget {
                           thickness: 1,
                         ),
                       ] else ...[
-                        // Mostra i dati dell'anziano in tutti gli altri casi
+                        // Se il profilo è dell'anziano, mostra i dati dell'anziano
                         TappableReader(
                           label: 'Data nascita assistito: 15 maggio 1948',
                           child: const InfoRow(label: 'Data nascita', value: '15/05/\'48'),
