@@ -4,13 +4,14 @@ import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:timezone/timezone.dart' as tz;
 
-// Definisci qui il plugin notifiche
+// Definisci qui il plugin notifiche globale
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
-// Callback per Android Alarm Manager
+// Callback per Android Alarm Manager: mostra la notifica all'orario programmato
 @pragma('vm:entry-point')
 void mostraNotificaCallback(int id, Map<String, dynamic> data) {
+  // Inizializza il plugin notifiche per Android
   final FlutterLocalNotificationsPlugin plugin = FlutterLocalNotificationsPlugin();
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -18,9 +19,11 @@ void mostraNotificaCallback(int id, Map<String, dynamic> data) {
       InitializationSettings(android: initializationSettingsAndroid);
   plugin.initialize(initializationSettings);
 
+  // Recupera nome e dose dal payload della notifica
   final String nome = data['nome'] ?? 'il tuo farmaco';
   final String dose = data['dose'] ?? '';
 
+  // Mostra la notifica con titolo e messaggio personalizzati
   plugin.show(
     id,
     'Promemoria Farmaco',
@@ -38,13 +41,16 @@ void mostraNotificaCallback(int id, Map<String, dynamic> data) {
   );
 }
 
+// Pianifica una notifica per un farmaco all'orario specificato
 Future<void> scheduleFarmacoNotification(dynamic key, String nome, String dose, String orario) async {
   final format = DateFormat("HH:mm");
   final time = format.parse(orario);
   final int notificationId = key; // Usa la chiave Hive come ID
 
   if (Platform.isAndroid) {
+    // Calcola la prossima occorrenza dell'orario richiesto
     final DateTime scheduledDateTime = _nextInstanceOfTime(time.hour, time.minute);
+    // Usa AndroidAlarmManager per programmare la notifica
     await AndroidAlarmManager.oneShotAt(
       scheduledDateTime,
       notificationId,
@@ -58,7 +64,9 @@ Future<void> scheduleFarmacoNotification(dynamic key, String nome, String dose, 
       },
     );
   } else if (Platform.isIOS) {
+    // Calcola la prossima occorrenza dell'orario richiesto (timezone-aware)
     final tz.TZDateTime scheduledDateTime = _nextInstanceOfTimeTZ(time.hour, time.minute);
+    // Usa il plugin notifiche per programmare la notifica su iOS
     await flutterLocalNotificationsPlugin.zonedSchedule(
       notificationId,
       '🕐 È il momento di prendere il farmaco!',
@@ -80,6 +88,7 @@ Future<void> scheduleFarmacoNotification(dynamic key, String nome, String dose, 
   }
 }
 
+// Cancella una notifica programmata per un farmaco
 Future<void> cancelFarmacoNotification(dynamic key) async {
   final int notificationId = key;
   if (Platform.isAndroid) {
@@ -89,6 +98,7 @@ Future<void> cancelFarmacoNotification(dynamic key) async {
   }
 }
 
+// Calcola la prossima occorrenza di un orario (oggi o domani se già passato) per Android
 DateTime _nextInstanceOfTime(int hour, int minute) {
   final now = DateTime.now();
   var scheduledDate = DateTime(now.year, now.month, now.day, hour, minute);
@@ -98,6 +108,7 @@ DateTime _nextInstanceOfTime(int hour, int minute) {
   return scheduledDate;
 }
 
+// Calcola la prossima occorrenza di un orario (oggi o domani se già passato) per iOS/timezone
 tz.TZDateTime _nextInstanceOfTimeTZ(int hour, int minute) {
   final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
   tz.TZDateTime scheduledDate =

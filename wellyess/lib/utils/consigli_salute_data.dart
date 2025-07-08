@@ -1,14 +1,15 @@
+// Lista di consigli per l'attività fisica, ogni elemento è una mappa con dettagli e suggerimenti
 final List<Map<String, dynamic>> attivitaFisicaTips = [
   // Consiglio Attività Fisica 1: Camminata leggera
   {
-    "svgAssetPath": "assets/icons/Vector.svg",
-    "title": "Camminata leggera",
-    "subtitle": "Almeno 30 minuti al giorno",
+    "svgAssetPath": "assets/icons/Vector.svg", // Percorso icona SVG
+    "title": "Camminata leggera",               // Titolo del consiglio
+    "subtitle": "Almeno 30 minuti al giorno",   // Sottotitolo
     "description":
         "La camminata leggera è una delle forme di esercizio più semplici, sicure ed efficaci per le persone anziane. Praticata con regolarità, contribuisce al mantenimento della salute fisica e mentale senza richiedere attrezzature o ambienti specifici. Bastano 30 minuti al giorno per trarne benefici concreti e duraturi.",
     "topics": [
       {
-        "title": "Benefici",
+        "title": "Benefici", // Titolo sezione
         "text": [
           "Migliora la salute cardiovascolare",
           "Riduce lo stress",
@@ -93,6 +94,7 @@ final List<Map<String, dynamic>> attivitaFisicaTips = [
       },
     ]
   },
+  // Consiglio Attività Fisica 4: Esercizi da seduti
   {
     "svgAssetPath": "assets/icons/divano.svg",
     "title": "Esercizi da seduti",
@@ -125,7 +127,9 @@ final List<Map<String, dynamic>> attivitaFisicaTips = [
   },
 ];
 
+// Lista di consigli per l'alimentazione, ogni elemento è una mappa con dettagli e suggerimenti
 final List<Map<String, dynamic>> alimentazioneTips = [
+  // Consiglio Alimentazione 1: Frutta e verdura
   {
     "svgAssetPath": "assets/icons/mela.svg",
     "title": "Frutta e verdura",
@@ -156,6 +160,7 @@ final List<Map<String, dynamic>> alimentazioneTips = [
       },
     ]
   },
+  // Consiglio Alimentazione 2: Proteine magre
   {
     "svgAssetPath": "assets/icons/fish.svg",
     "title": "Proteine magre",
@@ -186,6 +191,7 @@ final List<Map<String, dynamic>> alimentazioneTips = [
       },
     ]
   },
+  // Consiglio Alimentazione 3: Limitare lo zucchero
   {
     "svgAssetPath": "assets/icons/no_sugar.svg",
     "title": "Limitare lo zucchero",
@@ -213,6 +219,7 @@ final List<Map<String, dynamic>> alimentazioneTips = [
       },
     ]
   },
+  // Consiglio Alimentazione 4: Bere regolarmente
   {
     "svgAssetPath": "assets/icons/bottle.svg",
     "title": "Bere regolarmente",
