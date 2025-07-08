@@ -19,41 +19,44 @@ class BackCircleButton extends StatelessWidget {
   // Il metodo build costruisce l'interfaccia utente del widget
   @override
   Widget build(BuildContext context) {
+    // Recupera impostazioni di accessibilità dal provider
     final access = context.watch<AccessibilitaModel>();
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
     final screenWidth = MediaQuery.of(context).size.width;
+    // Calcola la dimensione del bottone e dell'icona in modo responsivo e accessibile
     final double buttonSize = screenWidth * 0.09 * fontSizeFactor;
     final double iconSize = buttonSize * 0.6;
 
     return Semantics(
       button: true,
-      label: 'Torna indietro',
-      hint: 'Torna alla schermata precedente',
+      label: 'Torna indietro', // Etichetta per screen reader
+      hint: 'Torna alla schermata precedente', // Suggerimento per accessibilità
       child: TappableReader(
-        label: 'Torna indietro',
+        label: 'Torna indietro', // Etichetta per lettura vocale
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () {
+            // Se TalkBack è attivo, annuncia il bottone
             if (access.talkbackEnabled) {
               TalkbackService.announce('Torna indietro');
             }
-            onPressed?.call();
+            onPressed?.call(); // Esegue la callback se presente
           },
           child: Container(
             width: buttonSize,
             height: buttonSize,
             decoration: BoxDecoration(
-              color: highContrast ? Colors.yellow.shade700 : const Color(0xFF5DB47F),
+              color: highContrast ? Colors.yellow.shade700 : const Color(0xFF5DB47F), // Sfondo adattato per contrasto
               shape: BoxShape.circle,
               border: highContrast
-                  ? Border.all(color: Colors.black, width: 2)
+                  ? Border.all(color: Colors.black, width: 2) // Bordo nero se alto contrasto
                   : null,
             ),
             child: Icon(
               Icons.arrow_back,
-              color: highContrast ? Colors.black : Colors.white,
+              color: highContrast ? Colors.black : Colors.white, // Colore icona adattato per contrasto
               size: iconSize,
             ),
           ),

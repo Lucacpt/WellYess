@@ -9,14 +9,16 @@ import 'package:wellyess/screens/consigli_salute.dart';
 import 'package:wellyess/screens/med_section.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
 
+// Popup menu principale dell'app, mostra le voci di navigazione in base al tipo utente
 class MenuPopup extends StatelessWidget {
-  final UserType userType;
+  final UserType userType; // Tipo utente (caregiver o anziano)
 
   const MenuPopup({
     super.key,
     required this.userType,
   });
 
+  // Gestisce il tap su una voce di menu e naviga alla pagina corrispondente
   void _handleMenuTap(BuildContext context, String key) {
     Navigator.of(context).pop(); // Chiudi il popup
     switch (key) {
@@ -48,11 +50,15 @@ class MenuPopup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Recupera impostazioni di accessibilità dal provider
     final access = context.watch<AccessibilitaModel>();
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
+    // Determina se l'utente è un caregiver
     final isCaregiver = userType == UserType.caregiver;
+
+    // Definisce le voci di menu in base al tipo utente
     final menuItems = isCaregiver
         ? [
             _MenuItemData('Farmaci', Icons.medication_outlined, 'farmaci'),
@@ -70,7 +76,7 @@ class MenuPopup extends StatelessWidget {
             _MenuItemData('SOS', Icons.sos, 'sos_elder', isSos: true),
           ];
 
-    // Colori accessibili
+    // Colori accessibili per sfondo, testo e icone
     final Color bgColor = highContrast ? Colors.yellow.shade100 : Colors.white;
     final Color borderColor = highContrast ? Colors.black : Colors.transparent;
     final Color defaultTextColor = highContrast ? Colors.black : Colors.black87;
@@ -102,11 +108,12 @@ class MenuPopup extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // Genera ogni voce di menu con stile e comportamento diversi se SOS o Logout
               ...menuItems.map((item) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 7),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
-                      onTap: () => _handleMenuTap(context, item.key),
+                      onTap: () => _handleMenuTap(context, item.key), // Gestisce il tap sulla voce
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                         decoration: BoxDecoration(
@@ -114,7 +121,7 @@ class MenuPopup extends StatelessWidget {
                           color: item.isSos == true
                               ? sosBgColor
                               : item.key == 'logout'
-                                ? (highContrast ? Colors.yellow.shade200 : Colors.grey.shade200) // <-- più chiaro in contrasto
+                                ? (highContrast ? Colors.yellow.shade200 : Colors.grey.shade200) // Più chiaro in contrasto
                                 : (highContrast ? Colors.yellow.shade600 : const Color(0xFF5DB47F).withOpacity(0.08)),
                           border: item.isSos == true
                               ? Border.all(color: sosBgColor, width: 2.5)
@@ -122,6 +129,7 @@ class MenuPopup extends StatelessWidget {
                         ),
                         child: Row(
                           children: [
+                            // Icona della voce di menu
                             Icon(
                               item.icon,
                               color: item.isSos == true
@@ -132,6 +140,7 @@ class MenuPopup extends StatelessWidget {
                               size: item.isSos == true ? 34 : 28,
                             ),
                             const SizedBox(width: 18),
+                            // Testo della voce di menu
                             Expanded(
                               child: Text(
                                 item.label,
@@ -147,6 +156,7 @@ class MenuPopup extends StatelessWidget {
                                 ),
                               ),
                             ),
+                            // Freccia a destra solo se non è SOS
                             if (!item.isSos)
                               Icon(Icons.chevron_right, color: highContrast ? Colors.black : Colors.grey, size: 22),
                           ],
@@ -162,10 +172,11 @@ class MenuPopup extends StatelessWidget {
   }
 }
 
+// Classe di supporto per rappresentare una voce di menu
 class _MenuItemData {
-  final String label;
-  final IconData icon;
-  final String key;
-  final bool isSos;
+  final String label;      // Testo della voce
+  final IconData icon;     // Icona della voce
+  final String key;        // Chiave per identificare la voce
+  final bool isSos;        // True se la voce è SOS (stile speciale)
   _MenuItemData(this.label, this.icon, this.key, {this.isSos = false});
 }
