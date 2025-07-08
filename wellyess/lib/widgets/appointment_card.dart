@@ -7,17 +7,20 @@ import 'package:provider/provider.dart';
 import 'package:wellyess/widgets/tappable_reader.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
 
+// Widget che rappresenta una card per visualizzare un appuntamento/visita
 class AppointmentCard extends StatelessWidget {
-  final AppointmentModel appointment;
+  final AppointmentModel appointment; // Modello dati dell'appuntamento
 
   const AppointmentCard({Key? key, required this.appointment}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // Recupera impostazioni di accessibilità dal provider
     final access = context.watch<AccessibilitaModel>();
     final fontSize = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
+    // Formatta la data e l'ora per la visualizzazione
     final dateStr = DateFormat('d MMM yyyy', 'it_IT').format(appointment.data);
     final timeStr = DateFormat('HH:mm').format(appointment.ora);
 
@@ -32,6 +35,7 @@ class AppointmentCard extends StatelessWidget {
         ),
       ),
       child: ListTile(
+        // Titolo della visita (es: "Visita cardiologica")
         title: TappableReader(
           label: appointment.tipoVisita,
           child: Text(
@@ -42,6 +46,7 @@ class AppointmentCard extends StatelessWidget {
             ),
           ),
         ),
+        // Sottotitolo con data e ora della visita
         subtitle: TappableReader(
           label: "$dateStr • $timeStr",
           child: Text(
@@ -52,11 +57,13 @@ class AppointmentCard extends StatelessWidget {
             ),
           ),
         ),
+        // Pulsante per vedere i dettagli della visita
         trailing: TappableReader(
           label: 'Dettagli visita',
           child: CustomButton(
             text: 'Dettagli',
             onPressed: () {
+              // Naviga alla schermata dei dettagli della visita passando i dati necessari
               Navigator.push(
                 context,
                 MaterialPageRoute(

@@ -28,6 +28,7 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Colori per la navbar e le icone, adattati per l'accessibilità
     final Color navBgColor = highContrast ? Colors.black : const Color(0xFF5DB47F);
     final Color iconActiveColor = highContrast ? Colors.yellow.shade700 : Colors.white;
     final Color iconInactiveColor = highContrast ? Colors.yellow.shade200 : Colors.white70;
@@ -35,7 +36,7 @@ class CustomBottomNavBar extends StatelessWidget {
     final Color homeIconColor = highContrast ? Colors.black : Colors.white;
     final Color borderColor = highContrast ? Colors.black : Colors.white;
 
-    // Limiti massimi per evitare overflow
+    // Limiti massimi per evitare overflow delle icone e dei pulsanti
     final double maxHomeSize = 80;
     final double homeSize = math.min(70 * fontSize, maxHomeSize);
     final double homeIconSize = math.min(36 * fontSize, 40);
@@ -46,7 +47,7 @@ class CustomBottomNavBar extends StatelessWidget {
       child: Stack(
         alignment: Alignment.topCenter,
         children: [
-          // Sfondo navbar
+          // Sfondo arrotondato della navbar
           Positioned(
             bottom: 0,
             left: 20,
@@ -62,7 +63,7 @@ class CustomBottomNavBar extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Menu
+                  // Pulsante Menu (sinistra)
                   TappableReader(
                     label: 'Apri menu',
                     child: Container(
@@ -79,17 +80,18 @@ class CustomBottomNavBar extends StatelessWidget {
                           color: isMenuOpen ? iconActiveColor : iconInactiveColor,
                         ),
                         onPressed: () {
+                          // Annuncia il menu se TalkBack è attivo
                           final access = Provider.of<AccessibilitaModel>(context, listen: false);
                           if (access.talkbackEnabled) {
                             TalkbackService.announce('Apri menu');
                           }
-                          onTap?.call(0);
+                          onTap?.call(0); // Notifica il tap al parent
                         },
                         tooltip: 'Menu',
                       ),
                     ),
                   ),
-                  // Impostazioni
+                  // Pulsante Impostazioni (destra)
                   TappableReader(
                     label: 'Apri impostazioni',
                     child: Container(
@@ -106,11 +108,12 @@ class CustomBottomNavBar extends StatelessWidget {
                           color: currentIndex == 2 ? iconActiveColor : iconInactiveColor,
                         ),
                         onPressed: () {
+                          // Annuncia le impostazioni se TalkBack è attivo
                           final access = Provider.of<AccessibilitaModel>(context, listen: false);
                           if (access.talkbackEnabled) {
                             TalkbackService.announce('Apri impostazioni');
                           }
-                          onTap?.call(2);
+                          onTap?.call(2); // Notifica il tap al parent
                         },
                         tooltip: 'Impostazioni',
                       ),
@@ -121,7 +124,7 @@ class CustomBottomNavBar extends StatelessWidget {
             ),
           ),
 
-          // Home centrale
+          // Pulsante Home centrale (in rilievo)
           Positioned(
             bottom: 5,
             child: TappableReader(
@@ -129,11 +132,12 @@ class CustomBottomNavBar extends StatelessWidget {
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () {
+                  // Annuncia "Home" se TalkBack è attivo
                   final access = Provider.of<AccessibilitaModel>(context, listen: false);
                   if (access.talkbackEnabled) {
                     TalkbackService.announce('Home');
                   }
-                  onTap?.call(1);
+                  onTap?.call(1); // Notifica il tap al parent
                 },
                 child: Container(
                   width: homeSize,
