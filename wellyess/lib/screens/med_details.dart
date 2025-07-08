@@ -11,9 +11,10 @@ import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
 import 'package:wellyess/widgets/tappable_reader.dart';
 
+// Pagina che mostra i dettagli di un farmaco specifico
 class DettagliFarmacoPage extends StatefulWidget {
-  final FarmacoModel farmaco;
-  final dynamic farmacoKey;
+  final FarmacoModel farmaco;   // Modello del farmaco da mostrare
+  final dynamic farmacoKey;     // Chiave del farmaco in Hive
 
   const DettagliFarmacoPage({
     Key? key,
@@ -26,15 +27,16 @@ class DettagliFarmacoPage extends StatefulWidget {
 }
 
 class _DettagliFarmacoPageState extends State<DettagliFarmacoPage> {
-  UserType? _userType;
-  bool _isLoading = true;
+  UserType? _userType;   // Tipo utente (caregiver, anziano, ecc.)
+  bool _isLoading = true; // Stato di caricamento
 
   @override
   void initState() {
     super.initState();
-    _loadUserType();
+    _loadUserType(); // Carica il tipo di utente dalle preferenze
   }
 
+  // Carica il tipo di utente dalle SharedPreferences
   Future<void> _loadUserType() async {
     final prefs = await SharedPreferences.getInstance();
     final userTypeString = prefs.getString('userType');
@@ -51,22 +53,24 @@ class _DettagliFarmacoPageState extends State<DettagliFarmacoPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Ottieni dimensioni schermo per layout responsivo
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // Accessibilità
+    // Accessibilità: recupera i valori dal provider
     final access = context.watch<AccessibilitaModel>();
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
+    // Mostra loader se i dati sono in caricamento
     if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return BaseLayout(
-      pageTitle: 'Dettagli Farmaco',
+      pageTitle: 'Dettagli Farmaco', // Titolo della pagina nella barra superiore
       userType: _userType,
-      onBackPressed: () => Navigator.pop(context),
+      onBackPressed: () => Navigator.pop(context), // Azione per il tasto indietro
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
             .copyWith(bottom: screenHeight * 0.01),
@@ -80,6 +84,7 @@ class _DettagliFarmacoPageState extends State<DettagliFarmacoPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     SizedBox(height: screenHeight * 0.02),
+                    // Titolo della pagina
                     Center(
                       child: TappableReader(
                         label: 'Titolo pagina Dettagli Farmaco',
@@ -101,7 +106,8 @@ class _DettagliFarmacoPageState extends State<DettagliFarmacoPage> {
                     ),
                     SizedBox(height: screenHeight * 0.04),
 
-                    // DETTAGLI FARMACO
+                    // --- DETTAGLI FARMACO ---
+                    // Nome del farmaco
                     TappableReader(
                       label: 'Nome farmaco: ${widget.farmaco.nome}',
                       child: InfoRow(label: 'Nome', value: widget.farmaco.nome),
@@ -111,6 +117,7 @@ class _DettagliFarmacoPageState extends State<DettagliFarmacoPage> {
                       thickness: 1,
                     ),
                     SizedBox(height: screenHeight * 0.02),
+                    // Dose del farmaco
                     TappableReader(
                       label: 'Dose farmaco: ${widget.farmaco.dose}',
                       child: InfoRow(label: 'Dose', value: widget.farmaco.dose),
@@ -120,6 +127,7 @@ class _DettagliFarmacoPageState extends State<DettagliFarmacoPage> {
                       thickness: 1,
                     ),
                     SizedBox(height: screenHeight * 0.02),
+                    // Forma terapeutica
                     TappableReader(
                       label:
                           'Forma Terapeutica: ${widget.farmaco.formaTerapeutica}',
@@ -131,6 +139,7 @@ class _DettagliFarmacoPageState extends State<DettagliFarmacoPage> {
                       thickness: 1,
                     ),
                     SizedBox(height: screenHeight * 0.02),
+                    // Orario di somministrazione
                     TappableReader(
                       label: 'Orario somministrazione: ${widget.farmaco.orario}',
                       child: InfoRow(label: 'Orario', value: widget.farmaco.orario),
@@ -144,7 +153,7 @@ class _DettagliFarmacoPageState extends State<DettagliFarmacoPage> {
               ),
             ),
 
-            // Pulsante fisso in basso
+            // Pulsante fisso in basso per eliminare il farmaco
             SizedBox(height: screenHeight * 0.02),
             TappableReader(
               label: 'Bottone Elimina Farmaco',
@@ -152,6 +161,7 @@ class _DettagliFarmacoPageState extends State<DettagliFarmacoPage> {
                 text: 'Elimina',
                 color: Colors.red.shade700,
                 onTap: () {
+                  // Mostra un popup di conferma prima di eliminare
                   showDialog(
                     context: context,
                     builder: (BuildContext dialogContext) {

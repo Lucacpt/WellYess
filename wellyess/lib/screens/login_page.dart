@@ -6,6 +6,7 @@ import 'package:wellyess/screens/homepage.dart';
 // MODIFICA: L'import di profilo_caregiver non è più necessario qui.
 import 'package:wellyess/widgets/custom_main_button.dart';
 
+// Pagina di login per l'applicazione
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
   @override
@@ -13,15 +14,18 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  // Controller per i campi email e password
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
-  bool _loading = false;
+  bool _loading = false; // Stato di caricamento per il pulsante
 
+  // Credenziali fisse per il prototipo (anziano e caregiver)
   static const String elderEmail = "anziano";
   static const String elderPass = "password";
   static const String caregiverEmail = "caregiver";
   static const String caregiverPass = "password";
 
+  // Gestisce il login dell'utente
   Future<void> _handleLogin() async {
     setState(() => _loading = true);
 
@@ -30,6 +34,7 @@ class _LoginPageState extends State<LoginPage> {
 
     UserType? loggedInUserType;
 
+    // Verifica le credenziali inserite
     if (email == elderEmail && pass == elderPass) {
       loggedInUserType = UserType.elder;
     } else if (email == caregiverEmail && pass == caregiverPass) {
@@ -37,6 +42,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     if (loggedInUserType != null) {
+      // Salva il tipo di utente nelle SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('userType', loggedInUserType.toString());
 
@@ -48,6 +54,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
       );
     } else {
+      // Mostra un dialog di errore se le credenziali non sono valide
       _showErrorDialog(context);
     }
 
@@ -56,6 +63,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  // Mostra un dialog di errore per credenziali non valide
   Future<void> _showErrorDialog(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
@@ -109,6 +117,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Ottieni dimensioni schermo per layout responsivo
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
@@ -123,11 +132,13 @@ class _LoginPageState extends State<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SizedBox(height: screenHeight * 0.08),
+                // Logo dell'applicazione
                 SizedBox(
                   height: screenHeight * 0.12,
                   child: Image.asset('assets/logo/wellyess.png'),
                 ),
                 SizedBox(height: screenHeight * 0.05),
+                // Titolo di benvenuto
                 Text(
                   'Bentornato!',
                   textAlign: TextAlign.center,
@@ -138,6 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 SizedBox(height: screenHeight * 0.01),
+                // Sottotitolo
                 Text(
                   'Accedi per continuare',
                   textAlign: TextAlign.center,
@@ -147,6 +159,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 SizedBox(height: screenHeight * 0.05),
+                // Campo email
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -177,6 +190,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 SizedBox(height: screenHeight * 0.02),
+                // Campo password
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -201,6 +215,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
+                // Link per password dimenticata (non implementato)
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
@@ -217,6 +232,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 SizedBox(height: screenHeight * 0.03),
+                // Pulsante di login o loader se in caricamento
                 _loading
                     ? const Center(child: CircularProgressIndicator())
                     : CustomMainButton(
@@ -225,6 +241,7 @@ class _LoginPageState extends State<LoginPage> {
                         onTap: _handleLogin,
                       ),
                 SizedBox(height: screenHeight * 0.05),
+                // Link per la registrazione (non implementato)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

@@ -15,7 +15,7 @@ import 'package:wellyess/models/accessibilita_model.dart';
 import 'package:wellyess/widgets/tappable_reader.dart';
 import 'package:wellyess/services/flutter_tts.dart';
 
-
+// Pagina principale dell'agenda medica
 class MedDiaryPage extends StatefulWidget {
   const MedDiaryPage({Key? key}) : super(key: key);
   @override
@@ -23,18 +23,18 @@ class MedDiaryPage extends StatefulWidget {
 }
 
 class _MedDiaryPageState extends State<MedDiaryPage> {
-  DateTime _selectedDate = DateTime.now();
-  // MODIFICA: Aggiunte variabili per gestire il tipo di utente
-  UserType? _userType;
-  bool _isLoading = true;
+  DateTime _selectedDate = DateTime.now(); // Data selezionata nel calendario
+  UserType? _userType; // Tipo utente (caregiver, anziano, ecc.)
+  bool _isLoading = true; // Stato di caricamento
 
   @override
   void initState() {
     super.initState();
-    // MODIFICA: Carica il tipo di utente all'avvio della pagina
+    // Carica il tipo di utente all'avvio della pagina
     _loadUserType();
   }
 
+  // Carica il tipo di utente dalle SharedPreferences
   Future<void> _loadUserType() async {
     final prefs = await SharedPreferences.getInstance();
     final userTypeString = prefs.getString('userType');
@@ -49,13 +49,16 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
     }
   }
 
+  // Aggiorna la data selezionata quando si sceglie un giorno diverso
   void _onDaySelected(DateTime d) => setState(() => _selectedDate = d);
+
+  // Cambia settimana avanti o indietro
   void _onWeekChanged(int days) =>
       setState(() => _selectedDate = _selectedDate.add(Duration(days: days)));
 
   @override
   Widget build(BuildContext context) {
-    // MODIFICA: Mostra un caricamento finché non si conosce l'utente
+    // Mostra un caricamento finché non si conosce l'utente
     if (_isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
@@ -65,19 +68,20 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
     final box = Hive.box<AppointmentModel>('appointments');
     final allAppointments = box.values.toList();
 
-    // Accessibilità
+    // Accessibilità: recupera i valori dal provider
     final access = context.watch<AccessibilitaModel>();
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
-    // MODIFICA: Passa il tipo di utente corretto al BaseLayout
+    // Layout principale della pagina
     return BaseLayout(
-      pageTitle: 'Agenda Medica',      // ← titolo da annunciare
-      userType: _userType,
+      pageTitle: 'Agenda Medica',      // Titolo della pagina
+      userType: _userType,             // Passa il tipo di utente corretto
       onBackPressed: () => Navigator.of(context).pop(),
       child: Column(
         children: [
           const SizedBox(height: 12),
+          // Titolo grande in alto
           TappableReader(
             label: 'Titolo pagina Agenda Medica',
             child: Center(
@@ -91,6 +95,7 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
               ),
             ),
           ),
+          // Navigatore settimanale (frecce per cambiare settimana)
           TappableReader(
             label: 'Navigatore settimanale. Settimana del ${DateFormat('d MMMM', 'it_IT').format(_selectedDate)}',
             child: WeekNavigator(
@@ -98,6 +103,7 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
               onWeekChanged: _onWeekChanged,
             ),
           ),
+          // Selettore giorno orizzontale
           TappableReader(
             label: 'Selettore giorno',
             child: HorizontalDayScroller(
@@ -114,6 +120,7 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
           ),
           const Divider(),
           const SizedBox(height: 8),
+          // Titolo della sezione visite del giorno
           TappableReader(
             label: 'Visite del giorno ${DateFormat('EEEE d MMMM', 'it_IT').format(_selectedDate)}',
             child: Center(
@@ -126,6 +133,7 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
               ),
             ),
           ),
+          // Lista delle visite del giorno selezionato
           Expanded(
             child: AppointmentList(
               appointments: allAppointments
@@ -136,6 +144,7 @@ class _MedDiaryPageState extends State<MedDiaryPage> {
                   .toList(),
             ),
           ),
+          // Bottone per aggiungere un nuovo appuntamento
           TappableReader(
             label: 'Aggiungi appuntamento',
             child: CustomMainButton(

@@ -13,6 +13,7 @@ import 'package:wellyess/services/flutter_tts.dart';
 import 'add_new_parameters.dart';
 import 'monitoring_history_page.dart';
 
+// Pagina principale per il monitoraggio dei parametri vitali
 class MonitoraggioParametriPage extends StatefulWidget {
   const MonitoraggioParametriPage({super.key});
 
@@ -22,15 +23,16 @@ class MonitoraggioParametriPage extends StatefulWidget {
 }
 
 class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
-  UserType? _userType;
-  bool _isLoading = true;
+  UserType? _userType; // Tipo utente (caregiver, anziano, ecc.)
+  bool _isLoading = true; // Stato di caricamento
 
   @override
   void initState() {
     super.initState();
-    _loadUserType();
+    _loadUserType(); // Carica il tipo di utente dalle preferenze
   }
 
+  // Carica il tipo di utente dalle SharedPreferences
   Future<void> _loadUserType() async {
     final prefs = await SharedPreferences.getInstance();
     final userTypeString = prefs.getString('userType');
@@ -47,6 +49,7 @@ class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Mostra loader se i dati sono in caricamento
     if (_isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
@@ -58,20 +61,20 @@ class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // Accessibilità
+    // Accessibilità: recupera i valori dal provider
     final access = context.watch<AccessibilitaModel>();
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
     return BaseLayout(
-      pageTitle: 'Monitoraggio Parametri',  // ← titolo da annunciare
+      pageTitle: 'Monitoraggio Parametri',  // Titolo della pagina
       userType: _userType,
       currentIndex: 3,
       onBackPressed: () => Navigator.pop(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // HEADER FISSO
+          // HEADER FISSO: Titolo pagina
           TappableReader(
             label: 'Titolo pagina Monitoraggio Parametri',
             child: Center(
@@ -87,19 +90,21 @@ class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
             ),
           ),
           Divider(
-            color:Colors.grey,
+            color: Colors.grey,
             thickness: 1,
           ),
 
-          // CONTENUTO SCORRIBILE
+          // CONTENUTO SCORRIBILE: Stato generale e parametri
           Expanded(
             child: ValueListenableBuilder<Box<ParameterEntry>>(
               valueListenable: box.listenable(),
               builder: (context, box, _) {
+                // Ordina le entry dal più recente al meno recente
                 final entries = box.values.toList()
                   ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
                 final last = entries.isNotEmpty ? entries.first : null;
 
+                // Determina colore, icona e testo dello stato generale
                 final Color generalStatusColor =
                     last != null ? _getGeneralStatusColor(last) : Colors.green.shade400;
                 final IconData generalStatusIcon =
@@ -123,7 +128,7 @@ class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Card stato generale
+                      // Card stato generale (mostra un riassunto dell'ultimo monitoraggio)
                       if (last != null)
                         TappableReader(
                           label:
@@ -220,6 +225,7 @@ class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
                           ),
                         )
                       else
+                        // Messaggio se non ci sono dati disponibili
                         Semantics(
                           label: 'Nessun dato disponibile',
                           child: Card(
@@ -245,7 +251,7 @@ class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
                         ),
                       SizedBox(height: screenHeight * 0.025),
 
-                      // Card parametri
+                      // Card dei singoli parametri (pressione, battito, glicemia, saturazione)
                       if (last != null) ...[
                         TappableReader(
                           label: 'Pressione ${last.sys}/${last.dia} millimetri di mercurio',
@@ -290,9 +296,8 @@ class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
                       ],
                       SizedBox(height: screenHeight * 0.01),
 
-                      // Vedi storico
+                      // Link per vedere lo storico dei monitoraggi
                       if (last != null)
-                        // Ripristino link a Storico monitoraggi e reso leggibile
                         Padding(
                           padding: EdgeInsets.symmetric(vertical: screenHeight * 0.012),
                           child: TappableReader(
@@ -337,7 +342,7 @@ class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
             ),
           ),
 
-          // FOOTER FISSO: Pulsante aggiungi parametri
+          // FOOTER FISSO: Pulsante per aggiungere nuovi parametri
           Padding(
             padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
                 .copyWith(bottom: screenHeight * 0.01, top: screenHeight * 0.01),
@@ -361,7 +366,7 @@ class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
     );
   }
 
-  // Funzione per messaggio stato generale
+  // Restituisce un messaggio di stato generale in base ai valori dell'ultimo monitoraggio
   String _getStatusMessage(ParameterEntry entry) {
     if (entry.sys >= 90 &&
         entry.sys <= 140 &&
@@ -378,7 +383,7 @@ class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
     }
   }
 
-  // Funzione per colore stato generale
+  // Restituisce il colore dello stato generale in base a quanti valori sono fuori norma
   Color _getGeneralStatusColor(ParameterEntry entry) {
     int outOfRange = 0;
     if (entry.sys < 90 || entry.sys > 140) outOfRange++;
@@ -392,7 +397,7 @@ class _MonitoraggioParametriPageState extends State<MonitoraggioParametriPage> {
     return Colors.red.shade400;
   }
 
-  // Funzione per colore stato parametro
+  // Restituisce il colore per un singolo parametro in base ai limiti
   Color _getColor(num value, num min, num max) {
     if (value < min || value > max) {
       // Se molto fuori range, rosso

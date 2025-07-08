@@ -16,8 +16,9 @@ import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
 import 'package:wellyess/widgets/tappable_reader.dart';
 
+// Pagina principale che mostra i farmaci del giorno e permette di segnare l'assunzione
 class FarmaciPage extends StatefulWidget {
-  final int? farmacoKeyToShow;
+  final int? farmacoKeyToShow; // Chiave opzionale per evidenziare un farmaco
 
   const FarmaciPage({Key? key, this.farmacoKeyToShow}) : super(key: key);
 
@@ -26,23 +27,24 @@ class FarmaciPage extends StatefulWidget {
 }
 
 class _FarmaciPageState extends State<FarmaciPage> {
-  final Map<dynamic, Color> _statiFarmaci = {};
-  late final Box<FarmacoModel> _farmaciBox;
-  UserType? _userType;
-  bool _isLoading = true;
+  final Map<dynamic, Color> _statiFarmaci = {}; // Mappa che tiene traccia dello stato di ogni farmaco (assunto, saltato, in attesa)
+  late final Box<FarmacoModel> _farmaciBox;     // Box Hive che contiene i farmaci
+  UserType? _userType;                          // Tipo utente (caregiver, anziano, ecc.)
+  bool _isLoading = true;                       // Stato di caricamento
 
   @override
   void initState() {
     super.initState();
-    _initializePage();
+    _initializePage(); // Inizializza la pagina caricando dati e stato utente
   }
 
+  // Inizializza la pagina: carica tipo utente e stato dei farmaci
   Future<void> _initializePage() async {
     final prefs = await SharedPreferences.getInstance();
     final userTypeString = prefs.getString('userType');
     _farmaciBox = Hive.box<FarmacoModel>('farmaci');
 
-    // 1) inizializza la mappa con lo stato salvato
+    // Inizializza la mappa degli stati dei farmaci in base al valore salvato
     for (var key in _farmaciBox.keys) {
       final f = _farmaciBox.get(key);
       _statiFarmaci[key] = (f?.assunto == true)
@@ -64,6 +66,7 @@ class _FarmaciPageState extends State<FarmaciPage> {
     }
   }
 
+  // Funzione helper per interpretare qualsiasi stringa di orario
   DateTime? _parseTime(String timeString) {
     try {
       return DateFormat("h:mm a").parse(timeString);
@@ -76,6 +79,7 @@ class _FarmaciPageState extends State<FarmaciPage> {
     }
   }
 
+  // Mostra un dialog di conferma per segnare l'assunzione o il salto di un farmaco
   void _showConfirmationDialog(int key) {
     final farmaco = _farmaciBox.get(key)!;
     showDialog(
@@ -85,14 +89,14 @@ class _FarmaciPageState extends State<FarmaciPage> {
         cancelButtonText: 'No',
         confirmButtonText: 'Sì',
         onCancel: () {
-          Navigator.of(ctx).pop();              // chiudo il dialog
-          farmaco.assunto = false;
+          Navigator.of(ctx).pop();              // Chiude il dialog
+          farmaco.assunto = false;              // Segna come saltato
           farmaco.save();
           setState(() => _statiFarmaci[key] = Colors.red);
         },
         onConfirm: () {
           Navigator.of(ctx).pop();
-          farmaco.assunto = true;
+          farmaco.assunto = true;               // Segna come assunto
           farmaco.save();
           setState(() => _statiFarmaci[key] = Colors.green);
         },
@@ -102,12 +106,14 @@ class _FarmaciPageState extends State<FarmaciPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Recupera impostazioni di accessibilità dal provider
     final access = context.watch<AccessibilitaModel>();
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
+    // Mostra loader se i dati sono in caricamento
     if (_isLoading) {
       return BaseLayout(
         pageTitle: 'Farmaci',
@@ -119,7 +125,7 @@ class _FarmaciPageState extends State<FarmaciPage> {
     final isCaregiver = _userType == UserType.caregiver;
 
     return BaseLayout(
-      pageTitle: 'Farmaci',
+      pageTitle: 'Farmaci', // Titolo della pagina nella barra superiore
       userType: _userType,
       currentIndex: 1,
       onBackPressed: () => Navigator.of(context).pop(),
@@ -156,6 +162,7 @@ class _FarmaciPageState extends State<FarmaciPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // Titolo sezione farmaci di oggi
                     TappableReader(
                       label: 'Sezione Farmaci di Oggi',
                       child: Text(
@@ -168,6 +175,7 @@ class _FarmaciPageState extends State<FarmaciPage> {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.025),
+                    // Legenda dei colori per lo stato dei farmaci
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
@@ -177,7 +185,7 @@ class _FarmaciPageState extends State<FarmaciPage> {
                       ],
                     ),
                     SizedBox(height: screenHeight * 0.02),
-                    // TESTO INFORMATIVO
+                    // Testo informativo su come cambiare lo stato di assunzione
                     Row(
                       children: [
                         TappableReader(
@@ -203,6 +211,7 @@ class _FarmaciPageState extends State<FarmaciPage> {
                       ],
                     ),
                     SizedBox(height: screenHeight * 0.025),
+                    // Lista dei farmaci ordinati per orario
                     ValueListenableBuilder<Box<FarmacoModel>>(
                       valueListenable: _farmaciBox.listenable(),
                       builder: (context, box, _) {
@@ -220,6 +229,7 @@ class _FarmaciPageState extends State<FarmaciPage> {
                           },
                         );
                         if (keys.isEmpty) {
+                          // Messaggio se non ci sono farmaci
                           return Center(
                             child: Padding(
                               padding: EdgeInsets.symmetric(
@@ -235,6 +245,7 @@ class _FarmaciPageState extends State<FarmaciPage> {
                           );
                         }
 
+                        // Costruisce la lista dei farmaci
                         return ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
@@ -275,7 +286,7 @@ class _FarmaciPageState extends State<FarmaciPage> {
               ),
             ),
           ),
-          // FOOTER FISSO
+          // FOOTER FISSO: Bottone per vedere tutti i farmaci
           SizedBox(height: screenHeight * 0.02),
           TappableReader(
             label: 'Bottone Vedi tutti i farmaci',

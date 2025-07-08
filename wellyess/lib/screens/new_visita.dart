@@ -14,6 +14,7 @@ import 'package:wellyess/widgets/tappable_reader.dart';
 import 'package:wellyess/services/flutter_tts.dart';
 import 'package:intl/intl.dart';
 
+// Schermata per aggiungere una nuova visita medica
 class NewVisitaScreen extends StatefulWidget {
   const NewVisitaScreen({Key? key}) : super(key: key);
   @override
@@ -21,12 +22,13 @@ class NewVisitaScreen extends StatefulWidget {
 }
 
 class _NewVisitaScreenState extends State<NewVisitaScreen> {
-  DateTime? _selectedDate;
-  TimeOfDay? _selectedTime;
-  final _tipoCtrl = TextEditingController();
-  final _luogoCtrl = TextEditingController();
-  final _noteCtrl = TextEditingController();
+  DateTime? _selectedDate; // Data selezionata per la visita
+  TimeOfDay? _selectedTime; // Orario selezionato per la visita
+  final _tipoCtrl = TextEditingController();   // Controller per il tipo di visita
+  final _luogoCtrl = TextEditingController();  // Controller per il luogo
+  final _noteCtrl = TextEditingController();   // Controller per le note
 
+  // Salva la visita nel database Hive
   void _save() async {
     if (_selectedDate == null || _selectedTime == null) return;
     final box = Hive.box<AppointmentModel>('appointments');
@@ -45,7 +47,7 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
     );
     await box.add(app);
 
-    // mostra popup di conferma
+    // Mostra popup di conferma dopo il salvataggio
     await showDialog(
       context: context,
       builder: (_) => const PopUpConferma(
@@ -53,9 +55,10 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
       ),
     );
 
-    Navigator.of(context).pop();
+    Navigator.of(context).pop(); // Torna indietro dopo il salvataggio
   }
 
+  // Mostra un popup di conferma quando si tenta di uscire senza salvare
   Future<bool> _showExitConfirmation() async {
     final result = await showDialog<bool>(
       context: context,
@@ -75,15 +78,15 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // Accessibilità
+    // Accessibilità: recupera i valori dal provider
     final access = context.watch<AccessibilitaModel>();
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
     return WillPopScope(
-      onWillPop: _showExitConfirmation,
+      onWillPop: _showExitConfirmation, // Intercetta il tasto indietro per mostrare conferma
       child: BaseLayout(
-        pageTitle: 'Aggiungi Visita',          
+        pageTitle: 'Aggiungi Visita', // Titolo della pagina nella barra superiore
         onBackPressed: () async {
           if (await _showExitConfirmation()) {
             Navigator.of(context).pop();
@@ -92,7 +95,7 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // HEADER FISSO
+            // HEADER FISSO: Titolo pagina
             TappableReader(
               label: 'Titolo pagina Aggiungi Visita',
               child: Center(
@@ -111,7 +114,7 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
               color: Colors.grey,
               thickness: 1,
             ),
-            // CONTENUTO SCORRIBILE
+            // CONTENUTO SCORRIBILE: Form per inserire i dati della visita
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
@@ -119,7 +122,7 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Testo informativo
+                    // Testo informativo in alto
                     Row(
                       children: [
                         TappableReader(
@@ -145,6 +148,7 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
                       ],
                     ),
                     SizedBox(height: screenHeight * 0.025),
+                    // Campo: Tipo di visita
                     TappableReader(
                       label: 'Etichetta Tipo di visita',
                       child: Text('Tipo di visita',
@@ -166,6 +170,7 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.025),
+                    // Campo: Luogo della visita
                     TappableReader(
                       label: 'Etichetta Luogo',
                       child: Text('Luogo',
@@ -187,6 +192,7 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.025),
+                    // Campo: Data della visita
                     TappableReader(
                       label: 'Etichetta Data',
                       child: Text('Data',
@@ -210,6 +216,7 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.025),
+                    // Campo: Orario della visita
                     TappableReader(
                       label: 'Etichetta Orario',
                       child: Text('Orario',
@@ -232,6 +239,7 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.025),
+                    // Campo: Note aggiuntive
                     TappableReader(
                       label: 'Etichetta Note',
                       child: Text('Note',
@@ -257,6 +265,7 @@ class _NewVisitaScreenState extends State<NewVisitaScreen> {
                 ),
               ),
             ),
+            // FOOTER: Bottone per salvare la visita
             Padding(
               padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
                   .copyWith(bottom: screenHeight * 0.01, top: screenHeight * 0.01),
