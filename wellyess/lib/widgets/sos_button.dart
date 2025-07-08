@@ -3,10 +3,11 @@ import 'package:wellyess/models/user_model.dart';
 import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
 
+// SosButton è un widget che mostra un pulsante SOS adattato per caregiver o anziano
 class SosButton extends StatelessWidget {
-  final VoidCallback onPressed;
-  final UserType userType;
-  final bool hasNewRequest;
+  final VoidCallback onPressed;   // Callback quando il pulsante viene premuto
+  final UserType userType;        // Tipo utente (caregiver o anziano)
+  final bool hasNewRequest;       // Indica se ci sono nuove richieste SOS (solo caregiver)
 
   const SosButton({
     super.key,
@@ -22,7 +23,7 @@ class SosButton extends StatelessWidget {
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
-    // Colori accessibili
+    // Colori accessibili per pulsante, testo e badge
     final Color buttonColor = highContrast ? Colors.black : const Color(0xFFF44336);
     final Color textColor = highContrast ? Colors.yellow.shade700 : Colors.white;
     final Color borderColor = highContrast ? Colors.yellow.shade700 : Colors.white;
@@ -55,6 +56,7 @@ class SosButton extends StatelessWidget {
       return Stack(
         clipBehavior: Clip.none,
         children: [
+          // Pulsante principale "Gestione SOS"
           ElevatedButton(
             onPressed: onPressed,
             style: buttonStyle,
@@ -67,6 +69,7 @@ class SosButton extends StatelessWidget {
               ),
             ),
           ),
+          // Badge rosso/giallo che segnala una nuova richiesta SOS
           if (hasNewRequest)
             Positioned(
               top: -14, // più visibile e centrato
@@ -74,10 +77,10 @@ class SosButton extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: highContrast ? Colors.yellow.shade700 : Colors.red,
+                  color: badgeColor,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: highContrast ? Colors.black : Colors.white,
+                    color: badgeBorder,
                     width: 3,
                   ),
                   boxShadow: [

@@ -23,6 +23,7 @@ import 'package:wellyess/models/accessibilita_model.dart';
 // Funzione di callback per Android Alarm Manager
 @pragma('vm:entry-point')
 void mostraNotificaCallback(int id, Map<String, dynamic> data) {
+  // Inizializza il plugin delle notifiche locali
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   const AndroidInitializationSettings initializationSettingsAndroid =
@@ -35,6 +36,7 @@ void mostraNotificaCallback(int id, Map<String, dynamic> data) {
   final String nome = data['nome'] ?? 'il tuo farmaco';
   final String dose = data['dose'] ?? '';
 
+  // Mostra la notifica locale con titolo e messaggio personalizzati
   flutterLocalNotificationsPlugin.show(
     id,
     '🕐 È il momento di prendere il farmaco!',
@@ -48,27 +50,32 @@ void mostraNotificaCallback(int id, Map<String, dynamic> data) {
         priority: Priority.high,
       ),
     ),
-    // **LA CORREZIONE CHIAVE**: Allega l'ID come payload
+    // Allega l'ID come payload per gestire il tap sulla notifica
     payload: id.toString(),
   );
 }
 
+// Plugin globale per le notifiche locali
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
+// Chiave globale per la navigazione
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+// Variabile per gestire quale farmaco mostrare dopo il tap sulla notifica
 String? farmacoDaMostrare;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // only initialize alarm manager on non-web Android
+  // Inizializza Alarm Manager solo su Android non web
   if (!kIsWeb && Platform.isAndroid) {
     await AndroidAlarmManager.initialize();
   }
 
+  // Inizializza i fusi orari per le notifiche pianificate
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation('Europe/Rome'));
 
+  // Inizializza Hive e registra gli adapter per i modelli
   await Hive.initFlutter();
   Hive.registerAdapter(UserTypeAdapter());
   Hive.registerAdapter(UserModelAdapter());
@@ -76,14 +83,17 @@ Future<void> main() async {
   Hive.registerAdapter(AppointmentModelAdapter());
   Hive.registerAdapter(ParameterEntryAdapter());
 
+  // Apre le box Hive per i dati persistenti
   await Hive.openBox<UserModel>('users');
   await Hive.openBox<FarmacoModel>('farmaci');
   await Hive.openBox<AppointmentModel>('appointments');
   await Hive.openBox<ParameterEntry>('parameters');
   await AuthService.init();
 
+  // Inizializza la localizzazione italiana per le date
   await initializeDateFormatting('it_IT', null);
 
+  // Impostazioni di inizializzazione per notifiche Android e iOS
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('@mipmap/ic_launcher');
   const DarwinInitializationSettings initializationSettingsIOS =
@@ -97,19 +107,18 @@ Future<void> main() async {
     iOS: initializationSettingsIOS,
   );
 
+  // Inizializza il plugin delle notifiche locali e gestisce il tap sulla notifica
   await flutterLocalNotificationsPlugin.initialize(
     initializationSettings,
     onDidReceiveNotificationResponse: (NotificationResponse response) async {
       if (response.payload != null) {
         farmacoDaMostrare = response.payload;
         
-        // **LA CORREZIONE PER LA SCHERMATA NERA**
-        // 1. Vai alla HomePage e pulisci la cronologia
+        // CORREZIONE: Naviga prima alla HomePage e poi alla pagina dei farmaci
         navigatorKey.currentState?.pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const HomePage()),
           (route) => false,
         );
-        // 2. Subito dopo, apri la pagina dei farmaci
         navigatorKey.currentState?.push(
           MaterialPageRoute(builder: (_) => const FarmaciPage()),
         );
@@ -117,6 +126,7 @@ Future<void> main() async {
     },
   );
 
+  // Richiede permessi speciali per le notifiche esatte su Android
   if (Platform.isAndroid) {
     final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
         flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
@@ -126,15 +136,16 @@ Future<void> main() async {
     }
   }
 
-  // 1) legge il tipo utente salvato (se esiste)
+  // Recupera il tipo utente salvato (se esiste) dalle preferenze
   final prefs = await SharedPreferences.getInstance();
   final saved = prefs.getString('userType');
 
-  // 2) imposta la pagina di partenza in base al valore
+  // Imposta la pagina di partenza in base al valore salvato
   final startPage = saved != null
       ? const HomePage()
       : const LoginPage();
 
+  // Avvia l'app con il provider per l'accessibilità
   runApp(
     ChangeNotifierProvider(
       create: (_) => AccessibilitaModel(),
@@ -143,7 +154,7 @@ Future<void> main() async {
   );
 }
 
-/// Global route observer
+/// Osservatore globale delle rotte per gestire eventi di navigazione
 final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
 
 class MyApp extends StatelessWidget {
@@ -152,7 +163,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Recupera le impostazioni di accessibilità
+    // Recupera le impostazioni di accessibilità dal provider
     final access = context.watch<AccessibilitaModel>();
     return MaterialApp(
       title: 'WellYess',
@@ -176,7 +187,7 @@ class MyApp extends StatelessWidget {
               fontSizeFactor: access.fontSizeFactor,
             ),
       ),
-      home: startPage,
+      home: startPage, // Pagina iniziale (login o home)
     );
   }
 }
