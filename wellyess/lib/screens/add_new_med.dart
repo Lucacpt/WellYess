@@ -16,6 +16,7 @@ import 'package:wellyess/widgets/confirm_popup.dart';
 import 'package:wellyess/widgets/tappable_reader.dart';
 import 'package:wellyess/services/flutter_tts.dart';
 
+// Pagina per aggiungere un nuovo farmaco
 class AggiungiFarmacoPage extends StatefulWidget {
   const AggiungiFarmacoPage({super.key});
   @override
@@ -23,15 +24,18 @@ class AggiungiFarmacoPage extends StatefulWidget {
 }
 
 class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
+  // Controller per il campo nome farmaco
   final nomeController = TextEditingController();
+  // Variabili per i valori selezionati nei vari campi
   String? doseValue;
   String? formaTerapeuticaValue;
   TimeOfDay? orarioValue;
   String? frequenzaValue;
 
-  UserType? _userType;
-  bool _isLoading = true;
+  UserType? _userType; // Tipo utente (caregiver, anziano, ecc.)
+  bool _isLoading = true; // Stato di caricamento
 
+  // Opzioni disponibili per i vari campi
   final List<String> doseOptions = ['10 mg', '20 mg', '50 mg', '100 mg'];
   final List<String> formaOptions = [
     'Compressa',
@@ -48,9 +52,10 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
   @override
   void initState() {
     super.initState();
-    _loadUserType();
+    _loadUserType(); // Carica il tipo di utente dalle preferenze
   }
 
+  // Carica il tipo di utente dalle SharedPreferences
   Future<void> _loadUserType() async {
     final prefs = await SharedPreferences.getInstance();
     final userTypeString = prefs.getString('userType');
@@ -65,6 +70,7 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
     }
   }
 
+  // Mostra un popup di conferma quando si tenta di uscire senza salvare
   Future<bool> _showExitConfirmation() async {
     final result = await showDialog<bool>(
       context: context,
@@ -81,20 +87,22 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Ottieni dimensioni schermo per layout responsivo
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // Accessibilità
+    // Accessibilità: recupera i valori dal provider
     final access = context.watch<AccessibilitaModel>();
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
+    // Mostra loader se i dati sono in caricamento
     if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return WillPopScope(
-      onWillPop: _showExitConfirmation,
+      onWillPop: _showExitConfirmation, // Intercetta il tasto indietro
       child: BaseLayout(
         pageTitle: 'Aggiungi Farmaco',
         userType: _userType,
@@ -160,6 +168,7 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
                       ],
                     ),
                     SizedBox(height: screenHeight * 0.025),
+                    // Campo Nome
                     TappableReader(
                       label: 'Etichetta Nome',
                       child: Text('Nome',
@@ -178,6 +187,7 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.025),
+                    // Campo Dose
                     TappableReader(
                       label: 'Etichetta Dose',
                       child: Text('Dose',
@@ -214,6 +224,7 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.025),
+                    // Campo Forma Terapeutica
                     TappableReader(
                       label: 'Etichetta Forma Terapeutica',
                       child: Text('Forma Terapeutica',
@@ -250,6 +261,7 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.025),
+                    // Campo Orario
                     TappableReader(
                       label: 'Etichetta Orario',
                       child: Text('Orario',
@@ -275,6 +287,7 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.025),
+                    // Campo Frequenza
                     TappableReader(
                       label: 'Etichetta Frequenza',
                       child: Text('Frequenza',
@@ -315,6 +328,7 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
                 ),
               ),
             ),
+            // Bottone Salva in fondo alla pagina
             Padding(
               padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
                   .copyWith(bottom: screenHeight * 0.01, top: screenHeight * 0.01),
@@ -353,7 +367,7 @@ class _AggiungiFarmacoPageState extends State<AggiungiFarmacoPage> {
                     final box = Hive.box<FarmacoModel>('farmaci');
                     final key = await box.add(nuovoFarmaco);
 
-                    // 4. PIANIFICAZIONE AUTOMATICA DELLA NOTIFICA!
+                    // 4. Pianificazione automatica della notifica
                     await scheduleFarmacoNotification(
                       key,
                       nuovoFarmaco.nome,

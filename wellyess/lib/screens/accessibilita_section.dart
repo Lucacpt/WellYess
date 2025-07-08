@@ -19,14 +19,15 @@ class AccessibilitaSection extends StatefulWidget {
 }
 
 class _AccessibilitaSectionState extends State<AccessibilitaSection> {
+  // Canale per comunicare con la piattaforma nativa (Android)
   static const _channel = MethodChannel('wellyess/accessibility');
 
-  late final FlutterTts _tts;
-  double _fontSize = 1.0;
-  bool _highContrast = false;
-  UserType? _userType;
-  bool _isLoading = true;
-  bool _isReading = false;          // ← dichiarazione mancante
+  late final FlutterTts _tts; // Text-to-speech
+  double _fontSize = 1.0; // Fattore di scala per la dimensione del testo
+  bool _highContrast = false; // Stato del contrasto elevato
+  UserType? _userType; // Tipo utente (es. caregiver, anziano)
+  bool _isLoading = true; // Stato di caricamento
+  bool _isReading = false; // Se la sintesi vocale è attiva
 
   @override
   void initState() {
@@ -34,7 +35,7 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
     _tts = FlutterTts();
     _tts.setLanguage('it-IT');
     _tts.setSpeechRate(0.5);
-    // Sincronizza i valori locali con quelli globali del provider
+    // Sincronizza i valori locali con quelli globali del provider dopo il primo frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final access = context.read<AccessibilitaModel>();
       setState(() {
@@ -45,6 +46,7 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
     _loadUserType();
   }
 
+  // Carica il tipo di utente dalle preferenze condivise
   Future<void> _loadUserType() async {
     final prefs = await SharedPreferences.getInstance();
     final userTypeString = prefs.getString('userType');
@@ -69,6 +71,7 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
     }
   }
 
+  // Apre le impostazioni di accessibilità del sistema operativo
   void _openAccessibilitySettings() {
     if (Platform.isAndroid) {
       _channel.invokeMethod('openAccessibilitySettings');
@@ -82,6 +85,7 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
     }
   }
 
+  // Attiva/disattiva la lettura vocale della pagina
   Future<void> _toggleTalkBack() async {
     if (_isReading) {
       await _tts.stop();
@@ -99,12 +103,15 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
 
   @override
   Widget build(BuildContext context) {
+    // Ottieni dimensioni schermo per layout responsivo
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    // Provider per accessibilità
     final access = context.watch<AccessibilitaModel>();
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
+    // Mostra loader se i dati sono in caricamento
     if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
@@ -118,6 +125,7 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SizedBox(height: screenHeight * 0.01),
+          // Titolo pagina con lettura vocale
           Align(
             alignment: Alignment.center,
             child: TappableReader(
@@ -157,7 +165,7 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
                     ),
                     SizedBox(height: screenHeight * 0.03),
 
-                    // Dimensione testo
+                    // Sezione per la dimensione del testo
                     TappableReader(
                       label: 'Dimensione testo',
                       child: Text(
@@ -171,6 +179,7 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
                     SizedBox(height: screenHeight * 0.01),
                     Row(
                       children: [
+                        // Icona informativa
                         TappableReader(
                           label: "Icona info",
                           child: Icon(Icons.info_outline,
@@ -178,6 +187,7 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
                               size: screenWidth * 0.055),
                         ),
                         SizedBox(width: screenWidth * 0.02),
+                        // Testo descrittivo
                         Expanded(
                           child: TappableReader(
                             label: "Aumenta la dimensione dei testi per una lettura più facile.",
@@ -193,6 +203,7 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
                         ),
                       ],
                     ),
+                    // Slider per regolare la dimensione del testo
                     TappableReader(
                       label: 'Slider Dimensione testo valore ${_fontSize == 1.0 ? 'Normale' : _fontSize == 1.2 ? 'Grande' : 'Molto grande'}',
                       child: Slider(
@@ -209,13 +220,14 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
                           setState(() {
                             _fontSize = value;
                           });
+                          // Aggiorna il valore globale nel provider
                           context.read<AccessibilitaModel>().setFontSize(value);
                         },
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.02),
 
-                    // Contrasto elevato (ora richiede doppio tap per cambiare lo stato se talkback è attivo)
+                    // Contrasto elevato (richiede doppio tap se TalkBack attivo)
                     TappableReader(
                       label: access.highContrast
                         ? 'Interruttore Contrasto elevato attivo'
@@ -239,7 +251,7 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
                             style: TextStyle(fontSize: screenWidth * 0.05 * fontSizeFactor),
                           ),
                           value: access.highContrast,
-                          // disabilito il toggle al singolo tap quando talkback è attivo
+                          // Disabilita il toggle al singolo tap se TalkBack è attivo
                           onChanged: access.talkbackEnabled
                             ? null
                             : (v) => context.read<AccessibilitaModel>().setHighContrast(v),
@@ -248,7 +260,7 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
                     ),
                     SizedBox(height: screenHeight * 0.02),
 
-                    // TalkBack: unico switch, stato persistente su provider
+                    // TalkBack: switch per attivare/disattivare la lettura vocale
                     TappableReader(
                       label: access.talkbackEnabled
                         ? 'Interruttore TalkBack attivo'
@@ -287,7 +299,7 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
                     ),
                     SizedBox(height: screenHeight * 0.03),
 
-                    // Anteprima testo
+                    // Anteprima del testo con le impostazioni correnti
                     Semantics(
                       label: 'Anteprima testo di esempio',
                       readOnly: true,
@@ -314,7 +326,7 @@ class _AccessibilitaSectionState extends State<AccessibilitaSection> {
                     ),
                     SizedBox(height: screenHeight * 0.04),
 
-                    // Salva
+                    // Bottone per salvare le impostazioni
                     TappableReader(
                       label: 'Bottone Salva impostazioni accessibilità',
                       child: CustomMainButton(

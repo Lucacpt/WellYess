@@ -2,21 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../widgets/base_layout.dart';
 
+// Pagina per aggiungere un nuovo caregiver
 class AggiungiCaregiverPage extends StatelessWidget {
   const AggiungiCaregiverPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BaseLayout(
-      pageTitle: 'Caregiver', // ← aggiunto
-      currentIndex: 0,
-      onBackPressed: () => Navigator.of(context).pop(),
+      pageTitle: 'Caregiver', // Titolo della pagina mostrato nella barra superiore
+      currentIndex: 0, // Indice della pagina nella navbar (se usata)
+      onBackPressed: () => Navigator.of(context).pop(), // Azione per il tasto indietro
       child: Padding(
         padding: const EdgeInsets.all(16.0), // Padding esterno principale della pagina
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Titolo in alto
+            // Titolo in alto centrato
             const Align(
               alignment: Alignment.topCenter,
               child: Text(
@@ -27,17 +28,18 @@ class AggiungiCaregiverPage extends StatelessWidget {
                 ),
               ),
             ),
-            const Divider(),
-            // Fine Titolo
+            const Divider(), // Linea divisoria sotto il titolo
 
-            const SizedBox(height: 80), 
+            const SizedBox(height: 80), // Spazio tra titolo e contenuto
 
+            // Contenitore per immagine e pulsante
             Padding(
-              // Riduci o rimuovi il padding orizzontale qui per allargare il pulsante
-              padding: const EdgeInsets.symmetric(horizontal: 0), // Impostato a 0 per la massima larghezza
+              // Padding orizzontale impostato a 0 per allargare il pulsante
+              padding: const EdgeInsets.symmetric(horizontal: 0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  // Immagine SVG che rappresenta l'aggiunta di un caregiver
                   SvgPicture.asset(
                     'assets/icons/add_Caregiver.svg',
                     height: 150,
@@ -47,13 +49,14 @@ class AggiungiCaregiverPage extends StatelessWidget {
                         padding: const EdgeInsets.all(30.0),
                         child: const CircularProgressIndicator()),
                   ),
-                  const SizedBox(height: 80), // Spazio tra l'immagine e il pulsante
+                  const SizedBox(height: 80), // Spazio tra immagine e pulsante
 
+                  // Pulsante per aggiungere un caregiver
                   SizedBox(
-                    width: double.infinity,
+                    width: double.infinity, // Occupa tutta la larghezza disponibile
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        // Logica per aggiungere un caregiver
+                        // Qui va la logica per aggiungere un caregiver
                       },
                       icon: SvgPicture.asset(
                         'assets/icons/add_icon.svg',
@@ -70,11 +73,11 @@ class AggiungiCaregiverPage extends StatelessWidget {
                         maxLines: 1,
                       ),
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        backgroundColor: Colors.green.shade500,
-                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 18), // Altezza del pulsante
+                        backgroundColor: Colors.green.shade500, // Colore di sfondo
+                        foregroundColor: Colors.white, // Colore del testo/icona
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
+                          borderRadius: BorderRadius.circular(30), // Bordi arrotondati
                         ),
                         textStyle: const TextStyle(
                            fontSize: 20,

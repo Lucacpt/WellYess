@@ -12,6 +12,7 @@ import 'package:wellyess/models/accessibilita_model.dart';
 import 'package:wellyess/widgets/tappable_reader.dart';
 import 'package:wellyess/services/flutter_tts.dart';
 
+// Pagina per aggiungere un nuovo monitoraggio dei parametri vitali
 class AggiungiMonitoraggioPage extends StatefulWidget {
   const AggiungiMonitoraggioPage({super.key});
 
@@ -20,6 +21,7 @@ class AggiungiMonitoraggioPage extends StatefulWidget {
 }
 
 class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
+  // Mappa dei controller per ogni parametro (inizializzati a 0)
   final Map<String, TextEditingController> controllers = {
     'SYS': TextEditingController(text: '0'),
     'DIA': TextEditingController(text: '0'),
@@ -28,15 +30,16 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
     'SpO2': TextEditingController(text: '0'),
   };
 
-  UserType? _userType;
-  bool _isLoading = true;
+  UserType? _userType; // Tipo utente (caregiver, anziano, ecc.)
+  bool _isLoading = true; // Stato di caricamento
 
   @override
   void initState() {
     super.initState();
-    _loadUserType();
+    _loadUserType(); // Carica il tipo di utente dalle preferenze
   }
 
+  // Carica il tipo di utente dalle SharedPreferences
   Future<void> _loadUserType() async {
     final prefs = await SharedPreferences.getInstance();
     final userTypeString = prefs.getString('userType');
@@ -51,16 +54,19 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
     }
   }
 
+  // Incrementa il valore del parametro selezionato
   void increment(String key) {
     final value = int.tryParse(controllers[key]!.text) ?? 0;
     controllers[key]!.text = (value + 1).toString();
   }
 
+  // Decrementa il valore del parametro selezionato (non va sotto zero)
   void decrement(String key) {
     final value = int.tryParse(controllers[key]!.text) ?? 0;
     controllers[key]!.text = (value - 1).clamp(0, double.infinity).toInt().toString();
   }
 
+  // Mostra un popup di conferma quando si tenta di uscire senza salvare
   Future<bool> _showExitConfirmation() async {
     final result = await showDialog<bool>(
       context: context,
@@ -75,10 +81,12 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
     return result == true;
   }
 
+  // Costruisce il widget per l'inserimento di un parametro (con + e -)
   Widget buildValueInput(String label, String key, double fontSize, bool highContrast) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Etichetta del parametro
         TappableReader(
           label: label,
           child: Text(label, style: TextStyle(
@@ -90,6 +98,7 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
         const SizedBox(height: 10),
         Row(
           children: [
+            // Campo di input numerico
             Expanded(
               child: TappableReader(
                 label: '$label campo input',
@@ -121,6 +130,7 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
                       color: highContrast ? Colors.black : Colors.black,
                     ),
                     onChanged: (val) {
+                      // Annuncio vocale se TalkBack attivo
                       if (context.read<AccessibilitaModel>().talkbackEnabled) {
                         TalkbackService.announce('$label: $val');
                       }
@@ -130,6 +140,7 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
               ),
             ),
             const SizedBox(width: 10),
+            // Pulsante per decrementare il valore
             TappableReader(
               label: 'Diminuisci $label',
               child: _IncrementDecrementButton(
@@ -139,6 +150,7 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
               ),
             ),
             const SizedBox(width: 6),
+            // Pulsante per incrementare il valore
             TappableReader(
               label: 'Incrementa $label',
               child: _IncrementDecrementButton(
@@ -153,6 +165,7 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
     );
   }
 
+  // Salva i parametri inseriti nel database Hive
   void _save() async {
     final entry = ParameterEntry(
       timestamp: DateTime.now(),
@@ -165,6 +178,7 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
     final box = Hive.box<ParameterEntry>('parameters');
     await box.add(entry);
 
+    // Mostra popup di conferma
     await showDialog(
       context: context,
       builder: (_) => const PopUpConferma(
@@ -176,6 +190,7 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
 
   @override
   void dispose() {
+    // Libera i controller quando la pagina viene chiusa
     for (var controller in controllers.values) {
       controller.dispose();
     }
@@ -184,10 +199,12 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Mostra loader se i dati sono in caricamento
     if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
+    // Calcola dimensioni schermo e accessibilità
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final access = context.watch<AccessibilitaModel>();
@@ -198,7 +215,7 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
     final double fieldFontSize = (screenWidth * 0.05 * fontSizeFactor).clamp(15.0, 22.0);
 
     return WillPopScope(
-      onWillPop: _showExitConfirmation,
+      onWillPop: _showExitConfirmation, // Intercetta il tasto indietro
       child: BaseLayout(
         pageTitle: 'Aggiungi Monitoraggio',
         userType: _userType,
@@ -264,26 +281,31 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
                       ],
                     ),
                     SizedBox(height: screenHeight * 0.025),
+                    // Campo Minima (SYS)
                     TappableReader(
                       label: 'Sezione Minima (SYS)',
                       child: buildValueInput('Minima (SYS)', 'SYS', fieldFontSize, highContrast),
                     ),
                     const SizedBox(height: 20),
+                    // Campo Massima (DIA)
                     TappableReader(
                       label: 'Sezione Massima (DIA)',
                       child: buildValueInput('Massima (DIA)', 'DIA', fieldFontSize, highContrast),
                     ),
                     const SizedBox(height: 20),
+                    // Campo Frequenza Cardiaca (BPM)
                     TappableReader(
                       label: 'Sezione Frequenza Cardiaca (BPM)',
                       child: buildValueInput('Frequenza Cardiaca (BPM)', 'BPM', fieldFontSize, highContrast),
                     ),
                     const SizedBox(height: 20),
+                    // Campo Glicemia (HGT)
                     TappableReader(
                       label: 'Sezione Glicemia (HGT)',
                       child: buildValueInput('Glicemia (HGT)', 'HGT', fieldFontSize, highContrast),
                     ),
                     const SizedBox(height: 20),
+                    // Campo Saturazione (%SpO2)
                     TappableReader(
                       label: 'Sezione Saturazione (%SpO2)',
                       child: buildValueInput('Saturazione (%SpO2)', 'SpO2', fieldFontSize, highContrast),
@@ -293,7 +315,7 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
                 ),
               ),
             ),
-            // FOOTER FISSO
+            // FOOTER FISSO: Bottone Salva
             Padding(
               padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04)
                   .copyWith(bottom: screenHeight * 0.01, top: screenHeight * 0.01),
@@ -313,6 +335,7 @@ class _AggiungiMonitoraggioPageState extends State<AggiungiMonitoraggioPage> {
   }
 }
 
+// Widget per il pulsante di incremento/decremento (+/-)
 class _IncrementDecrementButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
@@ -344,7 +367,7 @@ class _IncrementDecrementButton extends StatelessWidget {
           ),
           child: Icon(
             icon,
-            color: highContrast ? Colors.black : const Color(0xFF5DB47F), // <-- nero se contrasto attivo
+            color: highContrast ? Colors.black : const Color(0xFF5DB47F), // nero se contrasto attivo
             size: 22,
           ),
         ),

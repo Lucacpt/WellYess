@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
 import 'package:wellyess/widgets/tappable_reader.dart';
 
-// Helper per interpretare qualsiasi stringa di orario
+// Funzione helper per interpretare qualsiasi stringa di orario
 DateTime? _parseTime(String timeString) {
   try {
     return DateFormat("h:mm a").parse(timeString);
@@ -25,6 +25,7 @@ DateTime? _parseTime(String timeString) {
   }
 }
 
+// Pagina che mostra la lista di tutti i farmaci salvati
 class AllMedsPage extends StatefulWidget {
   const AllMedsPage({Key? key}) : super(key: key);
 
@@ -33,15 +34,16 @@ class AllMedsPage extends StatefulWidget {
 }
 
 class _AllMedsPageState extends State<AllMedsPage> {
-  UserType? _userType;
-  bool _isLoading = true;
+  UserType? _userType; // Tipo utente (caregiver, anziano, ecc.)
+  bool _isLoading = true; // Stato di caricamento
 
   @override
   void initState() {
     super.initState();
-    _loadUserType();
+    _loadUserType(); // Carica il tipo di utente dalle preferenze
   }
 
+  // Carica il tipo di utente dalle SharedPreferences
   Future<void> _loadUserType() async {
     final prefs = await SharedPreferences.getInstance();
     final userTypeString = prefs.getString('userType');
@@ -58,21 +60,22 @@ class _AllMedsPageState extends State<AllMedsPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Mostra loader se i dati sono in caricamento
     if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    final box = Hive.box<FarmacoModel>('farmaci');
+    final box = Hive.box<FarmacoModel>('farmaci'); // Box Hive dei farmaci
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // Accessibilità
+    // Accessibilità: recupera i valori dal provider
     final access = context.watch<AccessibilitaModel>();
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
     return BaseLayout(
-      pageTitle: 'Tutta la Terapia',   // ← titolo da annunciare
+      pageTitle: 'Tutta la Terapia',   // Titolo della pagina
       userType: _userType,
       currentIndex: 1,
       onBackPressed: () => Navigator.pop(context),
@@ -81,7 +84,7 @@ class _AllMedsPageState extends State<AllMedsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Intestazione fissa
+            // Intestazione fissa con titolo
             TappableReader(
               label: 'Titolo pagina Tutta la Terapia',
               child: Text(
@@ -99,13 +102,14 @@ class _AllMedsPageState extends State<AllMedsPage> {
               thickness: 1,
             ),
 
-            // Corpo dinamico (scorrevole o vuoto)
+            // Corpo dinamico (lista farmaci o messaggio vuoto)
             Expanded(
               child: ValueListenableBuilder<Box<FarmacoModel>>(
                 valueListenable: box.listenable(),
                 builder: (context, box, _) {
                   final farmaciEntries = box.toMap().entries.toList();
 
+                  // Se non ci sono farmaci, mostra un messaggio
                   if (farmaciEntries.isEmpty) {
                     return Center(
                       child: Text(
@@ -119,14 +123,15 @@ class _AllMedsPageState extends State<AllMedsPage> {
                     );
                   }
 
+                  // Ordina i farmaci in ordine alfabetico per nome
                   farmaciEntries.sort((a, b) => a.value.nome
                       .toLowerCase()
                       .compareTo(b.value.nome.toLowerCase()));
 
-                  // Tutto il contenuto scorrevole
+                  // Lista scorrevole dei farmaci
                   return ListView.builder(
                     padding: EdgeInsets.zero,
-                    itemCount: farmaciEntries.length + 2,
+                    itemCount: farmaciEntries.length + 2, // +2 per info e spazio finale
                     itemBuilder: (context, index) {
                       if (index == 0) {
                         // Testo informativo in cima alla lista
@@ -166,17 +171,20 @@ class _AllMedsPageState extends State<AllMedsPage> {
                         return SizedBox(height: screenHeight * 0.02);
                       }
 
+                      // Recupera il farmaco e la chiave
                       final entry = farmaciEntries[index - 1];
                       final farmaco = entry.value;
                       final farmacoKey = entry.key;
 
+                      // Converte l'orario in formato 24h se possibile
                       final orario24h = _parseTime(farmaco.orario);
                       final orarioDaMostrare = orario24h != null
                           ? DateFormat('HH:mm').format(orario24h)
                           : farmaco.orario;
 
+                      // Card che rappresenta ogni farmaco
                       return Card(
-                        color:Colors.white,
+                        color: Colors.white,
                         elevation: 4,
                         margin: EdgeInsets.symmetric(
                             vertical: screenHeight * 0.01),
@@ -210,6 +218,7 @@ class _AllMedsPageState extends State<AllMedsPage> {
                           ),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: () {
+                            // Naviga alla pagina dei dettagli del farmaco
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -228,7 +237,7 @@ class _AllMedsPageState extends State<AllMedsPage> {
               ),
             ),
 
-            // Footer fisso
+            // Footer fisso: bottone per aggiungere un nuovo farmaco
             SizedBox(height: screenHeight * 0.02),
             TappableReader(
               label: 'Bottone Aggiungi farmaco',
@@ -236,6 +245,7 @@ class _AllMedsPageState extends State<AllMedsPage> {
                 text: '+ Aggiungi farmaco',
                 color: const Color(0xFF5DB47F),
                 onTap: () {
+                  // Naviga alla pagina per aggiungere un nuovo farmaco
                   Navigator.push(
                     context,
                     MaterialPageRoute(
