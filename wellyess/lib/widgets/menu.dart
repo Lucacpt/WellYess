@@ -7,6 +7,7 @@ import 'package:wellyess/screens/monitoring_section.dart';
 import 'package:wellyess/screens/login_page.dart';
 import 'package:wellyess/screens/consigli_salute.dart';
 import 'package:wellyess/screens/med_section.dart';
+import 'package:wellyess/screens/tutorial_page.dart'; // ← import Guida rapida
 import 'package:wellyess/models/accessibilita_model.dart';
 
 // Popup menu principale dell'app, mostra le voci di navigazione in base al tipo utente
@@ -45,6 +46,9 @@ class MenuPopup extends StatelessWidget {
       case 'sport':
         Navigator.push(context, MaterialPageRoute(builder: (_) => const ConsigliSalutePage()));
         break;
+      case 'tutorial': // ← voce Guida rapida
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const TutorialPage()));
+        break;
     }
   }
 
@@ -65,6 +69,7 @@ class MenuPopup extends StatelessWidget {
             _MenuItemData('Agenda', Icons.calendar_month, 'agenda'),
             _MenuItemData('Gestione SOS', Icons.warning_amber_rounded, 'sos'),
             _MenuItemData('Parametri', Icons.monitor_heart, 'parametri'),
+            _MenuItemData('Guida rapida', Icons.help_outline, 'tutorial'), // ← aggiunta
             _MenuItemData('Logout', Icons.logout, 'logout'),
           ]
         : [
@@ -72,6 +77,7 @@ class MenuPopup extends StatelessWidget {
             _MenuItemData('Agenda Medica', Icons.calendar_month, 'agenda'),
             _MenuItemData('Sport & Alimentazione', Icons.restaurant, 'sport'),
             _MenuItemData('Parametri', Icons.monitor_heart, 'parametri'),
+            _MenuItemData('Guida rapida', Icons.help_outline, 'tutorial'), // ← aggiunta
             _MenuItemData('Logout', Icons.logout, 'logout'),
             _MenuItemData('SOS', Icons.sos, 'sos_elder', isSos: true),
           ];

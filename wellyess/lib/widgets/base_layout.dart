@@ -10,6 +10,7 @@ import 'package:wellyess/widgets/bottom_navbar.dart';
 import 'package:wellyess/services/flutter_tts.dart';    // ← già presente
 import 'package:wellyess/main.dart';                   // per routeObserver
 import 'package:wellyess/widgets/tappable_reader.dart'; // ← aggiunto per usare TappableReader
+import 'package:wellyess/screens/homepage.dart';        // ← import HomePage
 
 // Layout di base riutilizzabile per tutte le schermate principali dell'app
 class BaseLayout extends StatefulWidget {
@@ -120,7 +121,16 @@ class _BaseLayoutState extends State<BaseLayout> with RouteAware {
                     children: [
                       TappableReader(
                         label: 'Logo Wellyess',
-                        child: Image.asset('assets/logo/wellyess.png', height: sh*0.06),
+                        child: GestureDetector(
+                          onTap: () {
+                            // Vai alla Home se clicchi sul logo
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (_) => const HomePage()),
+                              (route) => false,
+                            );
+                          },
+                          child: Image.asset('assets/logo/wellyess.png', height: sh * 0.06),
+                        ),
                       ),
                       Semantics(
                         label: 'Foto profilo utente',

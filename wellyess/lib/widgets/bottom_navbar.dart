@@ -95,25 +95,32 @@ class CustomBottomNavBar extends StatelessWidget {
                   TappableReader(
                     label: 'Apri impostazioni',
                     child: Container(
-                      decoration: currentIndex == 2
-                          ? BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: borderColor, width: 2),
-                            )
-                          : null,
+                      // fissa larghezza/altezza in modo che il bordo (anche trasparente)
+                      // non alteri il layout al variare dello stato selezionato/hover
+                      width: iconButtonSize + 4,
+                      height: iconButtonSize + 4,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: currentIndex == 2 ? borderColor : Colors.transparent,
+                          width: 2,
+                        ),
+                      ),
                       child: IconButton(
                         iconSize: iconButtonSize,
+                        padding: EdgeInsets.zero,      // rimuove padding interno variabile
+                        constraints: BoxConstraints(), // evita min constraints di default
                         icon: Icon(
                           Icons.settings,
                           color: currentIndex == 2 ? iconActiveColor : iconInactiveColor,
                         ),
                         onPressed: () {
-                          // Annuncia le impostazioni se TalkBack è attivo
                           final access = Provider.of<AccessibilitaModel>(context, listen: false);
                           if (access.talkbackEnabled) {
                             TalkbackService.announce('Apri impostazioni');
                           }
-                          onTap?.call(2); // Notifica il tap al parent
+                          onTap?.call(2);
                         },
                         tooltip: 'Impostazioni',
                       ),
