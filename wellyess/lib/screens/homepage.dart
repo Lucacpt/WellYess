@@ -25,13 +25,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  UserType? _userType;
-  bool _isLoading = true;
+  UserType? _userType; // Tipo utente (caregiver, anziano, ecc.)
+  bool _isLoading = true; // Stato di caricamento
 
   @override
   void initState() {
     super.initState();
-    _loadUserType();
+    _loadUserType(); // Carica il tipo di utente dalle preferenze
 
     // Mostra la Guida Rapida al primo avvio
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -60,6 +60,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  // Carica il tipo di utente dalle SharedPreferences
   Future<void> _loadUserType() async {
     final prefs = await SharedPreferences.getInstance();
     final userTypeString = prefs.getString('userType');
@@ -74,6 +75,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  // Restituisce il percorso dell'icona SVG in base al tema (contrasto alto o normale)
   String _getIconAsset(String baseName, bool highContrast) {
     // Usa la versione nera se highContrast, altrimenti la versione verde
     switch (baseName) {
@@ -104,6 +106,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Recupera impostazioni di accessibilità dal provider
     final access = context.watch<AccessibilitaModel>();
     final highContrast = access.highContrast;
     final fontSizeFactor = access.fontSizeFactor;
@@ -112,6 +115,7 @@ class _HomePageState extends State<HomePage> {
     final double iconSize = screenWidth * 0.14 * fontSizeFactor;
     final double cardHeight = screenHeight * 0.16;
 
+    // Mostra loader se i dati sono in caricamento
     if (_isLoading) {
       return BaseLayout(
         pageTitle: 'Home', // ← aggiunto
@@ -131,6 +135,7 @@ class _HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(height: screenHeight * 0.01),
+            // Messaggio di benvenuto personalizzato in base al tipo utente
             Align(
               alignment: Alignment.center,
               child: Text(
@@ -147,11 +152,13 @@ class _HomePageState extends State<HomePage> {
               thickness: 1,
             ),
             SizedBox(height: screenHeight * 0.02),
+            // Sezione delle funzionalità principali (Farmaci, Parametri, Agenda, Salute/Assistito)
             Column(
               children: [
                 IntrinsicHeight(
                   child: Row(
                     children: [
+                      // Card Farmaci
                       Expanded(
                         child: SizedBox(
                           height: cardHeight,
@@ -174,6 +181,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       SizedBox(width: screenWidth * 0.04),
+                      // Card Parametri
                       Expanded(
                         child: SizedBox(
                           height: cardHeight,
@@ -202,6 +210,7 @@ class _HomePageState extends State<HomePage> {
                 IntrinsicHeight(
                   child: Row(
                     children: [
+                      // Card Agenda
                       Expanded(
                         child: SizedBox(
                           height: cardHeight,
@@ -224,6 +233,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       SizedBox(width: screenWidth * 0.04),
+                      // Card Salute (per anziano) o Assistito (per caregiver)
                       Expanded(
                         child: SizedBox(
                           height: cardHeight,
@@ -238,6 +248,7 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             SizedBox(height: screenHeight * 0.03),
+            // Pulsante SOS in fondo alla pagina
             SizedBox(
               width: double.infinity,
               height: screenHeight * 0.1,
@@ -260,6 +271,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // Card "Assistito" per il caregiver
   Widget _buildAssistitoCard(double iconSize, bool highContrast, double fontSizeFactor) {
     return FeatureCard(
       icon: SvgPicture.asset(
@@ -279,6 +291,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // Card "Salute" per l'anziano
   Widget _buildConsigliCard(double iconSize, bool highContrast, double fontSizeFactor) {
     return FeatureCard(
       icon: SvgPicture.asset(

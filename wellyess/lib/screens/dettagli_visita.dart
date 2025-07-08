@@ -5,23 +5,26 @@ import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
 import 'package:wellyess/widgets/tappable_reader.dart';
 
+// Schermata che mostra i dettagli di una visita medica
 class DettagliVisitaScreen extends StatelessWidget {
-  final Map<String, String> appointment;
+  final Map<String, String> appointment; // Dati della visita (tipo, luogo, data, ora, note)
+
   const DettagliVisitaScreen({super.key, required this.appointment});
 
   @override
   Widget build(BuildContext context) {
+    // Ottieni dimensioni schermo per layout responsivo
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // Accessibilità
+    // Accessibilità: recupera i valori dal provider
     final access = context.watch<AccessibilitaModel>();
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
     return BaseLayout(
-      pageTitle: 'Dettagli Visita',
-      onBackPressed: () => Navigator.of(context).pop(),
+      pageTitle: 'Dettagli Visita', // Titolo della pagina nella barra superiore
+      onBackPressed: () => Navigator.of(context).pop(), // Azione per il tasto indietro
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
         child: Column(
@@ -54,7 +57,7 @@ class DettagliVisitaScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Tipo visita ora scorre con il resto
+                    // Tipo visita (es: "Visita Cardiologica")
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -77,6 +80,7 @@ class DettagliVisitaScreen extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: screenHeight * 0.03),
+                    // Riga info: Luogo della visita
                     TappableReader(
                       label: 'Luogo: ${appointment['luogo'] ?? ''}',
                       child: InfoRow(
@@ -86,6 +90,7 @@ class DettagliVisitaScreen extends StatelessWidget {
                     ),
                     const Divider(),
                     SizedBox(height: screenHeight * 0.02),
+                    // Riga info: Data della visita
                     TappableReader(
                       label: 'Data: ${appointment['data'] ?? ''}',
                       child: InfoRow(
@@ -95,6 +100,7 @@ class DettagliVisitaScreen extends StatelessWidget {
                     ),
                     const Divider(),
                     SizedBox(height: screenHeight * 0.02),
+                    // Riga info: Orario della visita
                     TappableReader(
                       label: 'Orario: ${appointment['ora'] ?? ''}',
                       child: InfoRow(
@@ -104,6 +110,7 @@ class DettagliVisitaScreen extends StatelessWidget {
                     ),
                     const Divider(),
                     SizedBox(height: screenHeight * 0.02),
+                    // Riga info: Note aggiuntive
                     TappableReader(
                       label: 'Note: ${appointment['note'] ?? ''}',
                       child: InfoRow(
@@ -113,6 +120,7 @@ class DettagliVisitaScreen extends StatelessWidget {
                     ),
                     const Divider(),
                     SizedBox(height: screenHeight * 0.03),
+                    // Titolo sezione mappa
                     Align(
                       alignment: Alignment.centerLeft,
                       child: TappableReader(
@@ -128,11 +136,11 @@ class DettagliVisitaScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.015),
+                    // Immagine della mappa (statica)
                     TappableReader(
                       label: 'Mappa posizione della visita',
                       child: ClipRRect(
-                        borderRadius:
-                            BorderRadius.circular(screenWidth * 0.04),
+                        borderRadius: BorderRadius.circular(screenWidth * 0.04),
                         child: Image.asset(
                           'assets/images/map.png',
                           height: screenHeight * 0.18,

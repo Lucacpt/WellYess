@@ -3,8 +3,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wellyess/widgets/base_layout.dart';
 import 'package:wellyess/models/user_model.dart';
 
+// Schermata che mostra i dettagli e i consigli per un parametro vitale specifico
 class DetailedChartScreen extends StatefulWidget {
-  final String title;
+  final String title; // Titolo del parametro (es: Glicemia, Pressione, ecc.)
 
   const DetailedChartScreen({
     super.key,
@@ -16,15 +17,16 @@ class DetailedChartScreen extends StatefulWidget {
 }
 
 class _DetailedChartScreenState extends State<DetailedChartScreen> {
-  UserType? _userType;
-  bool _isLoading = true;
+  UserType? _userType; // Tipo utente (caregiver, anziano, ecc.)
+  bool _isLoading = true; // Stato di caricamento
 
   @override
   void initState() {
     super.initState();
-    _loadUserType();
+    _loadUserType(); // Carica il tipo di utente dalle preferenze
   }
 
+  // Carica il tipo di utente dalle SharedPreferences
   Future<void> _loadUserType() async {
     final prefs = await SharedPreferences.getInstance();
     final userTypeString = prefs.getString('userType');
@@ -39,11 +41,13 @@ class _DetailedChartScreenState extends State<DetailedChartScreen> {
     }
   }
 
+  // Genera una breve analisi generale (qui è fissa, ma puoi personalizzarla)
   String _generateOverallAnalysis() {
     // Analisi semplificata generica — puoi differenziare anche qui se vuoi
     return "I valori medi sono nella norma. Continua così!";
   }
 
+  // Restituisce una lista di consigli personalizzati in base al parametro selezionato
   List<String> _generateAdviceList() {
     switch (widget.title.toLowerCase()) {
       case 'glicemia':
@@ -83,11 +87,12 @@ class _DetailedChartScreenState extends State<DetailedChartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Mostra loader se i dati sono in caricamento
     if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     return BaseLayout(
-      pageTitle: widget.title,          // ← aggiunto
+      pageTitle: widget.title,          // Titolo della pagina nella barra superiore
       userType: _userType,
       currentIndex: -1,
       onBackPressed: () => Navigator.pop(context),
@@ -96,6 +101,7 @@ class _DetailedChartScreenState extends State<DetailedChartScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Titolo dettagliato
             Text(
               'Dettagli - ${widget.title}',
               style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
@@ -121,6 +127,7 @@ class _DetailedChartScreenState extends State<DetailedChartScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  // Titolo sezione analisi
                   const Center(
                     child: Text(
                       'Analisi Approssimativa',
@@ -131,6 +138,7 @@ class _DetailedChartScreenState extends State<DetailedChartScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
+                  // Testo dell'analisi
                   Text(
                     _generateOverallAnalysis(),
                     style: const TextStyle(
@@ -162,6 +170,7 @@ class _DetailedChartScreenState extends State<DetailedChartScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Titolo sezione consigli
                   const Center(
                     child: Text(
                       'Consigli per migliorare',
@@ -172,6 +181,7 @@ class _DetailedChartScreenState extends State<DetailedChartScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
+                  // Lista dei consigli con icona
                   ..._generateAdviceList().map((consiglio) => Padding(
                         padding: const EdgeInsets.symmetric(vertical: 6),
                         child: Row(

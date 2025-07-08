@@ -8,6 +8,7 @@ import 'package:wellyess/models/accessibilita_model.dart';
 import 'package:wellyess/widgets/tappable_reader.dart';
 import 'package:wellyess/services/flutter_tts.dart';
 
+// Pagina che mostra i consigli di salute suddivisi in due tab: Attività Fisica e Alimentazione
 class ConsigliSalutePage extends StatefulWidget {
   const ConsigliSalutePage({super.key});
 
@@ -16,20 +17,21 @@ class ConsigliSalutePage extends StatefulWidget {
 }
 
 class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
-  int _currentTabIndex = 0;
-  Offset _slideBeginOffset = const Offset(1.0, 0.0);
+  int _currentTabIndex = 0; // Indice del tab selezionato (0=Attività Fisica, 1=Alimentazione)
+  Offset _slideBeginOffset = const Offset(1.0, 0.0); // Offset per l'animazione di transizione
 
   @override
   Widget build(BuildContext context) {
+    // Ottieni dimensioni schermo per layout responsivo
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // Accessibilità
+    // Accessibilità: recupera i valori dal provider
     final access = context.watch<AccessibilitaModel>();
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
-    // Responsive sizes
+    // Dimensioni responsive per padding e testo
     final double horizontalPadding = screenWidth * 0.04;
     final double verticalPadding = screenHeight * 0.015;
     final double titleFontSize = screenWidth * 0.075;
@@ -38,11 +40,11 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
     final double cardSubtitleFontSize = screenWidth * 0.035;
     final double iconSize = screenWidth * 0.10;
 
-    // Usa i dati importati
+    // Scegli i dati da mostrare in base al tab selezionato
     final tips = _currentTabIndex == 0 ? attivitaFisicaTips : alimentazioneTips;
 
     return BaseLayout(
-      pageTitle: 'Consigli Di Salute',   // ← qui il titolo da annunciare
+      pageTitle: 'Consigli Di Salute',   // Titolo della pagina
       onBackPressed: () => Navigator.of(context).pop(),
       child: Padding(
         padding: EdgeInsets.symmetric(
@@ -52,6 +54,7 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Titolo pagina centrato e accessibile
             Center(
               child: TappableReader(
                 label: 'Titolo pagina Consigli Di Salute',
@@ -66,6 +69,7 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
               ),
             ),
             const Divider(),
+            // Tab per selezionare la categoria dei consigli
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -73,6 +77,7 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
               ),
               child: Row(
                 children: [
+                  // Tab Attività Fisica
                   Expanded(
                     child: TappableReader(
                       label: 'Tab Attività Fisica',
@@ -120,6 +125,7 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
                       ),
                     ),
                   ),
+                  // Tab Alimentazione
                   Expanded(
                     child: TappableReader(
                       label: 'Tab Alimentazione',
@@ -171,11 +177,13 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
               ),
             ),
             SizedBox(height: screenHeight * 0.025),
+            // Lista dei consigli (animata con slide tra i tab)
             Expanded(
               child: ClipRect(
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
                   transitionBuilder: (Widget child, Animation<double> animation) {
+                    // Animazione di scorrimento tra i tab
                     final tween = Tween<Offset>(begin: _slideBeginOffset, end: Offset.zero)
                         .chain(CurveTween(curve: Curves.easeInOut));
                     return SlideTransition(
@@ -189,6 +197,7 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
                       final bool isLargeScreen = constraints.maxWidth > 600;
                       final double gridCardAspectRatio = isLargeScreen ? 3.5 : 2.8;
 
+                      // Funzione per costruire la card di ogni consiglio
                       Widget buildCard(Map<String, dynamic> tip) {
                         return TappableReader(
                           label: tip['title'] as String,
@@ -210,6 +219,7 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
                                 vertical: screenHeight * 0.015,
                                 horizontal: screenWidth * 0.04,
                               ),
+                              // Icona SVG del consiglio
                               leading: SvgPicture.asset(
                                 tip['svgAssetPath']!,
                                 height: iconSize * fontSizeFactor,
@@ -219,6 +229,7 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
                                   BlendMode.srcIn,
                                 ),
                               ),
+                              // Titolo del consiglio
                               title: Text(
                                 tip['title']!,
                                 style: TextStyle(
@@ -228,6 +239,7 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
                                 ),
                                 textAlign: TextAlign.center,
                               ),
+                              // Sottotitolo del consiglio
                               subtitle: Text(
                                 tip['subtitle']!,
                                 style: TextStyle(
@@ -239,6 +251,7 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
                                 ),
                                 textAlign: TextAlign.center,
                               ),
+                              // Azione al tap: naviga alla pagina di dettaglio del consiglio
                               onTap: () {
                                 Navigator.push(
                                   context,
@@ -248,7 +261,9 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
                                       subtitle: tip['subtitle']!,
                                       svgAssetPath: tip['svgAssetPath']!,
                                       description: tip['description'] ?? '',
-                                      topics: (tip['topics'] as List).map((e) => Map<String, dynamic>.from(e)).toList(),
+                                      topics: (tip['topics'] as List)
+                                          .map((e) => Map<String, dynamic>.from(e))
+                                          .toList(),
                                     ),
                                   ),
                                 );
@@ -258,6 +273,7 @@ class _ConsigliSalutePageState extends State<ConsigliSalutePage> {
                         );
                       }
 
+                      // Se schermo grande, mostra i consigli in griglia, altrimenti in lista
                       if (isLargeScreen) {
                         return GridView.builder(
                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

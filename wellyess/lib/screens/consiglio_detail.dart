@@ -5,12 +5,13 @@ import '../widgets/base_layout.dart';
 import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
 
+// Pagina di dettaglio per un singolo consiglio di salute
 class ConsiglioDetailPage extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final String svgAssetPath;
-  final String description;
-  final List<Map<String, dynamic>> topics;
+  final String title; // Titolo del consiglio
+  final String subtitle; // Sottotitolo del consiglio
+  final String svgAssetPath; // Percorso dell'icona SVG
+  final String description; // Descrizione testuale del consiglio
+  final List<Map<String, dynamic>> topics; // Lista di argomenti/approfondimenti
 
   const ConsiglioDetailPage({
     super.key,
@@ -23,14 +24,16 @@ class ConsiglioDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Ottieni dimensioni schermo per layout responsivo
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // Accessibilità
+    // Accessibilità: recupera i valori dal provider
     final access = context.watch<AccessibilitaModel>();
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
+    // Calcola dimensioni responsive per padding e testo
     final double horizontalPadding = screenWidth * 0.04;
     final double verticalPadding = screenHeight * 0.015;
     final double titleFontSize = (screenWidth * 0.075 * fontSizeFactor).clamp(20.0, 36.0);
@@ -41,8 +44,8 @@ class ConsiglioDetailPage extends StatelessWidget {
     final double topicTextFontSize = (screenWidth * 0.041 * fontSizeFactor).clamp(13.0, 22.0);
 
     return BaseLayout(
-      pageTitle: title,                // ← aggiunto
-      onBackPressed: () => Navigator.of(context).pop(),
+      pageTitle: title, // Mostra il titolo nella barra superiore
+      onBackPressed: () => Navigator.of(context).pop(), // Azione per il tasto indietro
       child: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: horizontalPadding,
@@ -51,6 +54,7 @@ class ConsiglioDetailPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // Titolo del consiglio
             TappableReader(
               label: 'Titolo consiglio: $title',
               child: Text(
@@ -64,16 +68,18 @@ class ConsiglioDetailPage extends StatelessWidget {
               ),
             ),
             SizedBox(height: screenHeight * 0.01),
+            // Linea divisoria
             Divider(
               thickness: 1,
               color: Colors.grey,
             ),
             SizedBox(height: screenHeight * 0.01),
+            // Contenuto scorrevole
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    // Icona in cerchio con ombra
+                    // Icona SVG in un cerchio con ombra
                     TappableReader(
                       label: 'Icona consiglio',
                       child: Container(
@@ -104,6 +110,7 @@ class ConsiglioDetailPage extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.025),
+                    // Sottotitolo del consiglio
                     TappableReader(
                       label: 'Sottotitolo consiglio: $subtitle',
                       child: Text(
@@ -117,6 +124,7 @@ class ConsiglioDetailPage extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.025),
+                    // Descrizione testuale del consiglio
                     TappableReader(
                       label: 'Descrizione consiglio: $description',
                       child: Text(
@@ -129,7 +137,7 @@ class ConsiglioDetailPage extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.03),
-                    // Argomenti come card leggere, con elenco puntato se serve
+                    // Argomenti/approfondimenti come card leggere, con elenco puntato se serve
                     ...topics.map((topic) => TappableReader(
                       label: 'Sezione ${topic['title']}',
                       child: Padding(
@@ -152,6 +160,7 @@ class ConsiglioDetailPage extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                // Titolo della sezione/argomento
                                 TappableReader(
                                   label: 'Titolo sezione: ${topic['title']}',
                                   child: Text(
@@ -164,6 +173,7 @@ class ConsiglioDetailPage extends StatelessWidget {
                                   ),
                                 ),
                                 SizedBox(height: 6),
+                                // Se il testo è una lista, mostra elenco puntato
                                 if (topic['text'] is List)
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,6 +203,7 @@ class ConsiglioDetailPage extends StatelessWidget {
                                       )),
                                     ),
                                   )
+                                // Altrimenti mostra solo il testo
                                 else
                                   Text(
                                     topic['text']?.toString() ?? '',
@@ -208,6 +219,7 @@ class ConsiglioDetailPage extends StatelessWidget {
                       ),
                     )),
                     SizedBox(height: screenHeight * 0.01),
+                    // Icona informativa finale
                     TappableReader(
                       label: 'Icona informativa finale',
                       child: Icon(
@@ -217,6 +229,7 @@ class ConsiglioDetailPage extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.01),
+                    // Testo di incoraggiamento finale
                     TappableReader(
                       label: 'Testo di incoraggiamento finale',
                       child: Text(
