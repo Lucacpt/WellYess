@@ -3,10 +3,11 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
 
+// Campo personalizzato che permette di selezionare una data tramite un date picker
 class DatePickerField extends StatelessWidget {
-  final DateTime? value;
-  final String placeholder;
-  final ValueChanged<DateTime> onChanged;
+  final DateTime? value;                // Valore attuale della data selezionata
+  final String placeholder;             // Testo segnaposto se nessuna data è selezionata
+  final ValueChanged<DateTime> onChanged; // Callback quando viene selezionata una nuova data
 
   const DatePickerField({
     super.key,
@@ -15,16 +16,17 @@ class DatePickerField extends StatelessWidget {
     required this.onChanged,
   });
 
+  // Mostra il date picker e aggiorna la data se l'utente ne seleziona una nuova
   Future<void> _selectDate(BuildContext context) async {
     final now = DateTime.now();
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: value ?? now,
-      firstDate: DateTime(now.year - 1),
-      lastDate: DateTime(now.year + 1),
+      initialDate: value ?? now,                  // Data iniziale: quella selezionata o oggi
+      firstDate: DateTime(now.year - 1),          // Data minima selezionabile: un anno fa
+      lastDate: DateTime(now.year + 1),           // Data massima selezionabile: tra un anno
     );
     if (picked != null && picked != value) {
-      onChanged(picked);
+      onChanged(picked);                          // Notifica la nuova data selezionata
     }
   }
 
@@ -36,10 +38,12 @@ class DatePickerField extends StatelessWidget {
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
+    // Colori adattati per l'accessibilità
     final Color bgColor = highContrast ? Colors.yellow.shade700 : Colors.white;
     final Color textColor = highContrast ? Colors.black : Colors.grey;
     final Color iconColor = highContrast ? Colors.black : Colors.grey;
 
+    // Testo da mostrare: data formattata o placeholder
     String displayText;
     if (value != null) {
       displayText = DateFormat("d MMMM yyyy", "it_IT").format(value!);
@@ -48,7 +52,7 @@ class DatePickerField extends StatelessWidget {
     }
 
     return GestureDetector(
-      onTap: () => _selectDate(context),
+      onTap: () => _selectDate(context), // Apre il date picker al tap
       child: Container(
         decoration: BoxDecoration(
           color: bgColor,
@@ -70,6 +74,7 @@ class DatePickerField extends StatelessWidget {
             vertical: screenHeight * 0.018),
         child: Row(
           children: [
+            // Testo della data selezionata o placeholder
             Expanded(
               child: Text(
                 displayText,
@@ -80,6 +85,7 @@ class DatePickerField extends StatelessWidget {
                 ),
               ),
             ),
+            // Icona calendario
             Icon(
               Icons.calendar_today,
               color: iconColor,

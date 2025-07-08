@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
 
+// Campo a discesa personalizzato che si adatta alle impostazioni di accessibilità
 class DropdownField extends StatelessWidget {
-  final List<String> options;
-  final String? value;
-  final String placeholder;
-  final ValueChanged<String?> onChanged;
+  final List<String> options;           // Opzioni disponibili nel menu a discesa
+  final String? value;                  // Valore attualmente selezionato
+  final String placeholder;             // Testo segnaposto se nessuna opzione è selezionata
+  final ValueChanged<String?> onChanged; // Callback quando viene selezionata una nuova opzione
 
   const DropdownField({
     super.key,
@@ -28,8 +29,8 @@ class DropdownField extends StatelessWidget {
       hint: 'Campo a scelta multipla. Premi per espandere le opzioni.',
       child: Container(
         decoration: BoxDecoration(
-          color: highContrast ? Colors.yellow.shade700 : Colors.white,
-          borderRadius: BorderRadius.circular(screenWidth * 0.04),
+          color: highContrast ? Colors.yellow.shade700 : Colors.white, // Sfondo adattato per contrasto
+          borderRadius: BorderRadius.circular(screenWidth * 0.04),     // Bordo arrotondato
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.3),
@@ -39,7 +40,7 @@ class DropdownField extends StatelessWidget {
             ),
           ],
           border: highContrast
-              ? Border.all(color: Colors.black, width: 2)
+              ? Border.all(color: Colors.black, width: 2) // Bordo nero se alto contrasto
               : null,
         ),
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
@@ -47,6 +48,7 @@ class DropdownField extends StatelessWidget {
           child: DropdownButton<String>(
             value: value,
             isExpanded: true,
+            // Testo segnaposto se nessuna opzione è selezionata
             hint: Text(
               placeholder,
               style: TextStyle(
@@ -55,13 +57,15 @@ class DropdownField extends StatelessWidget {
                 fontWeight: highContrast ? FontWeight.bold : FontWeight.normal,
               ),
             ),
+            // Stile del testo delle opzioni
             style: TextStyle(
               fontSize: screenWidth * 0.04 * fontSizeFactor,
               color: highContrast ? Colors.black : Colors.black,
               fontWeight: highContrast ? FontWeight.bold : FontWeight.normal,
             ),
-            dropdownColor: highContrast ? Colors.yellow.shade700 : Colors.white,
-            iconEnabledColor: highContrast ? Colors.black : Colors.grey.shade800,
+            dropdownColor: highContrast ? Colors.yellow.shade700 : Colors.white, // Colore menu
+            iconEnabledColor: highContrast ? Colors.black : Colors.grey.shade800, // Colore icona freccia
+            // Genera le opzioni del menu a discesa
             items: options
                 .map(
                   (opt) => DropdownMenuItem<String>(
@@ -74,7 +78,7 @@ class DropdownField extends StatelessWidget {
                   ),
                 )
                 .toList(),
-            onChanged: onChanged,
+            onChanged: onChanged, // Callback quando cambia la selezione
           ),
         ),
       ),

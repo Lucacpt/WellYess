@@ -4,12 +4,13 @@ import 'package:wellyess/models/accessibilita_model.dart';
 import 'package:wellyess/widgets/tappable_reader.dart';
 import 'package:wellyess/services/flutter_tts.dart';
 
+// Dialog di conferma riutilizzabile con due pulsanti (Annulla/Conferma)
 class ConfirmDialog extends StatelessWidget {
-  final String titleText;
-  final String cancelButtonText;
-  final String confirmButtonText;
-  final VoidCallback onCancel;
-  final VoidCallback onConfirm;
+  final String titleText;         // Testo del titolo della dialog
+  final String cancelButtonText;  // Testo del pulsante Annulla
+  final String confirmButtonText; // Testo del pulsante Conferma
+  final VoidCallback onCancel;    // Callback quando si preme Annulla
+  final VoidCallback onConfirm;   // Callback quando si preme Conferma
 
   const ConfirmDialog({
     Key? key,
@@ -25,11 +26,12 @@ class ConfirmDialog extends StatelessWidget {
     final w = MediaQuery.of(context).size.width;
     final h = MediaQuery.of(context).size.height;
 
-    // Accessibilità
+    // Accessibilità: recupera fattore testo e contrasto dal provider
     final access = context.watch<AccessibilitaModel>();
     final fontSizeFactor = access.fontSizeFactor;
     final highContrast = access.highContrast;
 
+    // Colori adattati per l'accessibilità
     final Color bgColor = highContrast ? Colors.yellow.shade700 : Colors.white;
     final Color borderColor = highContrast ? Colors.black : Colors.transparent;
     final Color titleColor = highContrast ? Colors.black : Colors.black87;
@@ -43,6 +45,7 @@ class ConfirmDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(w * 0.05),
         side: BorderSide(color: borderColor, width: highContrast ? 2 : 0),
       ),
+      // Titolo della dialog, letto anche da TalkBack
       title: TappableReader(
         label: titleText,
         child: Text(
@@ -57,12 +60,13 @@ class ConfirmDialog extends StatelessWidget {
       ),
       actionsAlignment: MainAxisAlignment.center,
       actions: [
+        // Pulsante Annulla
         TappableReader(
           label: cancelButtonText,
           child: ElevatedButton(
             onPressed: () {
-              TalkbackService.announce(cancelButtonText);
-              onCancel();
+              TalkbackService.announce(cancelButtonText); // Annuncia il testo se TalkBack attivo
+              onCancel(); // Esegue la callback di annullamento
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: cancelBg,
@@ -82,12 +86,13 @@ class ConfirmDialog extends StatelessWidget {
             ),
           ),
         ),
+        // Pulsante Conferma
         TappableReader(
           label: confirmButtonText,
           child: ElevatedButton(
             onPressed: () {
-              TalkbackService.announce(confirmButtonText);
-              onConfirm();
+              TalkbackService.announce(confirmButtonText); // Annuncia il testo se TalkBack attivo
+              onConfirm(); // Esegue la callback di conferma
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: confirmBg,
