@@ -1,167 +1,173 @@
 import 'package:flutter/material.dart';
 import 'package:wellyess/widgets/base_layout.dart';
-import 'package:wellyess/widgets/tappable_reader.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wellyess/services/flutter_tts.dart';
 import 'package:provider/provider.dart';
 import 'package:wellyess/models/accessibilita_model.dart';
+import 'package:wellyess/services/flutter_tts.dart';
 
-// Pagina che mostra il tutorial passo-passo per l'utente
+class TutorialStep {
+  final String title;
+  final String description;
+  final String imagePath;
+  TutorialStep({required this.title, required this.description, required this.imagePath});
+}
+
 class TutorialPage extends StatefulWidget {
   const TutorialPage({super.key});
 
   @override
-  _TutorialPageState createState() => _TutorialPageState();
+  State<TutorialPage> createState() => _TutorialPageState();
 }
 
 class _TutorialPageState extends State<TutorialPage> {
-  int _currentStep = 0; // Indice del passo attuale del tutorial
+  final PageController _pageController = PageController();
+  int _currentStep = 0;
 
-  // Lista dei passi del tutorial, ognuno con titolo e contenuto
-  final List<Step> _steps = [
-    Step(
-      title: TappableReader(
-        label: 'Aggiungi Farmaco',
-        child: Text('Aggiungi Farmaco'),
-      ),
-      content: TappableReader(
-        label: 'Nella pagina Tutta la Terapia, tocca + per aggiungere farmaco',
-        child: Text('Nella pagina “Tutta la Terapia”, tocca il pulsante + per inserire un nuovo farmaco.'),
-      ),
-      isActive: true,
+  final List<TutorialStep> _steps = [
+    TutorialStep(
+      title: '1. Aggiungi Farmaco',
+      description: 'Nella pagina “Tutta la Terapia”, tocca il pulsante "+ Aggiungi Farmaco" per inserire un nuovo farmaco.',
+      imagePath: 'assets/images/aggiungi_farmaco.jpg',
     ),
-    Step(
-      title: TappableReader(
-        label: 'Compila il farmaco',
-        child: Text('Compila il farmaco'),
-      ),
-      content: TappableReader(
-        label: 'Inserisci nome, dose, forma terapeutica e tocca Salva',
-        child: Text('Inserisci nome, dose, forma terapeutica e tocca “Salva”.'),
-      ),
-      isActive: true,
+    TutorialStep(
+      title: '2. Compila il farmaco',
+      description: 'Inserisci tutti i dati richiesti e tocca “Salva”.',
+      imagePath: 'assets/images/compila_farmaco.jpg',
     ),
-    Step(
-      title: TappableReader(
-        label: 'Aggiungi Visita',
-        child: Text('Aggiungi Visita'),
-      ),
-      content: TappableReader(
-        label: 'Vai su Agenda Medica e tocca + per aggiungere visita',
-        child: Text('Vai su “Agenda Medica” e tocca il pulsante + per aggiungere una visita.'),
-      ),
-      isActive: true,
+    TutorialStep(
+      title: '3. Aggiungi Visita',
+      description: 'Vai su “Agenda Medica” e tocca il pulsante "+ Aggiungi Appuntamento" per aggiungere una visita.',
+      imagePath: 'assets/images/aggiungi_visita.jpg',
     ),
-    Step(
-      title: TappableReader(
-        label: 'Compila visita',
-        child: Text('Compila visita'),
-      ),
-      content: TappableReader(
-        label: 'Seleziona data, orario, note e tocca Salva',
-        child: Text('Scegli data, orario, compila note e tocca “Salva”.'),
-      ),
-      isActive: true,
+    TutorialStep(
+      title: '4. Compila visita',
+      description: 'Inserisci tutti i dati richiesti e tocca “Salva”.',
+      imagePath: 'assets/images/compila_visita.jpg',
     ),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    // Segna il tutorial come già mostrato nelle preferenze
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('tutorial_shown', true);
-    });
+  void _nextStep() {
+    if (_currentStep < _steps.length - 1) {
+      setState(() => _currentStep++);
+      _pageController.nextPage(duration: const Duration(milliseconds: 350), curve: Curves.easeInOut);
+      final access = Provider.of<AccessibilitaModel>(context, listen: false);
+      if (access.talkbackEnabled) {
+        TalkbackService.announce(_steps[_currentStep].title);
+      }
+    } else {
+      Navigator.pop(context);
+    }
+  }
+
+  void _prevStep() {
+    if (_currentStep > 0) {
+      setState(() => _currentStep--);
+      _pageController.previousPage(duration: const Duration(milliseconds: 350), curve: Curves.easeInOut);
+      final access = Provider.of<AccessibilitaModel>(context, listen: false);
+      if (access.talkbackEnabled) {
+        TalkbackService.announce(_steps[_currentStep].title);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final access = Provider.of<AccessibilitaModel>(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final fontSizeFactor = access.fontSizeFactor;
+    final step = _steps[_currentStep];
+
     return BaseLayout(
-      pageTitle: 'Guida passo-passo', // Titolo della pagina nella barra superiore
-      onBackPressed: () {
-        // Annuncia la chiusura solo se TalkBack è attivo
-        final access = Provider.of<AccessibilitaModel>(context, listen: false);
-        if (access.talkbackEnabled) {
-          TalkbackService.announce('Tutorial chiuso');
-        }
-        Navigator.pop(context);
-      },
-      child: Stepper(
-        currentStep: _currentStep, // Passo attuale
-        onStepContinue: () {
-          // Avanza al passo successivo o chiude il tutorial se è l'ultimo
-          if (_currentStep < _steps.length - 1) {
-            setState(() => _currentStep++);
-            final titleWidget = _steps[_currentStep].title;
-            final label = titleWidget is TappableReader
-              ? titleWidget.label
-              : 'Passo ${_currentStep + 1}';
-            // Annuncia solo se TalkBack è attivo
-            if (Provider.of<AccessibilitaModel>(context, listen: false).talkbackEnabled) {
-              TalkbackService.announce(label);
-            }
-          } else {
-            if (Provider.of<AccessibilitaModel>(context, listen: false).talkbackEnabled) {
-              TalkbackService.announce('Fine tutorial');
-            }
-            Navigator.pop(context);
-          }
-        },
-        onStepCancel: _currentStep > 0
-            ? () {
-                setState(() => _currentStep--);
-                final titleWidget = _steps[_currentStep].title;
-                final label = titleWidget is TappableReader
-                  ? titleWidget.label
-                  : 'Passo ${_currentStep + 1}';
-                // Annuncia solo se TalkBack è attivo
-                if (Provider.of<AccessibilitaModel>(context, listen: false).talkbackEnabled) {
-                  TalkbackService.announce(label);
-                }
-              }
-            : null,
-        controlsBuilder: (ctx, details) {
-          // Prendo talkbackEnabled
-          final access = Provider.of<AccessibilitaModel>(ctx, listen: false);
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              if (_currentStep > 0)
-                Semantics(
-                  button: true,
-                  label: 'Passo precedente',
-                  child: TextButton(
-                    onPressed: () {
-                      details.onStepCancel?.call();
-                      if (access.talkbackEnabled) {
-                        TalkbackService.announce('Passo precedente');
-                      }
-                    },
-                    child: const Text('Indietro'),
-                  ),
-                ),
-              const SizedBox(width: 12),
-              Semantics(
-                button: true,
-                label: _currentStep < _steps.length - 1 ? 'Passo successivo' : 'Fine tutorial',
-                child: ElevatedButton(
-                  onPressed: () {
-                    details.onStepContinue?.call();
-                    if (access.talkbackEnabled) {
-                      final msg = _currentStep < _steps.length - 1
-                          ? 'Passo successivo'
-                          : 'Fine tutorial';
-                      TalkbackService.announce(msg);
-                    }
-                  },
-                  child: Text(_currentStep < _steps.length - 1 ? 'Avanti' : 'Fine'),
-                ),
+      pageTitle: 'Tutorial',
+      onBackPressed: () => Navigator.pop(context),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(
+              top: screenHeight * 0.015,
+              left: screenWidth * 0.04,
+              right: screenWidth * 0.04,
+              bottom: screenHeight * 0.002,
+            ),
+            child: Text(
+              'Guida a Wellyess',
+              style: TextStyle(
+                fontSize: (screenWidth * 0.07 * fontSizeFactor).clamp(20.0, 28.0),
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
               ),
-            ],
-          );
-        },
-        steps: _steps, // Lista dei passi del tutorial
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: screenWidth * 0.04,
+                vertical: screenHeight * 0.005,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Titolo step
+                  Text(
+                    step.title,
+                    style: TextStyle(
+                      fontSize: (screenWidth * 0.06 * fontSizeFactor).clamp(18.0, 26.0),
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: screenHeight * 0.005),
+                  // Immagine step 
+                  Expanded(
+                    flex: 12,
+                    child: Center(
+                      child: Image.asset(
+                        step.imagePath,
+                        fit: BoxFit.contain,
+                        semanticLabel: step.title,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: screenHeight * 0.005),
+                  // Descrizione step
+                  Text(
+                    step.description,
+                    style: TextStyle(
+                      fontSize: (screenWidth * 0.045 * fontSizeFactor).clamp(14.0, 20.0),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: screenHeight * 0.01),
+                  // Bottoni navigazione
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (_currentStep > 0)
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: _prevStep,
+                            child: const Text('Indietro'),
+                          ),
+                        )
+                      else
+                        const Spacer(),
+                      SizedBox(width: screenWidth * 0.04),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: _nextStep,
+                          child: Text(_currentStep < _steps.length - 1 ? 'Avanti' : 'Fine'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
