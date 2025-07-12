@@ -1,7 +1,9 @@
 # 💊 WellYess
 
-WellYess is a mobile application developed as a university project for the Human-Computer Interaction course.  
+WellYess is a mobile application prototype developed as a university project for the Human-Computer Interaction course.  
 It is designed to support elderly users and caregivers in managing daily health routines through a simple, accessible, and intuitive interface.
+
+⚠️ Note: This is a prototype and not a fully-featured or production-ready application. Some functionalities may be partially implemented or simulated.
 
 ---
 
@@ -27,7 +29,6 @@ WellYess promotes autonomy and well-being by simplifying healthcare-related task
   <img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white" alt="Flutter" />
   <img src="https://img.shields.io/badge/Hive-FFCA28?style=for-the-badge&logo=hive&logoColor=black" alt="Hive" />
   <img src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white" alt="Figma" />
-  <img src="https://img.shields.io/badge/fl_chart-3DB9D3?style=for-the-badge&logo=chartdotjs&logoColor=white" alt="fl_chart" />
   <img src="https://img.shields.io/badge/local_notifications-FF6F00?style=for-the-badge&logo=android&logoColor=white" alt="flutter_local_notifications" />
 </p>
 
@@ -63,6 +64,26 @@ WellYess promotes autonomy and well-being by simplifying healthcare-related task
   - models/ – data models (e.g. FarmacoModel)
   - utils/ – utilities and notification logic
 - /assets/ – fonts, images, icons
+
+---
+
+## 📦 APK & Access Instructions
+
+A working Android APK of this prototype is available in the repository at:  
+📁 apk/flutter-apk/app-release.apk
+
+To test the application properly, make sure to:
+
+- ✅ Grant permission to set alarms and reminders (for medication notifications)
+- ✅ Enable all notifications from system settings
+
+Login credentials for the two available user roles:
+
+👵 Elderly user  
+  ‣ email: anziano  ‣ password: password
+
+👤 Caregiver  
+  ‣ email: caregiver ‣ password: password
 
 ---
 
